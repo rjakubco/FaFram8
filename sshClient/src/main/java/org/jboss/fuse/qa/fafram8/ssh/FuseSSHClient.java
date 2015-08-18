@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * Specific SSHClient for connecting to Fuse
+ * Specific SSHClient for connecting to Fuse.
  *
  * @author : Roman Jakubco (rjakubco@redhat.com)
  */
@@ -57,26 +57,47 @@ public class FuseSSHClient extends AbstractSSHClient {
 	}
 
 	@Override
-	public String executeCommand(String command) throws KarafSessionDownException, SSHClientException {
-		String returnString;
-
-		logger.debug("Command: " + command);
+	public String executeCommand(String command) throws KarafSessionDownException, SSHClientException, InterruptedException {
+		logger.info("Executing command: " + command);
 
 		try {
 
-			channel = session.openChannel("exec");
-			((ChannelExec) channel).setCommand(command);
+			// If we should retry the command
+			boolean retry;
 
-			channel.setInputStream(null);
-			((ChannelExec) channel).setErrStream(System.err);
+			int retries = 0;
 
-			InputStream in = channel.getInputStream();
+			String returnString = "";
+			do {
+				if (retries == 2) {
+					// If we retried it 2 times already, break
+					break;
+				}
+				channel = session.openChannel("exec");
+				((ChannelExec) channel).setCommand(command);
 
-			channel.connect();
+				channel.setInputStream(null);
+				((ChannelExec) channel).setErrStream(System.err);
 
-			returnString = convertStreamToString(in);
+				InputStream in = channel.getInputStream();
 
-			return returnString;
+				channel.connect();
+
+				returnString = convertStreamToString(in);
+				if (returnString.contains("not found")) {
+					logger.debug("Retrying command in 5 seconds");
+					retry = true;
+					retries++;
+					// Wait for 5 sec before executing command
+					Thread.sleep(5000L);
+					continue;
+				} else {
+					retry = false;
+				}
+				logger.debug("** Command response: " + returnString);
+			} while (retry);
+
+			return returnString.replaceAll("\u001B\\[[;\\d]*m", "").trim();
 		} catch (JSchException ex) {
 			if (ex.getMessage().contains("session is down")) {
 				logger.debug("Session is down exception when starting Fuse or creating fabric -> not important");
