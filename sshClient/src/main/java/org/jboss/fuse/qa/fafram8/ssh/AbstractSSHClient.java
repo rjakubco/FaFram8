@@ -16,7 +16,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * Abstract class for SSHClients
+ * Abstract class for SSHClients.
  *
  * @author : Roman Jakubco (rjakubco@redhat.com)
  */
@@ -62,12 +62,14 @@ public abstract class AbstractSSHClient {
 	 * @param command command to be executed
 	 * @return String containing response from command
 	 * @throws KarafSessionDownException throws this exception if Karaf is down(specific for FuseSSHClient)
-	 * @throws SSHClientException common exception for sshclient when there is some problem in connecting (auth fail, timeout, wrong host/port)
+	 * @throws SSHClientException common exception for sshclient when there is some problem in connecting
+	 * 							 (auth fail, timeout, wrong host/port)
 	 */
-	public abstract String executeCommand(String command) throws KarafSessionDownException, SSHClientException;
+	public abstract String executeCommand(String command) throws KarafSessionDownException,
+			SSHClientException, InterruptedException;
 
 	/**
-	 * Method for creating connection and session, that is is used in executeCommand() method
+	 * Method for creating connection and session, that is is used in executeCommand() method.
 	 *
 	 * @throws VerifyFalseException throw this exception when JschClient drop connection
 	 * @throws SSHClientException common exception for sshclient when there is some problem in executing command
@@ -75,7 +77,7 @@ public abstract class AbstractSSHClient {
 	public abstract void connect() throws VerifyFalseException, SSHClientException;
 
 	/**
-	 * Disconnects channel and session
+	 * Disconnects channel and session.
 	 */
 	public void disconnect() {
 
@@ -88,7 +90,16 @@ public abstract class AbstractSSHClient {
 	}
 
 	/**
-	 * Helper method for converting Stream to String
+	 * Helper method for checking if session is connected.
+	 *
+	 * @return true if connected
+	 */
+	public Boolean isConnected() {
+		return session != null && session.isConnected();
+	}
+
+	/**
+	 * Helper method for converting Stream to String.
 	 *
 	 * @param is InputStream to be converted to String
 	 * @return crated String from InputStream
