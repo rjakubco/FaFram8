@@ -1,6 +1,8 @@
 package org.jboss.fuse.qa.fafram8.exceptions;
 
 /**
+ * Exception for wrapping JschException: session is down for better handling of ssh connection to Fuse
+ *
  * @author : Roman Jakubco (rjakubco@redhat.com)
  */
 public class KarafSessionDownException extends Exception {
