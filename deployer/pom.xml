@@ -11,18 +11,7 @@
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
-	<artifactId>ssh-client</artifactId>
-	<name>Fafram8 SSH Client</name>
+	<artifactId>deployer</artifactId>
+	<name>Fafram8 Deployer</name>
 
-	<properties>
-		<jsch.version>0.1.53</jsch.version>
-	</properties>
-
-	<dependencies>
-		<dependency>
-			<groupId>com.jcraft</groupId>
-			<artifactId>jsch</artifactId>
-			<version>${jsch.version}</version>
-		</dependency>
-	</dependencies>
 </project>
