@@ -1,12 +1,13 @@
 package org.jboss.fuse.qa.fafram8.watcher;
 
+import org.jboss.fuse.qa.fafram8.property.SystemProperty;
 import org.jboss.fuse.qa.fafram8.ssh.AbstractSSHClient;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Watcher class.
+ * Executor class.
  * Created by avano on 19.8.15.
  */
 @AllArgsConstructor
@@ -14,10 +15,19 @@ import lombok.extern.slf4j.Slf4j;
 public class Executor {
 	private AbstractSSHClient client;
 
+	/**
+	 * Executes command.
+	 *
+	 * @param cmd command
+	 * @return command response
+	 */
 	public String executeCommand(String cmd) {
 		return cmd;
 	}
 
+	/**
+	 * Waits for the container to boot.
+	 */
 	public void waitForBoot() {
 		boolean online = false;
 
@@ -25,24 +35,29 @@ public class Executor {
 
 		while (!online) {
 			// Check if the time is up
-			if (elapsed > 120) {
-				log.error("*** Connection couldn't be established after " + 120 + " seconds");
-				throw new RuntimeException("Connection couldn't be established after " + 120 + " seconds");
+			if (elapsed > SystemProperty.START_WAIT_TIME) {
+				log.error("Connection couldn't be established after " + SystemProperty.START_WAIT_TIME
+						+ " seconds");
+				throw new RuntimeException("Connection couldn't be established after "
+						+ SystemProperty.START_WAIT_TIME + " seconds");
 			}
 
 			try {
 				// Try to execute the command - if it throws an exception, it is not ready yet
 				client.connect();
 				online = true;
-				log.info("* Container online");
+				log.info("Container online");
 			} catch (Exception ex) {
-				log.debug("** Remaining time: " + (120 - elapsed) + " seconds. ");
+				log.debug("Remaining time: " + (SystemProperty.START_WAIT_TIME - elapsed) + " seconds. ");
 				elapsed += 3;
 			}
 			sleep(3000L);
 		}
 	}
 
+	/**
+	 * Waits for the container to shut down.
+	 */
 	public void waitForShutdown() {
 		boolean online = true;
 
@@ -50,15 +65,16 @@ public class Executor {
 
 		while (online) {
 			// Check if the time is up
-			if (elapsed > 30) {
-				log.error("*** Connection could be established after " + 30 + " seconds");
-				throw new RuntimeException("Connection could be established after " + 30 + " seconds");
+			if (elapsed > SystemProperty.STOP_WAIT_TIME) {
+				log.error("Connection could be established after " + SystemProperty.STOP_WAIT_TIME + " seconds");
+				throw new RuntimeException(
+						"Connection could be established after " + SystemProperty.STOP_WAIT_TIME + " seconds");
 			}
 
 			try {
 				// Try to execute the command - if it succeed, the container is still up
 				online = client.isConnected();
-				log.debug("** Remaining time: " + (30 - elapsed) + " seconds. ");
+				log.debug("Remaining time: " + (SystemProperty.STOP_WAIT_TIME - elapsed) + " seconds. ");
 				elapsed += 5;
 			} catch (Exception ex) {
 				online = false;

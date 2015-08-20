@@ -1,9 +1,162 @@
 package org.jboss.fuse.qa.fafram8.downloader;
 
+import org.apache.maven.shared.invoker.DefaultInvocationRequest;
+import org.apache.maven.shared.invoker.DefaultInvoker;
+import org.apache.maven.shared.invoker.InvocationRequest;
+import org.apache.maven.shared.invoker.Invoker;
+import org.apache.maven.shared.invoker.MavenInvocationException;
+import org.apache.maven.shared.invoker.PrintStreamHandler;
+
+import org.jboss.fuse.qa.fafram8.property.SystemProperty;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.util.Collections;
+
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * Downloader class.
  * Created by avano on 19.8.15.
  */
+@Slf4j
 public class Downloader {
-	// TODO(avano): implement
+	/**
+	 * Downloads/Gets the product zip.
+	 * @return path to the downloaded zip
+	 */
+	public static String getProduct() {
+		// If we are working on localhost
+		if (SystemProperty.HOST == null) {
+			// If the FUSE_ZIP is not set, get the artifact from maven
+			if (SystemProperty.FUSE_ZIP == null) {
+				log.info("Getting product from local repository");
+				return getProductFromMaven();
+			}
+			else {
+				// We are using custom zip on local
+				log.info("Getting product from " + SystemProperty.FUSE_ZIP);
+				// TODO
+			}
+		}
+		else {
+			// TODO
+			// We are on remote
+		}
+		return null;
+	}
+
+	/**
+	 * Gets the product zip from maven.
+	 * @return absolute path to the file
+	 */
+	private static String getProductFromMaven() {
+		locateMaven();
+		String localRepo = getMavenLocalRepository();
+		return getArtifactPath(localRepo);
+	}
+
+	/**
+	 * Checks for the maven and sets the maven.home property used by maven-invoker.
+	 */
+	private static void locateMaven() {
+		log.debug("maven.home property is " + System.getProperty("maven.home"));
+		if (System.getProperty("maven.home") != null) {
+			return;
+		}
+
+		log.debug("M2_HOME system property is " + System.getProperty("M2_HOME"));
+		if (System.getProperty("M2_HOME") != null) {
+			System.setProperty("maven.home", System.getProperty("M2_HOME"));
+			return;
+		}
+
+		log.debug("M2_HOME env property is " + System.getenv("M2_HOME"));
+		if (System.getenv("M2_HOME") != null) {
+			System.setProperty("maven.home", System.getenv("M2_HOME"));
+			return;
+		}
+
+		String path = System.getenv("PATH");
+		String[] pathParts = path.split(File.pathSeparator);
+
+		for (String part : pathParts) {
+			log.debug("Checking path for mvn: " + part);
+			if (part.contains("mvn") || part.contains("maven")) {
+				// Strip the /bin from mvn path if found
+				String mvnLocation;
+				if (part.contains("bin")) {
+					mvnLocation = part.substring(0, part.indexOf("bin"));
+				} else {
+					mvnLocation = part;
+				}
+
+				System.setProperty("maven.home", mvnLocation);
+				log.debug("Maven found in " + mvnLocation);
+
+				return;
+			}
+		}
+	}
+
+	/**
+	 * Gets the maven local repository path.
+	 *
+	 * @return local repository path
+	 */
+	private static String getMavenLocalRepository() {
+		// Get effective settings from maven
+		InvocationRequest req = new DefaultInvocationRequest();
+		req.setGoals(Collections.singletonList("help:effective-settings"));
+
+		Invoker invoker = new DefaultInvoker();
+
+		// Redirect invoker output to variable
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		PrintStream ps = new PrintStream(baos);
+		invoker.setOutputHandler(new PrintStreamHandler(ps, true));
+
+		try {
+			invoker.execute(req);
+		} catch (MavenInvocationException e) {
+			e.printStackTrace();
+		}
+
+		// Close streams
+		ps.close();
+		String output = baos.toString();
+		try {
+			baos.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		// Parse local repository
+		output = output.substring(output.indexOf("localRepository"));
+		output = output.substring(output.indexOf(">") + 1, output.indexOf("<"));
+
+		log.debug("Local repository path is " + output);
+		return output;
+	}
+
+	/**
+	 * Gets the artifact path.
+	 *
+	 * @return artifact path
+	 */
+	private static String getArtifactPath(String localRepositoryPath) {
+		final String SEP = File.separator;
+		String groupPath = SystemProperty.FUSE_GROUP.replaceAll("\\.", SEP + SEP);
+
+		// Construct the path to the artifact in local repo
+		String artifactPath = localRepositoryPath + SEP + groupPath + SEP + SystemProperty.FUSE_ID + SEP +
+				SystemProperty.FUSE_VERSION + SEP + SystemProperty.FUSE_ID + "-" + SystemProperty.FUSE_VERSION + ".zip";
+
+		log.debug("Artifact path is " + artifactPath);
+
+		File artifact = new File(artifactPath);
+		return artifact.getAbsolutePath();
+	}
 }

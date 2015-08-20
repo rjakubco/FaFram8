@@ -9,9 +9,11 @@ import org.jboss.fuse.qa.fafram8.watcher.Executor;
 public interface NodeManager {
 	void prepareZip();
 
+	void unzipArtifact();
+
 	void prepareFuse();
 
 	void startFuse();
 
-	Executor getWatcher();
+	Executor getExecutor();
 }
