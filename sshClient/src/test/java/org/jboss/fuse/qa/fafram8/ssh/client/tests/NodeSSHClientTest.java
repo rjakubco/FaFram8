@@ -1,6 +1,6 @@
 package org.jboss.fuse.qa.fafram8.ssh.client.tests;
 
-import org.jboss.fuse.qa.fafram8.ssh.AbstractSSHClient;
+import org.jboss.fuse.qa.fafram8.ssh.SSHClient;
 import org.jboss.fuse.qa.fafram8.ssh.NodeSSHClient;
 
 import org.junit.Assert;
@@ -18,7 +18,7 @@ public class NodeSSHClientTest {
 	@Test
 	public void testFluent() throws Exception {
 		Assert.fail("TODO rjakubco");
-		final AbstractSSHClient client = new NodeSSHClient().hostname(HOST).defaultSSHPort().username("admin")
+		final SSHClient client = new NodeSSHClient().hostname(HOST).defaultSSHPort().username("admin")
 				.password("admin");
 		client.connect();
 		final String response = client.executeCommand("ping -c 1 google.com");
@@ -29,7 +29,7 @@ public class NodeSSHClientTest {
 	public void testSetters() throws Exception {
 		Assert.fail("TODO(rjakubco): implement");
 		// everything wrong -> check if setters work correctly
-		final AbstractSSHClient client = new NodeSSHClient().hostname("10.8.50.17").fuseSSHPort().username("admin")
+		final SSHClient client = new NodeSSHClient().hostname("10.8.50.17").fuseSSHPort().username("admin")
 				.password("admin");
 
 		client.setHostname(HOST);
@@ -46,7 +46,7 @@ public class NodeSSHClientTest {
 	@Test//(expected = SSHClientException.class)
 	public void testWrongPort() throws Exception {
 		Assert.fail("TODO(rjakubco): implement");
-		final AbstractSSHClient client = new NodeSSHClient().hostname("10.8.50.17").port(50).username("admin")
+		final SSHClient client = new NodeSSHClient().hostname("10.8.50.17").port(50).username("admin")
 				.password("fuse");
 		client.connect();
 		System.out.println(client.executeCommand("ping -c 1 google.com"));
@@ -55,7 +55,7 @@ public class NodeSSHClientTest {
 	@Test//(expected = SSHClientException.class)
 	public void testWrongHost() throws Exception {
 		Assert.fail("TODO(rjakubco): implement");
-		final AbstractSSHClient client = new NodeSSHClient().hostname("10.8.50.17").defaultSSHPort().username("admin")
+		final SSHClient client = new NodeSSHClient().hostname("10.8.50.17").defaultSSHPort().username("admin")
 				.password("fuse");
 		client.connect();
 		System.out.println(client.executeCommand("ping -c 1 google.com"));
@@ -64,7 +64,7 @@ public class NodeSSHClientTest {
 	@Test//(expected = SSHClientException.class)
 	public void testAuthFail() throws Exception {
 		Assert.fail("TODO(rjakubco): implement");
-		final AbstractSSHClient client = new NodeSSHClient().hostname(HOST).defaultSSHPort().username("admin")
+		final SSHClient client = new NodeSSHClient().hostname(HOST).defaultSSHPort().username("admin")
 				.password("fuse");
 		client.connect();
 		System.out.println(client.executeCommand("ping -c 1 google.com"));

@@ -18,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
  * @author : Roman Jakubco (rjakubco@redhat.com)
  */
 @Slf4j
-public class FuseSSHClient extends AbstractSSHClient {
+public class FuseSSHClient extends SSHClient {
 
 	@Override
 	public void connect() throws VerifyFalseException, SSHClientException {
