@@ -20,7 +20,7 @@ import lombok.Setter;
  *
  * @author : Roman Jakubco (rjakubco@redhat.com)
  */
-public abstract class AbstractSSHClient {
+public abstract class SSHClient {
 
 	@Getter
 	@Setter
@@ -109,42 +109,42 @@ public abstract class AbstractSSHClient {
 		return IOUtils.toString(is, "UTF-8");
 	}
 
-	public AbstractSSHClient hostname(String host) {
+	public SSHClient hostname(String host) {
 		this.hostname = host;
 		return this;
 	}
 
-	public AbstractSSHClient port(int port) {
+	public SSHClient port(int port) {
 		this.port = port;
 		return this;
 	}
 
-	public AbstractSSHClient username(String username) {
+	public SSHClient username(String username) {
 		this.username = username;
 		return this;
 	}
 
-	public AbstractSSHClient password(String password) {
+	public SSHClient password(String password) {
 		this.password = password;
 		return this;
 	}
 
-	public AbstractSSHClient privateKey(String privateKey) {
+	public SSHClient privateKey(String privateKey) {
 		this.privateKey = privateKey;
 		return this;
 	}
 
-	public AbstractSSHClient passphrase(String passphrase) {
+	public SSHClient passphrase(String passphrase) {
 		this.passphrase = passphrase;
 		return this;
 	}
 
-	public AbstractSSHClient defaultSSHPort() {
+	public SSHClient defaultSSHPort() {
 		this.port = 22;
 		return this;
 	}
 
-	public AbstractSSHClient fuseSSHPort() {
+	public SSHClient fuseSSHPort() {
 		this.port = 8101;
 		return this;
 	}

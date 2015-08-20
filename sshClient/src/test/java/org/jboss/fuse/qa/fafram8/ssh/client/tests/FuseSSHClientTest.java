@@ -1,6 +1,6 @@
 package org.jboss.fuse.qa.fafram8.ssh.client.tests;
 
-import org.jboss.fuse.qa.fafram8.ssh.AbstractSSHClient;
+import org.jboss.fuse.qa.fafram8.ssh.SSHClient;
 import org.jboss.fuse.qa.fafram8.ssh.FuseSSHClient;
 
 import org.junit.Assert;
@@ -18,7 +18,7 @@ public class FuseSSHClientTest {
 	@Test
 	public void testFuseSSHFluent() throws Exception {
 		Assert.fail("TODO rjakubco");
-		final AbstractSSHClient client = new FuseSSHClient().hostname(HOST).fuseSSHPort().username("admin")
+		final SSHClient client = new FuseSSHClient().hostname(HOST).fuseSSHPort().username("admin")
 				.password("admin");
 		client.connect();
 		final String response = client.executeCommand("ff");
