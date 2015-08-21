@@ -44,4 +44,7 @@ public class SystemProperty {
 	// Fabric provision wait time
 	public static final int PROVISION_WAIT_TIME = Integer.parseInt(System.getProperty(
 			FaframConstant.PROVISION_WAIT_TIME, "300"));
+
+	// Keep folder
+	public static final String KEEP_FOLDER = System.getProperty(FaframConstant.KEEP_FOLDER);
 }

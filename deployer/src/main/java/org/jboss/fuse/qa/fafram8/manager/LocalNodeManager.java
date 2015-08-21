@@ -1,6 +1,7 @@
 package org.jboss.fuse.qa.fafram8.manager;
 
 import static org.jboss.fuse.qa.fafram8.modifier.impl.AccessRightsModifier.setExecutable;
+import static org.jboss.fuse.qa.fafram8.modifier.impl.FileModifier.moveFile;
 import static org.jboss.fuse.qa.fafram8.modifier.impl.PropertyModifier.putProperty;
 
 import org.apache.commons.io.FileUtils;
@@ -10,7 +11,7 @@ import org.jboss.fuse.qa.fafram8.modifier.ModifierExecutor;
 import org.jboss.fuse.qa.fafram8.property.FaframConstant;
 import org.jboss.fuse.qa.fafram8.property.SystemProperty;
 import org.jboss.fuse.qa.fafram8.ssh.AbstractSSHClient;
-import org.jboss.fuse.qa.fafram8.watcher.Executor;
+import org.jboss.fuse.qa.fafram8.executor.Executor;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,6 +19,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import net.lingala.zip4j.core.ZipFile;
 
@@ -33,23 +35,49 @@ public class LocalNodeManager implements NodeManager {
 	// File separator
 	private static final String SEP = File.separator;
 
+	// Is windows?
 	private boolean windows = false;
 
+	// Is AMQ?
 	private boolean amq = false;
 
+	// Flag if this instance was already stopped
+	private boolean stopped = false;
+
+	// Product zip path
 	private String productZipPath;
 
+	// Target dir path
 	private String targetPath;
 
 	// Full path to unzipped product
 	private String productPath;
 
+	// Container process
 	private Process productProcess;
 
+	// Modifier executor
 	private ModifierExecutor modifierExecutor = new ModifierExecutor();
 
+	// Setup fabric?
+	@Setter
+	private boolean fabric = false;
+
+	/**
+	 * Constructor.
+	 * @param client ssh client
+	 */
 	public LocalNodeManager(AbstractSSHClient client) {
 		executor = new Executor(client);
+	}
+
+	/**
+	 * Checks if some container is already running.
+	 */
+	public void checkRunningContainer() {
+		if (executor.canConnect()) {
+			log.warn("Other container instance is already running! Unpredictable results may occur!");
+		}
 	}
 
 	@Override
@@ -64,7 +92,7 @@ public class LocalNodeManager implements NodeManager {
 
 		log.debug("Unzipping to " + targetPath);
 		try {
-			ZipFile zipFile = new ZipFile(productZipPath);
+			ZipFile zipFile = new ZipFile(new File(productZipPath).getAbsolutePath());
 			zipFile.extractAll(targetPath);
 		} catch (Exception ex) {
 			log.error("Exception caught during unzipping!");
@@ -123,6 +151,18 @@ public class LocalNodeManager implements NodeManager {
 			stopAndClean();
 			throw new RuntimeException("Could not start container: " + e);
 		}
+
+		if (fabric) {
+			setupFabric();
+		}
+	}
+
+	/**
+	 * Sets up fabric.
+	 */
+	private void setupFabric() {
+		executor.executeCommand("fabric:create");
+		executor.waitForProvisioning("root");
 	}
 
 	/**
@@ -148,8 +188,10 @@ public class LocalNodeManager implements NodeManager {
 	 * Stops the container and cleans up if desired.
 	 */
 	public void stopAndClean() {
-		stop();
-		deleteTargetDir();
+		if (!stopped) {
+			stop();
+			deleteTargetDir();
+		}
 	}
 
 	/**
@@ -187,18 +229,35 @@ public class LocalNodeManager implements NodeManager {
 			// Throw the exception because something was wrong
 			throw new RuntimeException("Could not stop container: " + e);
 		}
+
+		stopped = true;
 	}
 
 	/**
 	 * Force-Delete target dir.
 	 */
 	private void deleteTargetDir() {
-		// TODO(avano): keepfolder
-		try {
-			log.debug("Deleting " + targetPath);
-			FileUtils.forceDelete(new File(targetPath));
-		} catch (IOException e) {
-			e.printStackTrace();
+		if (SystemProperty.KEEP_FOLDER == null) {
+			try {
+				log.debug("Deleting " + targetPath);
+				FileUtils.forceDelete(new File(targetPath));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
+	}
+
+	/**
+	 * Adds a new user.
+	 * @param user user
+	 * @param pass password
+	 * @param roles comma-separated roles
+	 */
+	public void addUser(String user, String pass, String roles) {
+		this.modifierExecutor.addModifiers(putProperty("etc/users.properties", user, pass + "," + roles));
+	}
+
+	public void replaceFile(String fileToReplace, String fileToUse) {
+		this.modifierExecutor.addModifiers(moveFile(fileToReplace, fileToUse));
 	}
 }

@@ -17,6 +17,7 @@ public class LocalDeployer implements Deployer {
 
 	@Override
 	public void setup() {
+		nm.checkRunningContainer();
 		nm.prepareZip();
 		nm.unzipArtifact();
 		nm.prepareFuse();

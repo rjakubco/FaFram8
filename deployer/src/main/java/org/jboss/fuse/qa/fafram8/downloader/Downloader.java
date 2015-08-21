@@ -38,12 +38,12 @@ public class Downloader {
 			else {
 				// We are using custom zip on local
 				log.info("Getting product from " + SystemProperty.FUSE_ZIP);
-				// TODO
+				return getProductFromUrl();
 			}
 		}
 		else {
-			// TODO
 			// We are on remote
+
 		}
 		return null;
 	}
@@ -56,6 +56,30 @@ public class Downloader {
 		locateMaven();
 		String localRepo = getMavenLocalRepository();
 		return getArtifactPath(localRepo);
+	}
+
+	/**
+	 * Gets the product zip from url.
+	 * @return absolute path to the file
+	 */
+	private static String getProductFromUrl() {
+		String protocol = SystemProperty.FUSE_ZIP.substring(0, SystemProperty.FUSE_ZIP.indexOf(":"));
+		String location = null;
+		switch (protocol) {
+			case "http":
+				// wget
+				break;
+			case "scp":
+				// scp
+				break;
+			case "file":
+				// Strip the protocol from the path
+				location = SystemProperty.FUSE_ZIP.substring(protocol.length() + 3);
+				break;
+			default:
+				throw new RuntimeException("Unsupported protocol " + protocol);
+		}
+		return location;
 	}
 
 	/**

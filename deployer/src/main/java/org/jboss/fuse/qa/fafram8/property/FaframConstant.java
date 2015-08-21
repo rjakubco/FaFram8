@@ -43,4 +43,7 @@ public class FaframConstant {
 
 	// Fabric provision wait time
 	public static final String PROVISION_WAIT_TIME = "provision.wait.time";
+
+	// Keep folder
+	public static final String KEEP_FOLDER = "keepFolder";
 }

@@ -1,6 +1,6 @@
 package org.jboss.fuse.qa.fafram8.manager;
 
-import org.jboss.fuse.qa.fafram8.watcher.Executor;
+import org.jboss.fuse.qa.fafram8.executor.Executor;
 
 /**
  * Node manager interface.

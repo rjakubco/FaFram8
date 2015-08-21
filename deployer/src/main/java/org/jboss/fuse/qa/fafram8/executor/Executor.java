@@ -1,5 +1,8 @@
-package org.jboss.fuse.qa.fafram8.watcher;
+package org.jboss.fuse.qa.fafram8.executor;
 
+import org.jboss.fuse.qa.fafram8.exceptions.KarafSessionDownException;
+import org.jboss.fuse.qa.fafram8.exceptions.SSHClientException;
+import org.jboss.fuse.qa.fafram8.exceptions.VerifyFalseException;
 import org.jboss.fuse.qa.fafram8.property.SystemProperty;
 import org.jboss.fuse.qa.fafram8.ssh.AbstractSSHClient;
 
@@ -22,7 +25,36 @@ public class Executor {
 	 * @return command response
 	 */
 	public String executeCommand(String cmd) {
-		return cmd;
+		try {
+			return client.executeCommand(cmd);
+			// TODO: rework this
+		} catch (KarafSessionDownException e) {
+			try {
+				client.connect();
+			} catch (VerifyFalseException e1) {
+				e1.printStackTrace();
+			} catch (SSHClientException e1) {
+				e1.printStackTrace();
+			}
+		} catch (SSHClientException e) {
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+
+	/**
+	 * Checks if the client can connect.
+	 */
+	public boolean canConnect() {
+		try {
+			client.connect();
+			return true;
+		} catch (Exception ignored) {
+			return false;
+		}
 	}
 
 	/**
@@ -81,6 +113,39 @@ public class Executor {
 			}
 
 			sleep(5000L);
+		}
+	}
+
+	/**
+	 * Waits for container provisioning.
+	 *
+	 * @param containerName container name
+	 */
+	public void waitForProvisioning(String containerName) {
+		// Wait before executing - sometimes the provision is triggered a bit later
+		sleep(10000l);
+		int retries = 0;
+		String container;
+		boolean isSuccessful = false;
+
+		while (!isSuccessful) {
+			if (retries > SystemProperty.PROVISION_WAIT_TIME) {
+				log.error("Container root failed to provision in time");
+				throw new RuntimeException("*** Container root failed to provision in time");
+			}
+
+			container = executeCommand("container-list | grep " + containerName);
+			isSuccessful = container != null && container.contains("success");
+
+			if (!isSuccessful) {
+				log.debug("** Remaining time: " + (SystemProperty.PROVISION_WAIT_TIME - retries) + " seconds. ");
+				retries += 3;
+				try {
+					Thread.sleep(3000L);
+				} catch (final Exception ex) {
+					ex.printStackTrace();
+				}
+			}
 		}
 	}
 
