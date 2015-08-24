@@ -22,6 +22,16 @@ public class FuseSSHClient extends SSHClient {
 
 	@Override
 	public void connect() throws VerifyFalseException, SSHClientException {
+		connect(false);
+	}
+
+	/**
+	 * Connects to the ssh server.
+	 * @param supressLog if the error logs should be supressed
+	 * @throws VerifyFalseException when verify false error occurs
+	 * @throws SSHClientException when ssh error occurs
+	 */
+	public void connect(boolean supressLog) throws VerifyFalseException, SSHClientException {
 		try {
 			if (!"none".equals(privateKey)) {
 				if (passphrase != null) {
@@ -52,7 +62,9 @@ public class FuseSSHClient extends SSHClient {
 						+ session.getPort() + " after 20 seconds");
 			}
 
-			log.error(ex.getLocalizedMessage());
+			if (!supressLog) {
+				log.error(ex.getLocalizedMessage());
+			}
 			throw new SSHClientException(ex);
 		}
 	}
