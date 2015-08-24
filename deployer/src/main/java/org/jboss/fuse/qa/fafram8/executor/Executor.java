@@ -2,9 +2,8 @@ package org.jboss.fuse.qa.fafram8.executor;
 
 import org.jboss.fuse.qa.fafram8.exceptions.KarafSessionDownException;
 import org.jboss.fuse.qa.fafram8.exceptions.SSHClientException;
-import org.jboss.fuse.qa.fafram8.exceptions.VerifyFalseException;
 import org.jboss.fuse.qa.fafram8.property.SystemProperty;
-import org.jboss.fuse.qa.fafram8.ssh.AbstractSSHClient;
+import org.jboss.fuse.qa.fafram8.ssh.SSHClient;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 @AllArgsConstructor
 @Slf4j
 public class Executor {
-	private AbstractSSHClient client;
+	private SSHClient client;
 
 	/**
 	 * Executes command.
@@ -24,24 +23,17 @@ public class Executor {
 	 * @param cmd command
 	 * @return command response
 	 */
+	@SuppressWarnings("TryWithIdenticalCatches")
 	public String executeCommand(String cmd) {
 		try {
-			return client.executeCommand(cmd);
-			// TODO: rework this
+			return client.executeCommand(cmd, false);
 		} catch (KarafSessionDownException e) {
-			try {
-				client.connect();
-			} catch (VerifyFalseException e1) {
-				e1.printStackTrace();
-			} catch (SSHClientException e1) {
-				e1.printStackTrace();
-			}
+			log.error("Karaf session is down!");
 		} catch (SSHClientException e) {
-			e.printStackTrace();
+			log.error("SSHClient exception thrown: " + e);
 		} catch (InterruptedException e) {
-			e.printStackTrace();
+			// Ignore this
 		}
-
 		return null;
 	}
 
@@ -50,7 +42,8 @@ public class Executor {
 	 */
 	public boolean canConnect() {
 		try {
-			client.connect();
+			// We just check if its possible to connect - supress exception
+			client.connect(true);
 			return true;
 		} catch (Exception ignored) {
 			return false;
@@ -76,7 +69,8 @@ public class Executor {
 
 			try {
 				// Try to execute the command - if it throws an exception, it is not ready yet
-				client.connect();
+				// Supress the exception here to reduce spam
+				client.connect(true);
 				online = true;
 				log.info("Container online");
 			} catch (Exception ex) {
@@ -104,7 +98,7 @@ public class Executor {
 			}
 
 			try {
-				// Try to execute the command - if it succeed, the container is still up
+				// Check if we are still connected
 				online = client.isConnected();
 				log.debug("Remaining time: " + (SystemProperty.STOP_WAIT_TIME - elapsed) + " seconds. ");
 				elapsed += 5;
@@ -131,19 +125,34 @@ public class Executor {
 		while (!isSuccessful) {
 			if (retries > SystemProperty.PROVISION_WAIT_TIME) {
 				log.error("Container root failed to provision in time");
-				throw new RuntimeException("*** Container root failed to provision in time");
+				throw new RuntimeException("Container root failed to provision in time");
 			}
 
-			container = executeCommand("container-list | grep " + containerName);
-			isSuccessful = container != null && container.contains("success");
+			String reason = "";
+
+			try {
+				container = client.executeCommand("container-list | grep " + containerName, true);
+				isSuccessful = container != null && container.contains("success");
+			} catch (Exception e) {
+				// Get the reason
+				reason = e.getMessage();
+
+				// Re-init the ssh connection if it's not successful
+				try {
+					client.connect(true);
+				} catch (Exception e1) {
+					// Do nothing
+				}
+			}
 
 			if (!isSuccessful) {
-				log.debug("** Remaining time: " + (SystemProperty.PROVISION_WAIT_TIME - retries) + " seconds. ");
+				log.debug("Remaining time: " + (SystemProperty.PROVISION_WAIT_TIME - retries) + " seconds. " + (""
+						.equals(reason) ? "" : "(" + reason + ")"));
 				retries += 3;
 				try {
 					Thread.sleep(3000L);
 				} catch (final Exception ex) {
-					ex.printStackTrace();
+					// Do nothing
 				}
 			}
 		}

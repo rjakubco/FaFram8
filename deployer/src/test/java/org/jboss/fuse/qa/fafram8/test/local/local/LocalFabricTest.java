@@ -8,6 +8,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 /**
+ * Local fabric test.
  * Created by avano on 21.8.15.
  */
 public class LocalFabricTest {

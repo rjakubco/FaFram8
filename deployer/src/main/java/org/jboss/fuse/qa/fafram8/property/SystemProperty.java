@@ -1,6 +1,5 @@
 package org.jboss.fuse.qa.fafram8.property;
 
-
 /**
  * System property class.
  * Created by avano on 20.8.15.

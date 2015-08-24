@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.IOException;
 
 /**
+ * Local replace file test.
  * Created by avano on 21.8.15.
  */
 public class LocalReplaceFileTest {

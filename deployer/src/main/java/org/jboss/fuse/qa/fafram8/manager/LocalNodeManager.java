@@ -10,8 +10,8 @@ import org.jboss.fuse.qa.fafram8.downloader.Downloader;
 import org.jboss.fuse.qa.fafram8.modifier.ModifierExecutor;
 import org.jboss.fuse.qa.fafram8.property.FaframConstant;
 import org.jboss.fuse.qa.fafram8.property.SystemProperty;
-import org.jboss.fuse.qa.fafram8.ssh.AbstractSSHClient;
 import org.jboss.fuse.qa.fafram8.executor.Executor;
+import org.jboss.fuse.qa.fafram8.ssh.SSHClient;
 
 import java.io.File;
 import java.io.IOException;
@@ -65,9 +65,10 @@ public class LocalNodeManager implements NodeManager {
 
 	/**
 	 * Constructor.
+	 *
 	 * @param client ssh client
 	 */
-	public LocalNodeManager(AbstractSSHClient client) {
+	public LocalNodeManager(SSHClient client) {
 		executor = new Executor(client);
 	}
 
@@ -113,8 +114,8 @@ public class LocalNodeManager implements NodeManager {
 		if (!windows) {
 			// Restore execute rights to karaf, start, stop
 			log.debug("Setting executable flags to karaf, start, stop");
-			modifierExecutor.addModifiers(setExecutable("bin" + SEP + "karaf"),
-					setExecutable("bin" + SEP + "start"), setExecutable("bin" + SEP + "stop"));
+			modifierExecutor.addModifiers(setExecutable("bin" + SEP + "karaf", "bin" + SEP + "start",
+					"bin" + SEP + "stop"));
 		}
 
 		// Add default user
@@ -162,7 +163,13 @@ public class LocalNodeManager implements NodeManager {
 	 */
 	private void setupFabric() {
 		executor.executeCommand("fabric:create");
-		executor.waitForProvisioning("root");
+		try {
+			executor.waitForProvisioning("root");
+		} catch (RuntimeException ex) {
+			// Container is not provisioned in time
+			stopAndClean();
+			throw new RuntimeException("Container did not provision in time");
+		}
 	}
 
 	/**
@@ -249,6 +256,7 @@ public class LocalNodeManager implements NodeManager {
 
 	/**
 	 * Adds a new user.
+	 *
 	 * @param user user
 	 * @param pass password
 	 * @param roles comma-separated roles

@@ -11,6 +11,7 @@ import org.junit.After;
 import org.junit.Test;
 
 /**
+ * Local custom zip test.
  * Created by avano on 21.8.15.
  */
 public class LocalCustomZipTest {
@@ -22,10 +23,17 @@ public class LocalCustomZipTest {
 		fafram = new Fafram();
 		fafram.setup();
 
-		// TODO(avano): rework based on file name
+		String artifactName = SystemProperty.FUSE_ZIP.substring(SystemProperty.FUSE_ZIP.lastIndexOf("/") + 1);
+
+		// Fuse zip contains 'full' in the zip, but not in folder name
+		artifactName = artifactName.replace("full-", "");
+
+		// Remove extension
+		String expectedFolderName = artifactName.substring(0, artifactName.lastIndexOf("."));
+
 		// It sets the system property to the product path
 		assertTrue("Does not contain expected dir in path",
-				SystemProperty.FUSE_ZIP.contains("jboss-a-mq-6.1.0.redhat-379"));
+				System.getProperty(FaframConstant.FUSE_PATH).contains(expectedFolderName));
 	}
 
 	@After

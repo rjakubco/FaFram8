@@ -67,11 +67,12 @@ public class Fafram extends ExternalResource {
 	 * Sets up the remote deployment.
 	 */
 	private void setupRemoteDeployment() {
-
+		throw new UnsupportedOperationException("not implemented");
 	}
 
 	/**
 	 * Executes a command.
+	 *
 	 * @param command command
 	 * @return command response
 	 */
@@ -81,29 +82,31 @@ public class Fafram extends ExternalResource {
 
 	/**
 	 * Adds a new user.
+	 *
 	 * @param user user
 	 * @param pass pass
 	 * @param roles comma-separated roles
 	 * @return this
 	 */
 	public Fafram addUser(String user, String pass, String roles) {
-		((LocalNodeManager)deployer.getNodeManager()).addUser(user, pass, roles);
+		((LocalNodeManager) deployer.getNodeManager()).addUser(user, pass, roles);
 		return this;
 	}
 
 	/**
 	 * Replaces a file.
+	 *
 	 * @param fileToReplace file to replace
 	 * @param fileToUse file to use
 	 * @return this
 	 */
 	public Fafram replaceFile(String fileToReplace, String fileToUse) {
-		((LocalNodeManager)deployer.getNodeManager()).replaceFile(fileToReplace, fileToUse);
+		((LocalNodeManager) deployer.getNodeManager()).replaceFile(fileToReplace, fileToUse);
 		return this;
 	}
 
 	public Fafram withFabric() {
-		((LocalNodeManager)deployer.getNodeManager()).setFabric(true);
+		((LocalNodeManager) deployer.getNodeManager()).setFabric(true);
 		return this;
 	}
 }

@@ -2,7 +2,7 @@ package org.jboss.fuse.qa.fafram8.deployer;
 
 import org.jboss.fuse.qa.fafram8.manager.LocalNodeManager;
 import org.jboss.fuse.qa.fafram8.manager.NodeManager;
-import org.jboss.fuse.qa.fafram8.ssh.AbstractSSHClient;
+import org.jboss.fuse.qa.fafram8.ssh.SSHClient;
 
 /**
  * Local deployer class.
@@ -11,7 +11,11 @@ import org.jboss.fuse.qa.fafram8.ssh.AbstractSSHClient;
 public class LocalDeployer implements Deployer {
 	private LocalNodeManager nm;
 
-	public LocalDeployer(AbstractSSHClient client) {
+	/**
+	 * Constructor.
+	 * @param client ssh client instance
+	 */
+	public LocalDeployer(SSHClient client) {
 		nm = new LocalNodeManager(client);
 	}
 

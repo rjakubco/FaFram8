@@ -25,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 public class Downloader {
 	/**
 	 * Downloads/Gets the product zip.
+	 *
 	 * @return path to the downloaded zip
 	 */
 	public static String getProduct() {
@@ -34,22 +35,20 @@ public class Downloader {
 			if (SystemProperty.FUSE_ZIP == null) {
 				log.info("Getting product from local repository");
 				return getProductFromMaven();
-			}
-			else {
+			} else {
 				// We are using custom zip on local
 				log.info("Getting product from " + SystemProperty.FUSE_ZIP);
 				return getProductFromUrl();
 			}
-		}
-		else {
+		} else {
 			// We are on remote
-
+			throw new UnsupportedOperationException("not implemented");
 		}
-		return null;
 	}
 
 	/**
 	 * Gets the product zip from maven.
+	 *
 	 * @return absolute path to the file
 	 */
 	private static String getProductFromMaven() {
@@ -60,18 +59,19 @@ public class Downloader {
 
 	/**
 	 * Gets the product zip from url.
+	 *
 	 * @return absolute path to the file
 	 */
 	private static String getProductFromUrl() {
+		// Get the protocol from the property
 		String protocol = SystemProperty.FUSE_ZIP.substring(0, SystemProperty.FUSE_ZIP.indexOf(":"));
-		String location = null;
+		String location;
 		switch (protocol) {
 			case "http":
 				// wget
-				break;
+				throw new UnsupportedOperationException("not implemented");
 			case "scp":
-				// scp
-				break;
+				throw new UnsupportedOperationException("not implemented");
 			case "file":
 				// Strip the protocol from the path
 				location = SystemProperty.FUSE_ZIP.substring(protocol.length() + 3);
@@ -176,7 +176,8 @@ public class Downloader {
 
 		// Construct the path to the artifact in local repo
 		String artifactPath = localRepositoryPath + SEP + groupPath + SEP + SystemProperty.FUSE_ID + SEP +
-				SystemProperty.FUSE_VERSION + SEP + SystemProperty.FUSE_ID + "-" + SystemProperty.FUSE_VERSION + ".zip";
+				SystemProperty.FUSE_VERSION + SEP + SystemProperty.FUSE_ID + "-" + SystemProperty.FUSE_VERSION + "" +
+				".zip";
 
 		log.debug("Artifact path is " + artifactPath);
 

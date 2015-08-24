@@ -12,6 +12,7 @@ import org.junit.Test;
 import java.io.File;
 
 /**
+ * Local keep folder test.
  * Created by avano on 21.8.15.
  */
 public class LocalKeepFolderTest {
