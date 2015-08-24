@@ -21,7 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 public class FuseSSHClient extends SSHClient {
 
 	@Override
-	public void connect() throws VerifyFalseException, SSHClientException {
+	public void connect(boolean supressLog) throws VerifyFalseException, SSHClientException {
 		try {
 			if (!"none".equals(privateKey)) {
 				if (passphrase != null) {
@@ -41,7 +41,9 @@ public class FuseSSHClient extends SSHClient {
 			log.info("Connection established.");
 		} catch (JSchException ex) {
 			if (ex.getMessage().contains("verify false")) {
-				log.debug("JschException caught - Verify false");
+				if (!supressLog) {
+					log.error("JschException caught - Verify false");
+				}
 				throw new VerifyFalseException(ex);
 			}
 
@@ -52,18 +54,19 @@ public class FuseSSHClient extends SSHClient {
 						+ session.getPort() + " after 20 seconds");
 			}
 
-			log.error(ex.getLocalizedMessage());
+			if (!supressLog) {
+				log.error(ex.getLocalizedMessage());
+			}
 			throw new SSHClientException(ex);
 		}
 	}
 
 	@Override
-	public String executeCommand(String command) throws KarafSessionDownException, SSHClientException,
-			InterruptedException {
+	public String executeCommand(String command, boolean supressLog) throws KarafSessionDownException,
+			SSHClientException, InterruptedException {
 		log.info("Executing command: " + command);
 
 		try {
-
 			// If we should retry the command
 			boolean retry;
 
@@ -96,13 +99,15 @@ public class FuseSSHClient extends SSHClient {
 				} else {
 					retry = false;
 				}
-				log.debug("** Command response: " + returnString);
+				log.debug("Command response: " + returnString);
 			} while (retry);
 
 			return returnString.replaceAll("\u001B\\[[;\\d]*m", "").trim();
 		} catch (JSchException ex) {
 			if (ex.getMessage().contains("session is down")) {
-				log.debug("JschException caught - Session is down");
+				if (!supressLog) {
+					log.error("JschException caught - Session is down");
+				}
 				throw new KarafSessionDownException(ex);
 			}
 
