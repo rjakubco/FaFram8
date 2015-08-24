@@ -20,8 +20,8 @@ public class FuseSSHClientTest {
 		Assert.fail("TODO rjakubco");
 		final SSHClient client = new FuseSSHClient().hostname(HOST).fuseSSHPort().username("admin")
 				.password("admin");
-		client.connect();
-		final String response = client.executeCommand("ff");
+		client.connect(false);
+		final String response = client.executeCommand("ff", false);
 		System.out.println(response);
 //		Assert.assertTrue(response.contains("PING google.com"));
 	}

@@ -20,8 +20,8 @@ public class NodeSSHClientTest {
 		Assert.fail("TODO rjakubco");
 		final SSHClient client = new NodeSSHClient().hostname(HOST).defaultSSHPort().username("admin")
 				.password("admin");
-		client.connect();
-		final String response = client.executeCommand("ping -c 1 google.com");
+		client.connect(false);
+		final String response = client.executeCommand("ping -c 1 google.com", false);
 		Assert.assertTrue(response.contains("PING google.com"));
 	}
 
@@ -37,9 +37,9 @@ public class NodeSSHClientTest {
 		client.setUsername("fuse");
 		client.setPassword("fuse");
 
-		client.connect();
+		client.connect(false);
 
-		final String response = client.executeCommand("ping -c 1 google.com");
+		final String response = client.executeCommand("ping -c 1 google.com", false);
 		Assert.assertTrue(response.contains("PING google.com"));
 	}
 
@@ -48,8 +48,8 @@ public class NodeSSHClientTest {
 		Assert.fail("TODO(rjakubco): implement");
 		final SSHClient client = new NodeSSHClient().hostname("10.8.50.17").port(50).username("admin")
 				.password("fuse");
-		client.connect();
-		System.out.println(client.executeCommand("ping -c 1 google.com"));
+		client.connect(false);
+		System.out.println(client.executeCommand("ping -c 1 google.com", false));
 	}
 
 	@Test//(expected = SSHClientException.class)
@@ -57,8 +57,8 @@ public class NodeSSHClientTest {
 		Assert.fail("TODO(rjakubco): implement");
 		final SSHClient client = new NodeSSHClient().hostname("10.8.50.17").defaultSSHPort().username("admin")
 				.password("fuse");
-		client.connect();
-		System.out.println(client.executeCommand("ping -c 1 google.com"));
+		client.connect(false);
+		System.out.println(client.executeCommand("ping -c 1 google.com", false));
 	}
 
 	@Test//(expected = SSHClientException.class)
@@ -66,7 +66,7 @@ public class NodeSSHClientTest {
 		Assert.fail("TODO(rjakubco): implement");
 		final SSHClient client = new NodeSSHClient().hostname(HOST).defaultSSHPort().username("admin")
 				.password("fuse");
-		client.connect();
-		System.out.println(client.executeCommand("ping -c 1 google.com"));
+		client.connect(false);
+		System.out.println(client.executeCommand("ping -c 1 google.com", false));
 	}
 }
