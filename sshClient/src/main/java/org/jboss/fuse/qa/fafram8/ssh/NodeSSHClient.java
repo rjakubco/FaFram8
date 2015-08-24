@@ -25,7 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 public class NodeSSHClient extends SSHClient {
 
 	@Override
-	public void connect() throws VerifyFalseException, SSHClientException {
+	public void connect(boolean supressLog) throws VerifyFalseException, SSHClientException {
 		try {
 			if (!"none".equals(privateKey)) {
 				if (passphrase != null) {
@@ -47,7 +47,9 @@ public class NodeSSHClient extends SSHClient {
 			log.info("Connection established.");
 		} catch (JSchException ex) {
 			if (ex.getMessage().contains("verify false")) {
-				log.debug("JschException caught - Verify false");
+				if (!supressLog) {
+					log.debug("JschException caught - Verify false");
+				}
 				throw new VerifyFalseException(ex);
 			}
 
@@ -64,7 +66,8 @@ public class NodeSSHClient extends SSHClient {
 	}
 
 	@Override
-	public String executeCommand(String command) throws KarafSessionDownException, SSHClientException {
+	public String executeCommand(String command, boolean supressLog) throws KarafSessionDownException,
+			SSHClientException {
 		String returnString;
 
 		log.debug("Command: " + command);
@@ -84,7 +87,7 @@ public class NodeSSHClient extends SSHClient {
 			channel.connect();
 
 			returnString = convertStreamToString(in);
-
+			log.debug("Command response: " + returnString);
 			return returnString.replaceAll("\u001B\\[[;\\d]*m", "").trim();
 		} catch (JSchException ex) {
 			log.error("Cannot execute ssh command: \"" + command + "\"", ex);
