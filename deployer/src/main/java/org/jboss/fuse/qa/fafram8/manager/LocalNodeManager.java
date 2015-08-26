@@ -63,6 +63,9 @@ public class LocalNodeManager implements NodeManager {
 	@Setter
 	private boolean fabric = false;
 
+	// Is jenkins?
+	private boolean jenkins = System.getenv("WORKSPACE") != null;
+
 	/**
 	 * Constructor.
 	 *
@@ -88,10 +91,17 @@ public class LocalNodeManager implements NodeManager {
 
 	@Override
 	public void unzipArtifact() {
-		targetPath = new File("target" + SEP + "container" + SEP + new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").format
-				(new Date())).getAbsolutePath();
+		// Fix for long jenkins paths
+		if (jenkins) {
+			targetPath = new File(System.getenv("WORKSPACE") + SEP + new Date().getTime()).getAbsolutePath();
+		}
+		else {
+			targetPath = new File("target" + SEP + "container" + SEP + new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss")
+					.format(new Date())).getAbsolutePath();
+		}
 
 		log.debug("Unzipping to " + targetPath);
+
 		try {
 			ZipFile zipFile = new ZipFile(new File(productZipPath).getAbsolutePath());
 			zipFile.extractAll(targetPath);
@@ -100,7 +110,7 @@ public class LocalNodeManager implements NodeManager {
 			throw new RuntimeException(ex);
 		}
 
-		// Construct the full path to product root - get the subdir name in target/container/date/
+		// Construct the full path to product root - get the subdir name in targetPath
 		String folderName = new File(targetPath).list()[0];
 
 		// Use the subdir name to construct the product path
