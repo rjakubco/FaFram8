@@ -7,6 +7,7 @@ import org.apache.maven.shared.invoker.Invoker;
 import org.apache.maven.shared.invoker.MavenInvocationException;
 import org.apache.maven.shared.invoker.PrintStreamHandler;
 
+import org.jboss.fuse.qa.fafram8.executor.Executor;
 import org.jboss.fuse.qa.fafram8.property.SystemProperty;
 
 import java.io.ByteArrayOutputStream;
@@ -23,6 +24,10 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class Downloader {
+
+	// File separator
+	private static final String SEP = File.separator;
+
 	/**
 	 * Downloads/Gets the product zip.
 	 *
@@ -46,6 +51,13 @@ public class Downloader {
 		}
 	}
 
+	// TODO
+	public static String getProduct(Executor executor) {
+		// We are using custom zip on local
+		log.info("Getting product from " + SystemProperty.FUSE_ZIP);
+		return getProductFromUrl(executor);
+	}
+
 	/**
 	 * Gets the product zip from maven.
 	 *
@@ -58,7 +70,7 @@ public class Downloader {
 	}
 
 	/**
-	 * Gets the product zip from url.
+	 * Gets the product zip from url on localhost.
 	 *
 	 * @return absolute path to the file
 	 */
@@ -79,6 +91,35 @@ public class Downloader {
 			default:
 				throw new RuntimeException("Unsupported protocol " + protocol);
 		}
+		return location;
+	}
+
+	/**
+	 * TODO working dir?
+	 * TODO other possible protocols
+	 * Gets the product zip from url on remote.
+	 *
+	 * @return absolute path to the file
+	 */
+	private static String getProductFromUrl(Executor executor) {
+		// Get the protocol from the property
+		String protocol = SystemProperty.FUSE_ZIP.substring(0, SystemProperty.FUSE_ZIP.indexOf(":"));
+		String location;
+		switch (protocol) {
+			case "http":
+				log.info(executor.executeCommand("wget --no-check-certificate -q -P " + SystemProperty.FAFRAM_FOLDER + " " + SystemProperty.FUSE_ZIP));
+				location = executor.executeCommand("ls -d -1 $PWD" + SEP + SystemProperty.FAFRAM_FOLDER + SEP + "*");
+				break;
+			case "scp":
+				throw new UnsupportedOperationException("not implemented");
+			case "file":
+				// Strip the protocol from the path
+				location = SystemProperty.FUSE_ZIP.substring(protocol.length() + 3);
+				break;
+			default:
+				throw new RuntimeException("Unsupported protocol " + protocol);
+		}
+
 		return location;
 	}
 
