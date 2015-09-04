@@ -10,5 +10,5 @@ public interface Modifier {
 	 *
 	 * @throws Exception
 	 */
-	void execute() throws Exception;
+	void execute();
 }

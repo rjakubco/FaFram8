@@ -20,7 +20,7 @@ public class AccessRightsModifier implements Modifier {
 
 	@SuppressWarnings("ResultOfMethodCallIgnored")
 	@Override
-	public void execute() throws Exception {
+	public void execute() {
 		for (String path : paths) {
 			new File(System.getProperty(FaframConstant.FUSE_PATH) + File.separator + path).setExecutable(true);
 		}
