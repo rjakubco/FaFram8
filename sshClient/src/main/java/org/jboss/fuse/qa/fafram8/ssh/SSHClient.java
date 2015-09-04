@@ -67,7 +67,7 @@ public abstract class SSHClient {
 	 * 							 (auth fail, timeout, wrong host/port)
 	 */
 	public abstract String executeCommand(String command, boolean supressLog) throws KarafSessionDownException,
-			SSHClientException, InterruptedException;
+			SSHClientException;
 
 	/**
 	 * Method for creating connection and session, that is is used in executeCommand() method.
