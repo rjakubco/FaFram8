@@ -52,4 +52,7 @@ public class FaframConstant {
 
 	// Name of the working folder on remote host
 	public static final String FAFRAM_FOLDER = "fafram.folder";
+
+	// Patch
+	public static final String PATCH = "patch";
 }
