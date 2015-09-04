@@ -99,14 +99,14 @@ public class FuseSSHClient extends SSHClient {
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
-					continue;
 				} else {
 					retry = false;
 				}
-				log.debug("Command response: " + returnString);
 			} while (retry);
 
-			return returnString.replaceAll("\u001B\\[[;\\d]*m", "").trim();
+			returnString = returnString.replaceAll("\u001B\\[[;\\d]*m", "").trim();
+			log.debug("Command response: " + returnString);
+			return returnString;
 		} catch (JSchException ex) {
 			if (ex.getMessage().contains("session is down")) {
 				if (!supressLog) {
