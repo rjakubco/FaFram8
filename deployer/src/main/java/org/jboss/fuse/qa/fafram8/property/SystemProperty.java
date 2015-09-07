@@ -8,11 +8,14 @@ public class SystemProperty {
 	// Host
 	public static final String HOST = System.getProperty(FaframConstant.HOST);
 
+	public static final int HOST_PORT = Integer.parseInt(System.getProperty(FaframConstant.HOST_PORT,
+			"22"));
+
 	// Host login
-	public static final String HOST_USER = System.getProperty(FaframConstant.HOST_USER);
+	public static final String HOST_USER = System.getProperty(FaframConstant.HOST_USER, "fuse");
 
 	// Host password
-	public static final String HOST_PASSWORD = System.getProperty(FaframConstant.HOST_PASSWORD);
+	public static final String HOST_PASSWORD = System.getProperty(FaframConstant.HOST_PASSWORD, "fuse");
 
 	// Fuse user
 	public static final String FUSE_USER = System.getProperty(FaframConstant.FUSE_USER, "admin");
@@ -46,4 +49,7 @@ public class SystemProperty {
 
 	// Keep folder
 	public static final String KEEP_FOLDER = System.getProperty(FaframConstant.KEEP_FOLDER);
+
+	// Name of the working dir on remote host
+	public static final String FAFRAM_FOLDER = System.getProperty(FaframConstant.FAFRAM_FOLDER, "fafram");
 }

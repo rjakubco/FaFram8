@@ -2,9 +2,12 @@ package org.jboss.fuse.qa.fafram8.resource;
 
 import org.jboss.fuse.qa.fafram8.deployer.Deployer;
 import org.jboss.fuse.qa.fafram8.deployer.LocalDeployer;
+import org.jboss.fuse.qa.fafram8.deployer.RemoteDeployer;
+import org.jboss.fuse.qa.fafram8.exceptions.SSHClientException;
 import org.jboss.fuse.qa.fafram8.manager.LocalNodeManager;
 import org.jboss.fuse.qa.fafram8.property.SystemProperty;
 import org.jboss.fuse.qa.fafram8.ssh.FuseSSHClient;
+import org.jboss.fuse.qa.fafram8.ssh.NodeSSHClient;
 
 import org.junit.rules.ExternalResource;
 
@@ -24,8 +27,12 @@ public class Fafram extends ExternalResource {
 			log.info("Setting up local deployment");
 			setupLocalDeployment();
 		} else {
-			log.info("Setting up remote deployment on host " + SystemProperty.HOST);
-			setupRemoteDeployment();
+			log.info("Setting up remote deployment on host " + SystemProperty.HOST + ":" + SystemProperty.HOST_PORT);
+			try {
+				setupRemoteDeployment();
+			} catch (SSHClientException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -66,8 +73,11 @@ public class Fafram extends ExternalResource {
 	/**
 	 * Sets up the remote deployment.
 	 */
-	private void setupRemoteDeployment() {
-		throw new UnsupportedOperationException("not implemented");
+	private void setupRemoteDeployment() throws SSHClientException {
+		deployer = new RemoteDeployer(new NodeSSHClient().hostname(SystemProperty.HOST).port(SystemProperty.HOST_PORT)
+				.username(SystemProperty.HOST_USER).password(SystemProperty.HOST_PASSWORD),
+				new FuseSSHClient().hostname(SystemProperty.HOST).fuseSSHPort().username(SystemProperty.FUSE_USER)
+						.password(SystemProperty.FUSE_USER));
 	}
 
 	/**

@@ -1,8 +1,11 @@
 package org.jboss.fuse.qa.fafram8.executor;
 
+import org.jboss.fuse.qa.fafram8.exceptions.CopyFileException;
 import org.jboss.fuse.qa.fafram8.exceptions.KarafSessionDownException;
 import org.jboss.fuse.qa.fafram8.exceptions.SSHClientException;
+import org.jboss.fuse.qa.fafram8.exceptions.VerifyFalseException;
 import org.jboss.fuse.qa.fafram8.property.SystemProperty;
+import org.jboss.fuse.qa.fafram8.ssh.NodeSSHClient;
 import org.jboss.fuse.qa.fafram8.ssh.SSHClient;
 
 import lombok.AllArgsConstructor;
@@ -44,9 +47,22 @@ public class Executor {
 		try {
 			// We just check if its possible to connect - supress exception
 			client.connect(true);
+			client.disconnect();
 			return true;
 		} catch (Exception ignored) {
 			return false;
+		}
+	}
+
+	/**
+	 * Checks if the client can connect.
+	 */
+	public void connect() throws SSHClientException {
+		try {
+			client.connect(false);
+		} catch (VerifyFalseException ex) {
+			// TODO recursion -> bad idea?
+			connect();
 		}
 	}
 
@@ -155,6 +171,21 @@ public class Executor {
 					// Do nothing
 				}
 			}
+		}
+	}
+
+	/**
+	 * Copies local file to specified location in Fuse folder on remote host
+	 *
+	 * @param localPath absolute path to the file on local machine that should be copied
+	 * @param remotePath path to destination inside Fuse folder where the file should be copied
+	 * @throws CopyFileException if there was error in copying file
+	 */
+	public void copyFileToRemote(final String localPath, final String remotePath) throws CopyFileException {
+		if (client instanceof NodeSSHClient) {
+			((NodeSSHClient) client).copyFileToRemote(localPath, remotePath);
+		} else {
+			throw new CopyFileException("SSH client assigned to Executor is not instance of NodeSSHClient!");
 		}
 	}
 

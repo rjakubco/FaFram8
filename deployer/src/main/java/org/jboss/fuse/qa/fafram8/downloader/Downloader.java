@@ -1,5 +1,6 @@
 package org.jboss.fuse.qa.fafram8.downloader;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.shared.invoker.DefaultInvocationRequest;
 import org.apache.maven.shared.invoker.DefaultInvoker;
 import org.apache.maven.shared.invoker.InvocationRequest;
@@ -7,6 +8,7 @@ import org.apache.maven.shared.invoker.Invoker;
 import org.apache.maven.shared.invoker.MavenInvocationException;
 import org.apache.maven.shared.invoker.PrintStreamHandler;
 
+import org.jboss.fuse.qa.fafram8.executor.Executor;
 import org.jboss.fuse.qa.fafram8.property.SystemProperty;
 
 import java.io.ByteArrayOutputStream;
@@ -23,27 +25,37 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class Downloader {
+
+	// File separator
+	private static final String SEP = File.separator;
+
 	/**
-	 * Downloads/Gets the product zip.
+	 * Downloads/Gets the product zip on localhost.
 	 *
 	 * @return path to the downloaded zip
 	 */
 	public static String getProduct() {
-		// If we are working on localhost
-		if (SystemProperty.HOST == null) {
-			// If the FUSE_ZIP is not set, get the artifact from maven
-			if (SystemProperty.FUSE_ZIP == null) {
-				log.info("Getting product from local repository");
-				return getProductFromMaven();
-			} else {
-				// We are using custom zip on local
-				log.info("Getting product from " + SystemProperty.FUSE_ZIP);
-				return getProductFromUrl();
-			}
+		// If the FUSE_ZIP is not set, get the artifact from maven
+		if (SystemProperty.FUSE_ZIP == null) {
+			log.info("Getting product from local repository");
+			return getProductFromMaven();
 		} else {
-			// We are on remote
-			throw new UnsupportedOperationException("not implemented");
+			// We are using custom zip on local
+			log.info("Getting product from " + SystemProperty.FUSE_ZIP);
+			return getProductFromUrl();
 		}
+	}
+
+	/**
+	 * Downloads/Gets the product zip to the remote host.
+	 *
+	 * @param executor executor with assign ssh client
+	 * @return
+	 */
+	public static String getProduct(Executor executor) {
+		// We are using custom zip on local
+		log.info("Getting product from " + SystemProperty.FUSE_ZIP);
+		return getProductFromUrl(executor);
 	}
 
 	/**
@@ -58,7 +70,7 @@ public class Downloader {
 	}
 
 	/**
-	 * Gets the product zip from url.
+	 * Gets the product zip from url on localhost.
 	 *
 	 * @return absolute path to the file
 	 */
@@ -79,6 +91,35 @@ public class Downloader {
 			default:
 				throw new RuntimeException("Unsupported protocol " + protocol);
 		}
+		return location;
+	}
+
+	/**
+	 * TODO working dir?
+	 * TODO other possible protocols
+	 * Gets the product zip from url on remote.
+	 *
+	 * @return absolute path to the file
+	 */
+	private static String getProductFromUrl(Executor executor) {
+		// Get the protocol from the property
+		String protocol = StringUtils.substringBefore(SystemProperty.FUSE_ZIP, ":");
+		String location;
+		switch (protocol) {
+			case "http":
+				log.info(executor.executeCommand("wget --no-check-certificate -q -P " + SystemProperty.FAFRAM_FOLDER + " " + SystemProperty.FUSE_ZIP));
+				location = executor.executeCommand("ls -d -1 $PWD" + SEP + SystemProperty.FAFRAM_FOLDER + SEP + "*");
+				break;
+			case "scp":
+				throw new UnsupportedOperationException("not implemented");
+			case "file":
+				// Strip the protocol from the path
+				location = StringUtils.substringAfter(SystemProperty.FUSE_ZIP, ":");
+				break;
+			default:
+				throw new RuntimeException("Unsupported protocol " + protocol);
+		}
+
 		return location;
 	}
 

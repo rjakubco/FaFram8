@@ -35,7 +35,7 @@ public class PropertyModifier implements Modifier {
 	}
 
 	@Override
-	public void execute() throws IOException {
+	public void execute() {
 		Properties p = new Properties();
 
 		Path path = Paths.get(filePath);
@@ -48,7 +48,7 @@ public class PropertyModifier implements Modifier {
 				p.load(Files.newInputStream(path));
 			} catch (IOException e) {
 				log.error("Can't load property file {}.", filePath, e);
-				throw e;
+				throw new RuntimeException("Can't load property file " + filePath + ".", e);
 			}
 		} else {
 			log.debug("Creating new property file {}", filePath);
@@ -64,7 +64,7 @@ public class PropertyModifier implements Modifier {
 			p.store(os, "property file edited by Fuse ModifierExecutor");
 		} catch (IOException e) {
 			log.error("Failed to store modified property file {}", filePath, e);
-			throw e;
+			throw new RuntimeException("Failed to store modified property file " + filePath + ".", e);
 		}
 	}
 

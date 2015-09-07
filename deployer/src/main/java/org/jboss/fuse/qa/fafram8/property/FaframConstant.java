@@ -8,6 +8,9 @@ public class FaframConstant {
 	// Host IP address
 	public static final String HOST = "host";
 
+	// Host port
+	public static final String HOST_PORT = "host.port";
+
 	// Host login
 	public static final String HOST_USER = "host.user";
 
@@ -46,4 +49,7 @@ public class FaframConstant {
 
 	// Keep folder
 	public static final String KEEP_FOLDER = "keepFolder";
+
+	// Name of the working folder on remote host
+	public static final String FAFRAM_FOLDER = "fafram.folder";
 }

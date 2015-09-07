@@ -26,7 +26,7 @@ public class FileModifier implements Modifier {
 	}
 
 	@Override
-	public void execute() throws Exception {
+	public void execute() {
 		String oldFilePath = System.getProperty(FaframConstant.FUSE_PATH) + File.separator + fileToReplace;
 		try {
 			FileUtils.forceDelete(new File(oldFilePath));
