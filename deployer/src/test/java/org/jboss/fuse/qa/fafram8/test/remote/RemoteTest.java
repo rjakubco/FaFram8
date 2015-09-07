@@ -12,7 +12,8 @@ import org.junit.Test;
 public class RemoteTest {
 	static {
 		System.setProperty(FaframConstant.HOST, "10.8.49.84");
-		System.setProperty(FaframConstant.FUSE_ZIP, "http://repository.jboss.org/nexus/content/groups/ea/org/jboss/fuse/jboss-fuse-full/6.2.1.redhat-020/jboss-fuse-full-6.2.1.redhat-020.zip");
+//		System.setProperty(FaframConstant.FUSE_ZIP, "http://repository.jboss.org/nexus/content/groups/ea/org/jboss/fuse/jboss-fuse-full/6.2.1.redhat-020/jboss-fuse-full-6.2.1.redhat-020.zip");
+		System.setProperty(FaframConstant.FUSE_ZIP, "file:///home/fuse/jboss-fuse-full-6.2.1.redhat-020.zip");
 	}
 
 	@Rule

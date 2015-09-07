@@ -1,5 +1,6 @@
 package org.jboss.fuse.qa.fafram8.manager;
 
+import static org.jboss.fuse.qa.fafram8.modifier.impl.RemoteFileModifier.moveRemoteFile;
 import static org.jboss.fuse.qa.fafram8.modifier.impl.RemotePropertyModifier.putRemoteProperty;
 
 import org.jboss.fuse.qa.fafram8.downloader.Downloader;
@@ -77,15 +78,10 @@ public class RemoteNodeManager implements NodeManager {
 
 	@Override
 	public void prepareFuse() {
-		// TODO add iteration over all properties that should be modified in Fuse
-		// TODO add iteration over all files that should be copied to remote Fuse
-		// TODO work around because sed doesn't work correctly at the moment. Needs more tuning-> for some reason it forgets to add new line
 		// Add default user
 		modifierExecutor.addModifiers(putRemoteProperty("etc/users.properties", SystemProperty.FUSE_USER,
 				SystemProperty.FUSE_PASSWORD + ",admin,manager,viewer,Monitor, Operator, Maintainer, Deployer, " +
 						"Auditor, Administrator, SuperUser", executor));
-
-
 
 		modifierExecutor.executeModifiers();
 	}
@@ -93,6 +89,7 @@ public class RemoteNodeManager implements NodeManager {
 	@Override
 	public void startFuse() {
 		try {
+			// TODO add changing java before start
 			log.info("Starting fuse");
 			executor.executeCommand(productPath + SEP + "bin" + SEP + "start");
 			fuseExecutor.waitForBoot();
@@ -109,5 +106,37 @@ public class RemoteNodeManager implements NodeManager {
 		log.info("Cleaning " + SystemProperty.HOST);
 		executor.executeCommand("pkill -9 -f karaf");
 		executor.executeCommand("rm -rf " + SystemProperty.FAFRAM_FOLDER);
+	}
+
+	/**
+	 * Adds/Replaces property in given file
+	 *
+ 	 * @param path path to file where property should be set
+	 * @param key key of the property
+	 * @param value value of the propety
+	 */
+	public void addProperty(String path, String key, String value) {
+		this.modifierExecutor.addModifiers(putRemoteProperty(path, key, value, executor));
+	}
+
+	/**
+	 * Adds a new user.
+	 *
+	 * @param user user
+	 * @param pass password
+	 * @param roles comma-separated roles
+	 */
+	public void addUser(String user, String pass, String roles) {
+		this.modifierExecutor.addModifiers(putRemoteProperty("etc/users.properties", user, pass + "," + roles, executor));
+	}
+
+	/**
+	 * Replaces file.
+	 *
+	 * @param fileToReplace file from localhost
+	 * @param fileToUse file path on remote
+	 */
+	public void replaceFile(String fileToReplace, String fileToUse) {
+		this.modifierExecutor.addModifiers(moveRemoteFile(fileToReplace, fileToUse, executor));
 	}
 }

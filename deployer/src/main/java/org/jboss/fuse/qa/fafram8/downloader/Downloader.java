@@ -1,5 +1,6 @@
 package org.jboss.fuse.qa.fafram8.downloader;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.shared.invoker.DefaultInvocationRequest;
 import org.apache.maven.shared.invoker.DefaultInvoker;
 import org.apache.maven.shared.invoker.InvocationRequest;
@@ -29,29 +30,28 @@ public class Downloader {
 	private static final String SEP = File.separator;
 
 	/**
-	 * Downloads/Gets the product zip.
+	 * Downloads/Gets the product zip on localhost.
 	 *
 	 * @return path to the downloaded zip
 	 */
 	public static String getProduct() {
-		// If we are working on localhost
-		if (SystemProperty.HOST == null) {
-			// If the FUSE_ZIP is not set, get the artifact from maven
-			if (SystemProperty.FUSE_ZIP == null) {
-				log.info("Getting product from local repository");
-				return getProductFromMaven();
-			} else {
-				// We are using custom zip on local
-				log.info("Getting product from " + SystemProperty.FUSE_ZIP);
-				return getProductFromUrl();
-			}
+		// If the FUSE_ZIP is not set, get the artifact from maven
+		if (SystemProperty.FUSE_ZIP == null) {
+			log.info("Getting product from local repository");
+			return getProductFromMaven();
 		} else {
-			// We are on remote
-			throw new UnsupportedOperationException("not implemented");
+			// We are using custom zip on local
+			log.info("Getting product from " + SystemProperty.FUSE_ZIP);
+			return getProductFromUrl();
 		}
 	}
 
-	// TODO
+	/**
+	 * Downloads/Gets the product zip to the remote host.
+	 *
+	 * @param executor executor with assign ssh client
+	 * @return
+	 */
 	public static String getProduct(Executor executor) {
 		// We are using custom zip on local
 		log.info("Getting product from " + SystemProperty.FUSE_ZIP);
@@ -103,7 +103,7 @@ public class Downloader {
 	 */
 	private static String getProductFromUrl(Executor executor) {
 		// Get the protocol from the property
-		String protocol = SystemProperty.FUSE_ZIP.substring(0, SystemProperty.FUSE_ZIP.indexOf(":"));
+		String protocol = StringUtils.substringBefore(SystemProperty.FUSE_ZIP, ":");
 		String location;
 		switch (protocol) {
 			case "http":
@@ -114,7 +114,7 @@ public class Downloader {
 				throw new UnsupportedOperationException("not implemented");
 			case "file":
 				// Strip the protocol from the path
-				location = SystemProperty.FUSE_ZIP.substring(protocol.length() + 3);
+				location = StringUtils.substringAfter(SystemProperty.FUSE_ZIP, ":");
 				break;
 			default:
 				throw new RuntimeException("Unsupported protocol " + protocol);

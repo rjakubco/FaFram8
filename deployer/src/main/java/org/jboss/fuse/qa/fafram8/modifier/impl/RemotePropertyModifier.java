@@ -31,10 +31,13 @@ public class RemotePropertyModifier implements Modifier {
 	public void execute() {
 		String path = System.getProperty(FaframConstant.FUSE_PATH) + File.separator + filePath;
 
-		// TODO add some checking if the command was successful or catching exception from SSH?
-		log.debug(executor.executeCommand("(grep -v '[#]' " + path + " | grep -q '" + key + "' ) && sed -i \"s/^\\s*\\(" +
+		String response = executor.executeCommand("(grep -v '[#]' " + path + " | grep -q '" + key + "' ) && sed -i \"s/^\\s*\\(" +
 				StringUtils.replace(key, ".", "\\.") + "\\).*\\$/\\1=" + value + "/\" " + path + " || echo '\n" +
-				key + "=" + value + "' >> " + path));
+				key + "=" + value + "' >> " + path);
+		if (!response.isEmpty()) {
+			log.error("Setting property on remote host failed. Response should be empty but was: {}.", response);
+			throw new RuntimeException("Setting property on remote host failed (response should be empty): " + response);
+		}
 	}
 
 	/**
