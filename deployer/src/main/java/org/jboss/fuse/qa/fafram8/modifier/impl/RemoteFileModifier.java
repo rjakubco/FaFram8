@@ -7,12 +7,14 @@ import org.jboss.fuse.qa.fafram8.property.FaframConstant;
 
 import java.io.File;
 
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author : Roman Jakubco (rjakubco@redhat.com)
  */
 @Slf4j
+@ToString
 public class RemoteFileModifier implements Modifier {
 	private String remoteFilePath;
 	private String localFilePath;

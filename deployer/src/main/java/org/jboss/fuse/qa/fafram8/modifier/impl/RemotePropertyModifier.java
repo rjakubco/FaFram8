@@ -8,12 +8,14 @@ import org.codehaus.plexus.util.StringUtils;
 
 import java.io.File;
 
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author : Roman Jakubco (rjakubco@redhat.com)
  */
 @Slf4j
+@ToString
 public class RemotePropertyModifier implements Modifier {
 	private Executor executor;
 	private String filePath;

@@ -94,7 +94,7 @@ public class RemoteNodeManager implements NodeManager {
 			executor.executeCommand(productPath + SEP + "bin" + SEP + "start");
 			fuseExecutor.waitForBoot();
 		} catch (Exception e) {
-//			stopAndClean();
+			stopAndClean();
 			throw new RuntimeException("Could not start container: " + e);
 		}
 	}
