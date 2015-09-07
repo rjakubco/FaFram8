@@ -1,5 +1,7 @@
 package org.jboss.fuse.qa.fafram8.manager;
 
+import org.apache.commons.lang3.StringUtils;
+
 import org.jboss.fuse.qa.fafram8.executor.Executor;
 import org.jboss.fuse.qa.fafram8.patcher.Patcher;
 import org.jboss.fuse.qa.fafram8.property.SystemProperty;
@@ -21,6 +23,9 @@ public class ContainerManager {
 		this.executor = new Executor(client);
 	}
 
+	/**
+	 * Patch fuse.
+	 */
 	public void patchFuse() {
 		if (System.getProperty("fabric") == null) {
 			patchStandalone();
@@ -29,6 +34,9 @@ public class ContainerManager {
 		}
 	}
 
+	/**
+	 * Patch standalone container.
+	 */
 	private void patchStandalone() {
 		for (String s : Patcher.getPatches()) {
 			String patchName = getPatchName(executor.executeCommand("patch:add " + s));
@@ -37,18 +45,21 @@ public class ContainerManager {
 		}
 	}
 
+	/**
+	 * Patch fabric.
+	 */
 	private void patchFabric() {
 		// Create a new version
-		executor.executeCommand("version-create patch");
+		String version = executor.executeCommand("version-create").split(" ")[2];
 
 		for (String s : Patcher.getPatches()) {
 			executor.executeCommand("patch-apply -u " + SystemProperty.FUSE_USER + " -p " + SystemProperty
-					.FUSE_PASSWORD + " --version patch " + s);
+					.FUSE_PASSWORD + " --version " + version + " " + s);
 		}
 
-		executor.executeCommand("container-upgrade root patch");
+		executor.executeCommand("container-upgrade " + version + " root");
 		executor.waitForProvisioning("root");
-		executor.executeCommand("version-set-default patch");
+		executor.executeCommand("version-set-default " + version);
 	}
 
 	/**
@@ -59,8 +70,7 @@ public class ContainerManager {
 	 */
 	private String getPatchName(String patchAddResponse) {
 		// Get the 2nd row only
-		String response = patchAddResponse.substring(patchAddResponse.indexOf(System.lineSeparator()) + 1);
-
+		String response = StringUtils.substringAfter(patchAddResponse, System.lineSeparator());
 		// Replace multiple whitespaces
 		response = response.replaceAll(" +", " ").trim();
 

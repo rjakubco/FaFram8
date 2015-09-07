@@ -138,7 +138,7 @@ public class Executor {
 		boolean isSuccessful = false;
 
 		while (!isSuccessful) {
-			if (retries > SystemProperty.START_WAIT_TIME) {
+			if (retries > SystemProperty.PROVISION_WAIT_TIME) {
 				log.error("Container root failed to provision in time");
 				throw new RuntimeException("Container root failed to provision in time");
 			}
@@ -161,7 +161,7 @@ public class Executor {
 			}
 
 			if (!isSuccessful) {
-				log.debug("Remaining time: " + (SystemProperty.START_WAIT_TIME - retries) + " seconds. " + (""
+				log.debug("Remaining time: " + (SystemProperty.PROVISION_WAIT_TIME - retries) + " seconds. " + (""
 						.equals(reason) ? "" : "(" + reason + ")"));
 				retries += 3;
 				try {
@@ -196,11 +196,13 @@ public class Executor {
 	public void waitForPatch(String patchName) {
 		int retries = 0;
 		boolean isSuccessful = false;
+
 		log.info("Waiting for patch to be installed");
+
 		while (!isSuccessful) {
-			if (retries > 120) {
-				log.error("Container failed to install patch after 120 seconds.");
-				throw new RuntimeException("Container failed to install patch after 120 seconds.");
+			if (retries > SystemProperty.PATCH_WAIT_TIME) {
+				log.error("Container failed to install patch after " + SystemProperty.PATCH_WAIT_TIME + " seconds.");
+				throw new RuntimeException("Container failed to install patch after " + SystemProperty.PATCH_WAIT_TIME + " seconds.");
 			}
 
 			String reason = "";
@@ -219,7 +221,7 @@ public class Executor {
 			}
 
 			if (!isSuccessful) {
-				log.debug("Remaining time: " + (SystemProperty.PROVISION_WAIT_TIME - retries) + " seconds. " + (""
+				log.debug("Remaining time: " + (SystemProperty.PATCH_WAIT_TIME - retries) + " seconds. " + (""
 						.equals(reason) ? "" : "(" + reason + ")"));
 				retries += 3;
 			}

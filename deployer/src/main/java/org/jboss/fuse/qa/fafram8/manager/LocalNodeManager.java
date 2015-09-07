@@ -209,9 +209,18 @@ public class LocalNodeManager implements NodeManager {
 	 */
 	public void stopAndClean() {
 		if (!stopped) {
+			unsetProperties();
 			stop();
 			deleteTargetDir();
 		}
+	}
+
+	/**
+	 * Unsets system properties.
+	 */
+	private void unsetProperties() {
+		System.clearProperty("fabric");
+		System.clearProperty(FaframConstant.FUSE_PATH);
 	}
 
 	/**

@@ -50,7 +50,7 @@ public class Downloader {
 	 * Downloads/Gets the product zip to the remote host.
 	 *
 	 * @param executor executor with assign ssh client
-	 * @return
+	 * @return absolute path to the file
 	 */
 	public static String getProduct(Executor executor) {
 		// We are using custom zip on local
@@ -76,7 +76,7 @@ public class Downloader {
 	 */
 	private static String getProductFromUrl() {
 		// Get the protocol from the property
-		String protocol = SystemProperty.FUSE_ZIP.substring(0, SystemProperty.FUSE_ZIP.indexOf(":"));
+		String protocol = StringUtils.substringBefore(SystemProperty.FUSE_ZIP, ":");
 		String location;
 		switch (protocol) {
 			case "http":
@@ -86,7 +86,7 @@ public class Downloader {
 				throw new UnsupportedOperationException("not implemented");
 			case "file":
 				// Strip the protocol from the path
-				location = SystemProperty.FUSE_ZIP.substring(protocol.length() + 3);
+				location = StringUtils.substringAfter(SystemProperty.FUSE_ZIP, ":");
 				break;
 			default:
 				throw new RuntimeException("Unsupported protocol " + protocol);
