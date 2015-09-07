@@ -35,6 +35,7 @@ public class Executor {
 		} catch (SSHClientException e) {
 			log.error("SSHClient exception thrown: " + e);
 		}
+
 		return null;
 	}
 
@@ -184,6 +185,47 @@ public class Executor {
 			((NodeSSHClient) client).copyFileToRemote(localPath, remotePath);
 		} else {
 			throw new CopyFileException("SSH client assigned to Executor is not instance of NodeSSHClient!");
+		}
+	}
+
+	/*
+	 * Waits for the patch to be applied.
+	 *
+	 * @param patchName patch name
+	 */
+	public void waitForPatch(String patchName) {
+		int retries = 0;
+		boolean isSuccessful = false;
+
+		log.info("Waiting for patch to be installed");
+
+		while (!isSuccessful) {
+			if (retries > SystemProperty.PATCH_WAIT_TIME) {
+				log.error("Container failed to install patch after " + SystemProperty.PATCH_WAIT_TIME + " seconds.");
+				throw new RuntimeException("Container failed to install patch after " + SystemProperty.PATCH_WAIT_TIME + " seconds.");
+			}
+
+			String reason = "";
+
+			// TODO(avano): command, connection established, remaining time
+			try {
+				isSuccessful = client.executeCommand("patch:list | grep " + patchName, true).contains("true");
+			} catch (Exception e) {
+				reason = e.getMessage();
+
+				try {
+					client.connect(true);
+				} catch (Exception e1) {
+					// Do nothing
+				}
+			}
+
+			if (!isSuccessful) {
+				log.debug("Remaining time: " + (SystemProperty.PATCH_WAIT_TIME - retries) + " seconds. " + (""
+						.equals(reason) ? "" : "(" + reason + ")"));
+				retries += 3;
+			}
+			sleep(3000L);
 		}
 	}
 

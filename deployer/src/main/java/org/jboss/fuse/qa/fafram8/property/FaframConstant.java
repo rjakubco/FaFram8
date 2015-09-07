@@ -47,9 +47,15 @@ public class FaframConstant {
 	// Fabric provision wait time
 	public static final String PROVISION_WAIT_TIME = "provision.wait.time";
 
+	// Patch install wait time
+	public static final String PATCH_WAIT_TIME = "patch.wait.time";
+
 	// Keep folder
 	public static final String KEEP_FOLDER = "keepFolder";
 
 	// Name of the working folder on remote host
 	public static final String FAFRAM_FOLDER = "fafram.folder";
+
+	// Patch
+	public static final String PATCH = "patch";
 }

@@ -1,5 +1,6 @@
 package org.jboss.fuse.qa.fafram8.deployer;
 
+import org.jboss.fuse.qa.fafram8.manager.ContainerManager;
 import org.jboss.fuse.qa.fafram8.manager.LocalNodeManager;
 import org.jboss.fuse.qa.fafram8.manager.NodeManager;
 import org.jboss.fuse.qa.fafram8.ssh.SSHClient;
@@ -10,6 +11,7 @@ import org.jboss.fuse.qa.fafram8.ssh.SSHClient;
  */
 public class LocalDeployer implements Deployer {
 	private LocalNodeManager nm;
+	private ContainerManager cm;
 
 	/**
 	 * Constructor.
@@ -17,6 +19,7 @@ public class LocalDeployer implements Deployer {
 	 */
 	public LocalDeployer(SSHClient client) {
 		nm = new LocalNodeManager(client);
+		cm = new ContainerManager(client);
 	}
 
 	@Override
@@ -26,6 +29,7 @@ public class LocalDeployer implements Deployer {
 		nm.unzipArtifact();
 		nm.prepareFuse();
 		nm.startFuse();
+		cm.patchFuse();
 	}
 
 	@Override

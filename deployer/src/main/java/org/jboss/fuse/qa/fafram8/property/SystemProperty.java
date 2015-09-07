@@ -47,6 +47,10 @@ public class SystemProperty {
 	public static final int PROVISION_WAIT_TIME = Integer.parseInt(System.getProperty(
 			FaframConstant.PROVISION_WAIT_TIME, "300"));
 
+	// Patch install wait time
+	public static final int PATCH_WAIT_TIME = Integer.parseInt(System.getProperty(FaframConstant.PATCH_WAIT_TIME,
+			"120"));
+
 	// Keep folder
 	public static final String KEEP_FOLDER = System.getProperty(FaframConstant.KEEP_FOLDER);
 
