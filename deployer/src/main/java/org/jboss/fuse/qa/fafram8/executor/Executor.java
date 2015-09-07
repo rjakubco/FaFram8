@@ -31,8 +31,6 @@ public class Executor {
 			log.error("Karaf session is down!");
 		} catch (SSHClientException e) {
 			log.error("SSHClient exception thrown: " + e);
-		} catch (InterruptedException e) {
-			// Ignore this
 		}
 		return null;
 	}
