@@ -35,13 +35,11 @@ public class NodeSSHClient extends SSHClient {
 				}
 			}
 
-			log.debug("get session");
 			session = ssh.getSession(username, hostname, port);
 
 			session.setConfig("StrictHostKeyChecking", "no");
 			session.setPassword(password);
 
-			log.debug("session connecting");
 			session.connect(20000);
 
 			log.info("Connection established.");
@@ -73,8 +71,6 @@ public class NodeSSHClient extends SSHClient {
 		log.debug("Command: " + command);
 
 		try {
-
-			log.debug("open channel");
 			channel = session.openChannel("exec");
 			((ChannelExec) channel).setCommand(command);
 
@@ -83,12 +79,13 @@ public class NodeSSHClient extends SSHClient {
 
 			final InputStream in = channel.getInputStream();
 
-			log.debug("channel connecting");
 			channel.connect();
 
 			returnString = convertStreamToString(in);
+
+			returnString = returnString.replaceAll("\u001B\\[[;\\d]*m", "").trim();
 			log.debug("Command response: " + returnString);
-			return returnString.replaceAll("\u001B\\[[;\\d]*m", "").trim();
+			return returnString;
 		} catch (JSchException ex) {
 			log.error("Cannot execute ssh command: \"" + command + "\"", ex);
 			throw new SSHClientException(ex);
