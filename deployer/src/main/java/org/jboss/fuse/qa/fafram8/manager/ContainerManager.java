@@ -1,5 +1,6 @@
 package org.jboss.fuse.qa.fafram8.manager;
 
+import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 
 import org.jboss.fuse.qa.fafram8.executor.Executor;
@@ -19,8 +20,29 @@ public class ContainerManager {
 	@Getter
 	private Executor executor;
 
+	// Setup fabric?
+	@Setter
+	@Getter
+	private boolean fabric = false;
+
 	public ContainerManager(SSHClient client) {
 		this.executor = new Executor(client);
+	}
+
+	/**
+	 * Sets up fabric.
+	 */
+	public void setupFabric() {
+		executor.executeCommand("fabric:create");
+		try {
+			executor.waitForProvisioning("root");
+		} catch (RuntimeException ex) {
+			// Container is not provisioned in time
+			throw new RuntimeException("Container did not provision in time");
+		}
+
+		// Set system property to indicate that we are working with fabric
+		System.setProperty("fabric", "");
 	}
 
 	/**
@@ -79,4 +101,17 @@ public class ContainerManager {
 		log.debug("Patch name is " + patchName);
 		return patchName;
 	}
+
+	private void createSSHContainer(String nodeIP, String containerName) {
+		String command = String.format("container-create-ssh --host %s --user %s --password %s --resolver %s %s",
+				nodeIP, SystemProperty.FUSE_USER, SystemProperty.FUSE_PASSWORD, "localip", containerName);
+		executor.executeCommand(command);
+		executor.waitForProvisioning(containerName);
+	}
+
+/*	private void createSSHContainer(List<Container> containerList) {
+		for(Container containerList: container) {
+			createSSHContainer(container.getNodeIP, container.getName);
+		}
+	}*/
 }

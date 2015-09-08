@@ -4,6 +4,7 @@ import org.jboss.fuse.qa.fafram8.deployer.Deployer;
 import org.jboss.fuse.qa.fafram8.deployer.LocalDeployer;
 import org.jboss.fuse.qa.fafram8.deployer.RemoteDeployer;
 import org.jboss.fuse.qa.fafram8.exceptions.SSHClientException;
+import org.jboss.fuse.qa.fafram8.manager.ContainerManager;
 import org.jboss.fuse.qa.fafram8.manager.LocalNodeManager;
 import org.jboss.fuse.qa.fafram8.property.SystemProperty;
 import org.jboss.fuse.qa.fafram8.ssh.FuseSSHClient;
@@ -94,12 +95,12 @@ public class Fafram extends ExternalResource {
 	 * Adds a new user.
 	 *
 	 * @param user user
-	 * @param pass pass
+	 * @param password password
 	 * @param roles comma-separated roles
 	 * @return this
 	 */
-	public Fafram addUser(String user, String pass, String roles) {
-		((LocalNodeManager) deployer.getNodeManager()).addUser(user, pass, roles);
+	public Fafram addUser(String user, String password, String roles) {
+		deployer.getNodeManager().addUser(user, password, roles);
 		return this;
 	}
 
@@ -111,12 +112,16 @@ public class Fafram extends ExternalResource {
 	 * @return this
 	 */
 	public Fafram replaceFile(String fileToReplace, String fileToUse) {
-		((LocalNodeManager) deployer.getNodeManager()).replaceFile(fileToReplace, fileToUse);
+		deployer.getNodeManager().replaceFile(fileToReplace, fileToUse);
 		return this;
 	}
 
+	/**
+	 * Provide deployment with Fabric environment
+	 * @return
+	 */
 	public Fafram withFabric() {
-		((LocalNodeManager) deployer.getNodeManager()).setFabric(true);
+		deployer.getContainerManager().setFabric(true);
 		return this;
 	}
 }

@@ -59,10 +59,6 @@ public class LocalNodeManager implements NodeManager {
 	// Modifier executor
 	private ModifierExecutor modifierExecutor = new ModifierExecutor();
 
-	// Setup fabric?
-	@Setter
-	private boolean fabric = false;
-
 	// Is jenkins?
 	private boolean jenkins = System.getenv("WORKSPACE") != null;
 
@@ -162,27 +158,6 @@ public class LocalNodeManager implements NodeManager {
 			stopAndClean();
 			throw new RuntimeException("Could not start container: " + e);
 		}
-
-		if (fabric) {
-			setupFabric();
-		}
-	}
-
-	/**
-	 * Sets up fabric.
-	 */
-	private void setupFabric() {
-		executor.executeCommand("fabric:create");
-		try {
-			executor.waitForProvisioning("root");
-		} catch (RuntimeException ex) {
-			// Container is not provisioned in time
-			stopAndClean();
-			throw new RuntimeException("Container did not provision in time");
-		}
-
-		// Set system property to indicate that we are working with fabric
-		System.setProperty("fabric", "");
 	}
 
 	/**
