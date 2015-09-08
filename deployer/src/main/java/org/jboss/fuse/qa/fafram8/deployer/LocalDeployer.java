@@ -22,16 +22,28 @@ public class LocalDeployer implements Deployer {
 		cm = new ContainerManager(client);
 	}
 
+	/**
+	 * Setup FUSE root container on localhost
+	 */
 	@Override
 	public void setup() {
-		nm.checkRunningContainer();
-		nm.prepareZip();
-		nm.unzipArtifact();
-		nm.prepareFuse();
-		nm.startFuse();
-		cm.patchFuse();
+		try {
+			nm.checkRunningContainer();
+			nm.prepareZip();
+			nm.unzipArtifact();
+			nm.prepareFuse();
+			nm.startFuse();
+			if (cm.isFabric()) cm.setupFabric();
+			cm.patchFuse();
+		} catch (RuntimeException ex) {
+			nm.stopAndClean();
+			throw ex;
+		}
 	}
 
+	/**
+	 * Stop root container and delete FUSE home directory on localhost
+	 */
 	@Override
 	public void tearDown() {
 		nm.stopAndClean();
@@ -40,5 +52,10 @@ public class LocalDeployer implements Deployer {
 	@Override
 	public NodeManager getNodeManager() {
 		return nm;
+	}
+
+	@Override
+	public ContainerManager getContainerManager() {
+		return cm;
 	}
 }

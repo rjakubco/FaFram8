@@ -29,6 +29,7 @@ public class RemoteNodeManager implements NodeManager {
 	private Executor executor;
 
 	// executor for Fuse on remote host
+	@Getter
 	private Executor fuseExecutor;
 
 	// File separator
@@ -94,7 +95,6 @@ public class RemoteNodeManager implements NodeManager {
 			executor.executeCommand(productPath + SEP + "bin" + SEP + "start");
 			fuseExecutor.waitForBoot();
 		} catch (Exception e) {
-			stopAndClean();
 			throw new RuntimeException("Could not start container: " + e);
 		}
 	}

@@ -1,6 +1,7 @@
 package org.jboss.fuse.qa.fafram8.deployer;
 
 import org.jboss.fuse.qa.fafram8.exceptions.SSHClientException;
+import org.jboss.fuse.qa.fafram8.manager.ContainerManager;
 import org.jboss.fuse.qa.fafram8.manager.NodeManager;
 import org.jboss.fuse.qa.fafram8.manager.RemoteNodeManager;
 import org.jboss.fuse.qa.fafram8.ssh.SSHClient;
@@ -12,6 +13,7 @@ import org.jboss.fuse.qa.fafram8.ssh.SSHClient;
  */
 public class RemoteDeployer implements Deployer {
 	private RemoteNodeManager nm;
+	private ContainerManager cm;
 	// TODO add container manager with assigned FuseNodeClient
 
 	/**
@@ -23,16 +25,23 @@ public class RemoteDeployer implements Deployer {
 	 */
 	public RemoteDeployer(SSHClient nodeClient, SSHClient fuseClient) throws SSHClientException {
 		this.nm = new RemoteNodeManager(nodeClient, fuseClient);
+		this.cm = new ContainerManager(fuseClient);
 	}
 
 	@Override
 	public void setup() {
 		// TODO add clean and only connect options for manipulating the test
-		nm.stopAndClean();
-		nm.prepareZip();
-		nm.unzipArtifact();
-		nm.prepareFuse();
-		nm.startFuse();
+		try {
+			nm.stopAndClean();
+			nm.prepareZip();
+			nm.unzipArtifact();
+			nm.prepareFuse();
+			nm.startFuse();
+			if (cm.isFabric()) cm.setupFabric();
+		} catch (RuntimeException ex) {
+			nm.stopAndClean();
+			throw ex;
+		}
 	}
 
 	@Override
@@ -44,4 +53,7 @@ public class RemoteDeployer implements Deployer {
 	public NodeManager getNodeManager() {
 		return nm;
 	}
+
+	@Override
+	public ContainerManager getContainerManager() { return cm; }
 }
