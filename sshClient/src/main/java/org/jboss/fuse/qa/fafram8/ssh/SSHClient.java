@@ -57,7 +57,7 @@ public abstract class SSHClient {
 	protected JSch ssh = new JSch();
 
 	/**
-	 * Method for executing command on connected SSH server. Each implementation has some specific small hacks
+	 * Method for executing command on connected SSH server. Each implementation has some specific small hacks.
 	 *
 	 * @param command command to be executed
 	 * @param supressLog supress exception logging

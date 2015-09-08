@@ -99,43 +99,25 @@ public class RemoteNodeManager implements NodeManager {
 		}
 	}
 
-	/**
-	 * Kills Karaf and deletes the fafram folder on remote host.
-	 */
+	@Override
 	public void stopAndClean() {
 		log.info("Cleaning " + SystemProperty.HOST);
 		executor.executeCommand("pkill -9 -f karaf");
 		executor.executeCommand("rm -rf " + SystemProperty.FAFRAM_FOLDER);
 	}
 
-	/**
-	 * Adds/Replaces property in given file.
-	 *
- 	 * @param path path to file where property should be set
-	 * @param key key of the property
-	 * @param value value of the propety
-	 */
+	@Override
 	public void addProperty(String path, String key, String value) {
 		this.modifierExecutor.addModifiers(putRemoteProperty(path, key, value, executor));
 	}
 
-	/**
-	 * Adds a new user.
-	 *
-	 * @param user user
-	 * @param pass password
-	 * @param roles comma-separated roles
-	 */
+	@Override
 	public void addUser(String user, String pass, String roles) {
-		this.modifierExecutor.addModifiers(putRemoteProperty("etc/users.properties", user, pass + "," + roles, executor));
+		this.modifierExecutor
+				.addModifiers(putRemoteProperty("etc/users.properties", user, pass + "," + roles, executor));
 	}
 
-	/**
-	 * Replaces file.
-	 *
-	 * @param fileToReplace file from localhost
-	 * @param fileToUse file path on remote
-	 */
+	@Override
 	public void replaceFile(String fileToReplace, String fileToUse) {
 		this.modifierExecutor.addModifiers(moveRemoteFile(fileToReplace, fileToUse, executor));
 	}

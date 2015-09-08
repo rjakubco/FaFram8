@@ -107,7 +107,9 @@ public class Downloader {
 		String location;
 		switch (protocol) {
 			case "http":
-				log.info(executor.executeCommand("wget --no-check-certificate -q -P " + SystemProperty.FAFRAM_FOLDER + " " + SystemProperty.FUSE_ZIP));
+				log.info(executor.executeCommand(
+						"wget --no-check-certificate -q -P " + SystemProperty.FAFRAM_FOLDER + " " +
+								SystemProperty.FUSE_ZIP));
 				location = executor.executeCommand("ls -d -1 $PWD" + SEP + SystemProperty.FAFRAM_FOLDER + SEP + "*");
 				break;
 			case "scp":

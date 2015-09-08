@@ -4,8 +4,7 @@ import org.jboss.fuse.qa.fafram8.deployer.Deployer;
 import org.jboss.fuse.qa.fafram8.deployer.LocalDeployer;
 import org.jboss.fuse.qa.fafram8.deployer.RemoteDeployer;
 import org.jboss.fuse.qa.fafram8.exceptions.SSHClientException;
-import org.jboss.fuse.qa.fafram8.manager.ContainerManager;
-import org.jboss.fuse.qa.fafram8.manager.LocalNodeManager;
+import org.jboss.fuse.qa.fafram8.property.FaframConstant;
 import org.jboss.fuse.qa.fafram8.property.SystemProperty;
 import org.jboss.fuse.qa.fafram8.ssh.FuseSSHClient;
 import org.jboss.fuse.qa.fafram8.ssh.NodeSSHClient;
@@ -66,6 +65,9 @@ public class Fafram extends ExternalResource {
 	 * Sets up the local deployment.
 	 */
 	private void setupLocalDeployment() {
+		// Don't use fabric by default on localhost
+		System.clearProperty("fabric");
+
 		// Create a local deployer with local SSH Client and assign to deployer variable
 		deployer = new LocalDeployer(new FuseSSHClient().hostname("localhost").port(8101).username(SystemProperty
 				.FUSE_USER).password(SystemProperty.FUSE_PASSWORD));
@@ -75,6 +77,8 @@ public class Fafram extends ExternalResource {
 	 * Sets up the remote deployment.
 	 */
 	private void setupRemoteDeployment() throws SSHClientException {
+		// Use fabric by default on remote
+		System.setProperty(FaframConstant.FABRIC, "");
 		deployer = new RemoteDeployer(new NodeSSHClient().hostname(SystemProperty.HOST).port(SystemProperty.HOST_PORT)
 				.username(SystemProperty.HOST_USER).password(SystemProperty.HOST_PASSWORD),
 				new FuseSSHClient().hostname(SystemProperty.HOST).fuseSSHPort().username(SystemProperty.FUSE_USER)
@@ -127,11 +131,20 @@ public class Fafram extends ExternalResource {
 	}
 
 	/**
-	 * Provide deployment with Fabric environment
-	 * @return
+	 * Provide deployment with Fabric environment.
+	 * @return this
 	 */
 	public Fafram withFabric() {
-		deployer.getContainerManager().setFabric(true);
+		return withFabric("");
+	}
+
+	/**
+	 * Provide deployment with Fabric environment.
+	 * @param opts fabric create options
+	 * @return this
+	 */
+	public Fafram withFabric(String opts) {
+		System.setProperty(FaframConstant.FABRIC, opts);
 		return this;
 	}
 }

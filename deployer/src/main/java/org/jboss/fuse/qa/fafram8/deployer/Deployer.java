@@ -20,12 +20,14 @@ public interface Deployer {
 
 	/**
 	 * Node manager getter.
+	 *
 	 * @return node manager instance
 	 */
 	NodeManager getNodeManager();
 
 	/**
 	 * Container manager getter.
+	 *
 	 * @return container manager instance
 	 */
 	ContainerManager getContainerManager();

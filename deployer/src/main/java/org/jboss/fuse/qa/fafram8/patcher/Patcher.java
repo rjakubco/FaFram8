@@ -29,14 +29,25 @@ public class Patcher {
 	// Do not use patch sys property - the tests are setting the system property for every testMethod
 	// and SystemProperty is evaluated when the SystemProperty class is instantiated, therefore it just
 	// uses one value for all tests
-	
+
+	/**
+	 * Gets the patches on localhost.
+	 *
+	 * @return array of string with file uris
+	 */
 	public static String[] getPatches() {
 		return getPatches(null);
 	}
 
+	/**
+	 * Gets the patches on remote.
+	 *
+	 * @param client ssh client
+	 * @return array of string with file uris
+	 */
 	public static String[] getPatches(SSHClient client) {
 		String patch = System.getProperty(FaframConstant.PATCH);
-		
+
 		// If the property is not set, return empty array
 		if (patch == null) {
 			return new String[0];
@@ -65,6 +76,11 @@ public class Patcher {
 		}
 	}
 
+	/**
+	 * Gets the patch from default location (patchFolder/latest directory).
+	 *
+	 * @return array of string with file uris
+	 */
 	private static String[] getPatchFromDefaultLocation() {
 		// Parse the fuse version, returns 6.1 or 6.2, etc.
 		final String version = StringUtils.substring(SystemProperty.FUSE_VERSION, 0, 3);
@@ -89,10 +105,21 @@ public class Patcher {
 		return ret.toArray(new String[ret.size()]);
 	}
 
+	/**
+	 * Gets the patch from scp location.
+	 *
+	 * @param client ssh client
+	 * @return array of string with file uris
+	 */
 	private static String[] getPatchFromScp(SSHClient client) {
 		throw new UnsupportedOperationException("not implemented");
 	}
 
+	/**
+	 * Gets the patches by the name.
+	 *
+	 * @return array of string with file uris
+	 */
 	private static String[] getPatchByName() {
 		String patch = System.getProperty(FaframConstant.PATCH);
 

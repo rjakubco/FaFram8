@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.IOException;
 
 /**
+ * Local add user test.
  * Created by avano on 21.8.15.
  */
 public class LocalAddUserTest {

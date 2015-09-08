@@ -7,8 +7,6 @@ package org.jboss.fuse.qa.fafram8.modifier;
 public interface Modifier {
 	/**
 	 * This method will be called before fuse is started.
-	 *
-	 * @throws Exception
 	 */
 	void execute();
 }

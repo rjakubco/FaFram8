@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * Class representing FUSE container
+ * Class representing FUSE container.
  * Created by ecervena on 9/8/15.
  */
 public class Container {

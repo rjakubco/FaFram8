@@ -11,6 +11,7 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
 /**
+ * Remote file modifier class.
  * @author : Roman Jakubco (rjakubco@redhat.com)
  */
 @Slf4j

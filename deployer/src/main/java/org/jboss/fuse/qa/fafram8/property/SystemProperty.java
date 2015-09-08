@@ -5,9 +5,10 @@ package org.jboss.fuse.qa.fafram8.property;
  * Created by avano on 20.8.15.
  */
 public class SystemProperty {
-	// Host
+	// Remote host
 	public static final String HOST = System.getProperty(FaframConstant.HOST);
 
+	// Host SSH port
 	public static final int HOST_PORT = Integer.parseInt(System.getProperty(FaframConstant.HOST_PORT,
 			"22"));
 
