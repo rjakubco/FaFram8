@@ -155,7 +155,6 @@ public class LocalNodeManager implements NodeManager {
 			log.info("Waiting for the container to be online");
 			executor.waitForBoot();
 		} catch (Exception e) {
-			stopAndClean();
 			throw new RuntimeException("Could not start container: " + e);
 		}
 	}
