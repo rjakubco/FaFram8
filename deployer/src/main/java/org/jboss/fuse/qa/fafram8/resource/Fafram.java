@@ -91,6 +91,10 @@ public class Fafram extends ExternalResource {
 		return deployer.getNodeManager().getExecutor().executeCommand(command);
 	}
 
+	public String executeFuseCommand(String command) {
+		return deployer.getContainerManager().getExecutor().executeCommand(command);
+	}
+
 	/**
 	 * Adds a new user.
 	 *

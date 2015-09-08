@@ -29,6 +29,7 @@ public class RemoteNodeManager implements NodeManager {
 	private Executor executor;
 
 	// executor for Fuse on remote host
+	@Getter
 	private Executor fuseExecutor;
 
 	// File separator

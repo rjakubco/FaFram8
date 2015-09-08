@@ -31,11 +31,17 @@ public class RemoteDeployer implements Deployer {
 	@Override
 	public void setup() {
 		// TODO add clean and only connect options for manipulating the test
-		nm.stopAndClean();
-		nm.prepareZip();
-		nm.unzipArtifact();
-		nm.prepareFuse();
-		nm.startFuse();
+		try {
+			nm.stopAndClean();
+			nm.prepareZip();
+			nm.unzipArtifact();
+			nm.prepareFuse();
+			nm.startFuse();
+			if (cm.isFabric()) cm.setupFabric();
+		} catch (RuntimeException ex) {
+			nm.stopAndClean();
+			throw ex;
+		}
 	}
 
 	@Override
