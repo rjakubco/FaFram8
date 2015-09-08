@@ -91,6 +91,12 @@ public class Fafram extends ExternalResource {
 		return deployer.getNodeManager().getExecutor().executeCommand(command);
 	}
 
+	/**
+	 * Execute command in root container shell
+	 *
+	 * @param command fabric command to execute on root container
+	 * @return command stdo
+	 */
 	public String executeFuseCommand(String command) {
 		return deployer.getContainerManager().getExecutor().executeCommand(command);
 	}

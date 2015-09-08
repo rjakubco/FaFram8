@@ -3,6 +3,7 @@ package org.jboss.fuse.qa.fafram8.manager;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 
+import org.jboss.fuse.qa.fafram8.exception.EmptyContainerListException;
 import org.jboss.fuse.qa.fafram8.executor.Executor;
 import org.jboss.fuse.qa.fafram8.patcher.Patcher;
 import org.jboss.fuse.qa.fafram8.property.SystemProperty;
@@ -10,6 +11,8 @@ import org.jboss.fuse.qa.fafram8.ssh.SSHClient;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.List;
 
 /**
  * Container manager class.
@@ -40,16 +43,13 @@ public class ContainerManager {
 			// Container is not provisioned in time
 			throw new RuntimeException("Container did not provision in time");
 		}
-
-		// Set system property to indicate that we are working with fabric
-		System.setProperty("fabric", "");
 	}
 
 	/**
 	 * Patch fuse.
 	 */
 	public void patchFuse() {
-		if (System.getProperty("fabric") == null) {
+		if (!fabric) {
 			patchStandalone();
 		} else {
 			patchFabric();
@@ -102,16 +102,30 @@ public class ContainerManager {
 		return patchName;
 	}
 
-	private void createSSHContainer(String nodeIP, String containerName) {
+	/**
+	 * Execute container-create-ssh command on root container
+	 *
+	 * @param hostIP IP address of host node
+	 * @param containerName Name of container
+	 */
+	private void createSSHContainer(String hostIP, String containerName) {
 		String command = String.format("container-create-ssh --host %s --user %s --password %s --resolver %s %s",
-				nodeIP, SystemProperty.FUSE_USER, SystemProperty.FUSE_PASSWORD, "localip", containerName);
+				hostIP, SystemProperty.FUSE_USER, SystemProperty.FUSE_PASSWORD, "localip", containerName);
 		executor.executeCommand(command);
 		executor.waitForProvisioning(containerName);
 	}
 
-/*	private void createSSHContainer(List<Container> containerList) {
-		for(Container containerList: container) {
-			createSSHContainer(container.getNodeIP, container.getName);
+	/**
+	 * Execute container-create-ssh command for all container on the list
+	 *
+	 * @param containerList
+	 */
+	private void createSSHContainer(List<Container> containerList) throws EmptyContainerListException {
+		if(containerList.isEmpty()) {
+			throw new EmptyContainerListException("List of containers is empty. Root container should be provided in configuration file at least.");
 		}
-	}*/
+		for(Container container: containerList) {
+			createSSHContainer(container.getHostIP(), container.getName());
+		}
+	}
 }
