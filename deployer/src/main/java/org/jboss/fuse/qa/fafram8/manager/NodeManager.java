@@ -15,5 +15,9 @@ public interface NodeManager {
 
 	void startFuse();
 
+	void addUser(String user, String password, String roles);
+
+	void replaceFile(String fileToReplace, String fileToUse);
+
 	Executor getExecutor();
 }

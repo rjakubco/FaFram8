@@ -29,6 +29,7 @@ public class RemoteNodeManager implements NodeManager {
 	private Executor executor;
 
 	// executor for Fuse on remote host
+	@Getter
 	private Executor fuseExecutor;
 
 	// File separator
@@ -44,7 +45,7 @@ public class RemoteNodeManager implements NodeManager {
 	private ModifierExecutor modifierExecutor = new ModifierExecutor();
 
 	/**
-	 * Constructor
+	 * Constructor.
 	 *
 	 * @param nodeClient sshClient to remote host
 	 * @param fuseClient sshClient to fuse on remote host
@@ -94,13 +95,12 @@ public class RemoteNodeManager implements NodeManager {
 			executor.executeCommand(productPath + SEP + "bin" + SEP + "start");
 			fuseExecutor.waitForBoot();
 		} catch (Exception e) {
-			stopAndClean();
 			throw new RuntimeException("Could not start container: " + e);
 		}
 	}
 
 	/**
-	 * Kills Karaf and deletes the fafram folder on remote host
+	 * Kills Karaf and deletes the fafram folder on remote host.
 	 */
 	public void stopAndClean() {
 		log.info("Cleaning " + SystemProperty.HOST);
@@ -109,7 +109,7 @@ public class RemoteNodeManager implements NodeManager {
 	}
 
 	/**
-	 * Adds/Replaces property in given file
+	 * Adds/Replaces property in given file.
 	 *
  	 * @param path path to file where property should be set
 	 * @param key key of the property

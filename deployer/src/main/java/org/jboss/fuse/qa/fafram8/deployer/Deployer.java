@@ -1,5 +1,6 @@
 package org.jboss.fuse.qa.fafram8.deployer;
 
+import org.jboss.fuse.qa.fafram8.manager.ContainerManager;
 import org.jboss.fuse.qa.fafram8.manager.NodeManager;
 
 /**
@@ -22,4 +23,10 @@ public interface Deployer {
 	 * @return node manager instance
 	 */
 	NodeManager getNodeManager();
+
+	/**
+	 * Container manager getter.
+	 * @return container manager instance
+	 */
+	ContainerManager getContainerManager();
 }
