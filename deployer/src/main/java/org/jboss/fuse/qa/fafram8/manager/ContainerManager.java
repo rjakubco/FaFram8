@@ -35,6 +35,7 @@ public class ContainerManager {
 	/**
 	 * Sets up fabric.
 	 */
+	//TODO implement fabric:create options
 	public void setupFabric() {
 		executor.executeCommand("fabric:create");
 		try {
@@ -103,29 +104,30 @@ public class ContainerManager {
 	}
 
 	/**
-	 * Execute container-create-ssh command on root container
+	 * Execute container-create-ssh command on root container.
 	 *
 	 * @param hostIP IP address of host node
 	 * @param containerName Name of container
 	 */
+	//TODO throw authentization fail exception, implement parallel container spawn
 	private void createSSHContainer(String hostIP, String containerName) {
 		String command = String.format("container-create-ssh --host %s --user %s --password %s --resolver %s %s",
-				hostIP, SystemProperty.FUSE_USER, SystemProperty.FUSE_PASSWORD, "localip", containerName);
+				hostIP, SystemProperty.HOST_USER, SystemProperty.HOST_PASSWORD, "localip", containerName);
 		executor.executeCommand(command);
 		executor.waitForProvisioning(containerName);
 	}
 
 	/**
-	 * Execute container-create-ssh command for all container on the list
+	 * Execute container-create-ssh command for all containers on the list.
 	 *
 	 * @param containerList
 	 */
-	private void createSSHContainer(List<Container> containerList) throws EmptyContainerListException {
+	public void createSSHContainer(List<Container> containerList) throws EmptyContainerListException {
 		if(containerList.isEmpty()) {
 			throw new EmptyContainerListException("List of containers is empty. Root container should be provided in configuration file at least.");
 		}
 		for(Container container: containerList) {
-			createSSHContainer(container.getHostIP(), container.getName());
+			if(!container.isRoot()) createSSHContainer(container.getHostIP(), container.getName());
 		}
 	}
 }

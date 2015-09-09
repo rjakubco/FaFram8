@@ -1,10 +1,15 @@
 package org.jboss.fuse.qa.fafram8.deployer;
 
+import org.jboss.fuse.qa.fafram8.ConfigParser.ConfigurationParser;
 import org.jboss.fuse.qa.fafram8.exceptions.SSHClientException;
+import org.jboss.fuse.qa.fafram8.manager.Container;
 import org.jboss.fuse.qa.fafram8.manager.ContainerManager;
 import org.jboss.fuse.qa.fafram8.manager.NodeManager;
 import org.jboss.fuse.qa.fafram8.manager.RemoteNodeManager;
 import org.jboss.fuse.qa.fafram8.ssh.SSHClient;
+
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Remote deployer class.
@@ -14,7 +19,7 @@ import org.jboss.fuse.qa.fafram8.ssh.SSHClient;
 public class RemoteDeployer implements Deployer {
 	private RemoteNodeManager nm;
 	private ContainerManager cm;
-	// TODO add container manager with assigned FuseNodeClient
+	private ConfigurationParser configurationParser;
 
 	/**
 	 * Constructor
@@ -26,6 +31,8 @@ public class RemoteDeployer implements Deployer {
 	public RemoteDeployer(SSHClient nodeClient, SSHClient fuseClient) throws SSHClientException {
 		this.nm = new RemoteNodeManager(nodeClient, fuseClient);
 		this.cm = new ContainerManager(fuseClient);
+		this.configurationParser = new ConfigurationParser();
+		this.configurationParser.parseConfigurationFile("path/to/configuration/file");
 	}
 
 	@Override
@@ -37,7 +44,10 @@ public class RemoteDeployer implements Deployer {
 			nm.unzipArtifact();
 			nm.prepareFuse();
 			nm.startFuse();
-			if (cm.isFabric()) cm.setupFabric();
+			if (cm.isFabric()) {
+				cm.setupFabric();
+				cm.createSSHContainer(configurationParser.getContainerList());
+			}
 		} catch (RuntimeException ex) {
 			nm.stopAndClean();
 			throw ex;
