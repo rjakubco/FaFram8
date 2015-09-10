@@ -7,10 +7,10 @@ import static org.jboss.fuse.qa.fafram8.modifier.impl.PropertyModifier.putProper
 import org.apache.commons.io.FileUtils;
 
 import org.jboss.fuse.qa.fafram8.downloader.Downloader;
+import org.jboss.fuse.qa.fafram8.executor.Executor;
 import org.jboss.fuse.qa.fafram8.modifier.ModifierExecutor;
 import org.jboss.fuse.qa.fafram8.property.FaframConstant;
 import org.jboss.fuse.qa.fafram8.property.SystemProperty;
-import org.jboss.fuse.qa.fafram8.executor.Executor;
 import org.jboss.fuse.qa.fafram8.ssh.SSHClient;
 
 import java.io.File;
@@ -97,7 +97,7 @@ public class LocalNodeManager implements NodeManager {
 		log.debug("Unzipping to " + targetPath);
 
 		try {
-			ZipFile zipFile = new ZipFile(new File(productZipPath).getAbsolutePath());
+			final ZipFile zipFile = new ZipFile(new File(productZipPath).getAbsolutePath());
 			zipFile.extractAll(targetPath);
 		} catch (Exception ex) {
 			log.error("Exception caught during unzipping!");
@@ -105,7 +105,7 @@ public class LocalNodeManager implements NodeManager {
 		}
 
 		// Construct the full path to product root - get the subdir name in targetPath
-		String folderName = new File(targetPath).list()[0];
+		final String folderName = new File(targetPath).list()[0];
 
 		// Use the subdir name to construct the product path
 		productPath = targetPath + SEP + folderName;
@@ -124,21 +124,21 @@ public class LocalNodeManager implements NodeManager {
 
 		// Add default user
 		modifierExecutor.addModifiers(putProperty("etc/users.properties", SystemProperty.FUSE_USER,
-				SystemProperty.FUSE_PASSWORD + ",admin,manager,viewer,Monitor, Operator, Maintainer, Deployer, " +
-						"Auditor, Administrator, SuperUser"));
+				SystemProperty.FUSE_PASSWORD + ",admin,manager,viewer,Monitor, Operator, Maintainer, Deployer, "
+						+ "Auditor, Administrator, SuperUser"));
 
 		modifierExecutor.executeModifiers();
 	}
 
 	@Override
 	public void startFuse() {
-		String executable = "start";
-		String extension = windows ? ".bat" : "";
+		final String executable = "start";
+		final String extension = windows ? ".bat" : "";
 
 		log.debug("Executable file is \"" + executable + extension + "\"");
 
 		// Construct the path to the executable file
-		String executablePath = productPath + SEP + "bin" + SEP + executable + extension;
+		final String executablePath = productPath + SEP + "bin" + SEP + executable + extension;
 		log.debug("Executing " + executablePath);
 
 		try {
@@ -197,12 +197,12 @@ public class LocalNodeManager implements NodeManager {
 	 * Stops the container.
 	 */
 	private void stop() {
-		String executable = "stop";
-		String extension = windows ? ".bat" : "";
+		final String executable = "stop";
+		final String extension = windows ? ".bat" : "";
 
 		log.debug("Executable file is \"" + executable + extension + "\"");
 
-		String executablePath = productPath + SEP + "bin" + SEP + executable + extension;
+		final String executablePath = productPath + SEP + "bin" + SEP + executable + extension;
 		log.debug("Executing " + executablePath);
 
 		try {

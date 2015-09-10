@@ -59,7 +59,7 @@ public class RemoteNodeManager implements NodeManager {
 
 	@Override
 	public void prepareZip() {
-		// TODO workingDir on perf?
+		// TODO(rjakubco): workingDir on perf?
 		log.info("Preparing zip");
 		executor.executeCommand("mkdir " + SystemProperty.FAFRAM_FOLDER);
 		productZipPath = Downloader.getProduct(executor);
@@ -81,8 +81,8 @@ public class RemoteNodeManager implements NodeManager {
 	public void prepareFuse() {
 		// Add default user
 		modifierExecutor.addModifiers(putRemoteProperty("etc/users.properties", SystemProperty.FUSE_USER,
-				SystemProperty.FUSE_PASSWORD + ",admin,manager,viewer,Monitor, Operator, Maintainer, Deployer, " +
-						"Auditor, Administrator, SuperUser", executor));
+				SystemProperty.FUSE_PASSWORD + ",admin,manager,viewer,Monitor, Operator, Maintainer, Deployer, "
+						+ "Auditor, Administrator, SuperUser", executor));
 
 		modifierExecutor.executeModifiers();
 	}
@@ -90,7 +90,7 @@ public class RemoteNodeManager implements NodeManager {
 	@Override
 	public void startFuse() {
 		try {
-			// TODO add changing java before start
+			// TODO(rjakubco): add changing java before start
 			log.info("Starting fuse");
 			executor.executeCommand(productPath + SEP + "bin" + SEP + "start");
 			fuseExecutor.waitForBoot();

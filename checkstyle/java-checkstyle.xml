@@ -83,11 +83,6 @@
 			<property name="allowThrowsTagsForSubclasses" value="true"/>
 			<property name="allowUndeclaredRTE" value="true"/>
 		</module>
-		<!-- Checks that variables have Javadoc comments. -->
-		<module name="JavadocVariable">
-			<property name="severity" value="warning"/>
-			<property name="scope" value="public"/>
-		</module>
 		<!-- Validates Javadoc comments to help ensure they are well formed -->
 		<module name="JavadocStyle">
 			<property name="checkEmptyJavadoc" value="true"/>
@@ -110,10 +105,6 @@
 		<!-- Checks for size violations -->
 		<!-- http://checkstyle.sf.net/config_sizes.html -->
 
-		<!-- Checks for long source files -->
-		<module name="LineLength">
-			<property name="max" value="120"/>
-		</module>
 		<!-- Checks for long anonymous inner classes -->
 		<module name="AnonInnerLength">
 			<property name="max" value="30"/>

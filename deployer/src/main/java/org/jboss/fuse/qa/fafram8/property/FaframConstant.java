@@ -4,7 +4,14 @@ package org.jboss.fuse.qa.fafram8.property;
  * Fafram system properties names.
  * Created by avano on 20.8.15.
  */
-public class FaframConstant {
+public final class FaframConstant {
+
+	/**
+	 * Private constructor.
+	 */
+	private FaframConstant() {
+	}
+
 	// Host IP address
 	public static final String HOST = "host";
 

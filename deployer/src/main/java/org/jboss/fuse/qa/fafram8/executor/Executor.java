@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
  * Executor class.
  * Created by avano on 19.8.15.
  */
+@SuppressWarnings("UnnecessarySemicolon")
 @AllArgsConstructor
 @Slf4j
 public class Executor {
@@ -41,6 +42,8 @@ public class Executor {
 
 	/**
 	 * Checks if the client can connect.
+	 *
+	 * @return true/false if can/couldn't connect
 	 */
 	public boolean canConnect() {
 		try {
@@ -55,12 +58,14 @@ public class Executor {
 
 	/**
 	 * Checks if the client can connect.
+	 *
+	 * @throws SSHClientException if something went wrong
 	 */
 	public void connect() throws SSHClientException {
 		try {
 			client.connect(false);
 		} catch (VerifyFalseException ex) {
-			// TODO recursion -> bad idea?
+			// TODO(rjakubco): recursion -> bad idea?
 			connect();
 		}
 	}
@@ -69,6 +74,8 @@ public class Executor {
 	 * Waits for the container to boot.
 	 */
 	public void waitForBoot() {
+		final int step = 3;
+		final long timeout = step * 1000L;
 		boolean online = false;
 
 		int elapsed = 0;
@@ -90,9 +97,9 @@ public class Executor {
 				log.info("Container online");
 			} catch (Exception ex) {
 				log.debug("Remaining time: " + (SystemProperty.START_WAIT_TIME - elapsed) + " seconds. ");
-				elapsed += 3;
+				elapsed += step;
 			}
-			sleep(3000L);
+			sleep(timeout);
 		}
 	}
 
@@ -100,6 +107,8 @@ public class Executor {
 	 * Waits for the container to shut down.
 	 */
 	public void waitForShutdown() {
+		final int step = 5;
+		final long timeout = (step * 1000L);
 		boolean online = true;
 
 		int elapsed = 0;
@@ -116,12 +125,12 @@ public class Executor {
 				// Check if we are still connected
 				online = client.isConnected();
 				log.debug("Remaining time: " + (SystemProperty.STOP_WAIT_TIME - elapsed) + " seconds. ");
-				elapsed += 5;
+				elapsed += step;
 			} catch (Exception ex) {
 				online = false;
 			}
 
-			sleep(5000L);
+			sleep(timeout);
 		}
 	}
 
@@ -131,8 +140,12 @@ public class Executor {
 	 * @param containerName container name
 	 */
 	public void waitForProvisioning(String containerName) {
+		final int step = 3;
+		final long timeout = step * 1000L;
+		final long startTimeout = 10000L;
+
 		// Wait before executing - sometimes the provision is triggered a bit later
-		sleep(10000l);
+		sleep(startTimeout);
 		int retries = 0;
 		String container;
 		boolean isSuccessful = false;
@@ -157,24 +170,27 @@ public class Executor {
 					client.connect(true);
 				} catch (Exception e1) {
 					// Do nothing
+					;
 				}
 			}
 
 			if (!isSuccessful) {
-				log.debug("Remaining time: " + (SystemProperty.PROVISION_WAIT_TIME - retries) + " seconds. " + (""
-						.equals(reason) ? "" : "(" + reason + ")"));
-				retries += 3;
+				log.debug("Remaining time: " + (SystemProperty.PROVISION_WAIT_TIME - retries) + " seconds. " + ("".equals(
+						reason) ? ""
+						: "(" + reason + ")"));
+				retries += step;
 				try {
-					Thread.sleep(3000L);
+					Thread.sleep(timeout);
 				} catch (final Exception ex) {
 					// Do nothing
+					;
 				}
 			}
 		}
 	}
 
 	/**
-	 * Copies local file to specified location in Fuse folder on remote host
+	 * Copies local file to specified location in Fuse folder on remote host.
 	 *
 	 * @param localPath absolute path to the file on local machine that should be copied
 	 * @param remotePath path to destination inside Fuse folder where the file should be copied
@@ -188,12 +204,13 @@ public class Executor {
 		}
 	}
 
-	/*
+	/**
 	 * Waits for the patch to be applied.
-	 *
 	 * @param patchName patch name
 	 */
 	public void waitForPatch(String patchName) {
+		final int step = 3;
+		final long timeout = step * 1000L;
 		int retries = 0;
 		boolean isSuccessful = false;
 
@@ -217,16 +234,17 @@ public class Executor {
 				try {
 					client.connect(true);
 				} catch (Exception e1) {
-					// Do nothing
+					// Do nothing, ; for checkstyle
+					;
 				}
 			}
 
 			if (!isSuccessful) {
-				log.debug("Remaining time: " + (SystemProperty.PATCH_WAIT_TIME - retries) + " seconds. " + (""
-						.equals(reason) ? "" : "(" + reason + ")"));
-				retries += 3;
+				log.debug("Remaining time: " + (SystemProperty.PATCH_WAIT_TIME - retries) + " seconds. " + ("".equals(reason) ? ""
+						: "(" + reason + ")"));
+				retries += step;
 			}
-			sleep(3000L);
+			sleep(timeout);
 		}
 	}
 

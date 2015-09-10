@@ -6,9 +6,16 @@ package org.jboss.fuse.qa.fafram8.exception;
  */
 public class EmptyContainerListException extends RuntimeException {
 
+	/**
+	 * Constructor.
+	 */
 	public EmptyContainerListException() {
 	}
 
+	/**
+	 * Constructor.
+	 * @param message message
+	 */
 	public EmptyContainerListException(String message) {
 		super(message);
 	}

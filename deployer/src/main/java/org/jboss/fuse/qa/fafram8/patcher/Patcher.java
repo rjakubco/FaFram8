@@ -23,12 +23,15 @@ import lombok.extern.slf4j.Slf4j;
  * Created by avano on 1.9.15.
  */
 @Slf4j
-public class Patcher {
+public final class Patcher {
 	// TODO(avano): change this
 	private static final String DEFAULT_PATCH_LOCATION = "/home/fuse/patches";
 	// Do not use patch sys property - the tests are setting the system property for every testMethod
 	// and SystemProperty is evaluated when the SystemProperty class is instantiated, therefore it just
 	// uses one value for all tests
+
+	private Patcher() {
+	}
 
 	/**
 	 * Gets the patches on localhost.
@@ -46,7 +49,7 @@ public class Patcher {
 	 * @return array of string with file uris
 	 */
 	public static String[] getPatches(SSHClient client) {
-		String patch = System.getProperty(FaframConstant.PATCH);
+		final String patch = System.getProperty(FaframConstant.PATCH);
 
 		// If the property is not set, return empty array
 		if (patch == null) {
@@ -62,6 +65,7 @@ public class Patcher {
 			prefix = StringUtils.substringBefore(patch, ":");
 		} catch (Exception ignored) {
 			// We have no protocol, we are getting patches by name
+			return getPatchByName();
 		}
 
 		switch (prefix) {
@@ -86,17 +90,17 @@ public class Patcher {
 		final String version = StringUtils.substring(SystemProperty.FUSE_VERSION, 0, 3);
 
 		// Path to default patch directory
-		File f = new File(DEFAULT_PATCH_LOCATION + File.separator + "latest");
+		final File f = new File(DEFAULT_PATCH_LOCATION + File.separator + "latest");
 
 		// Get only the patches for current version
-		FilenameFilter versionFilter = new FilenameFilter() {
+		final FilenameFilter versionFilter = new FilenameFilter() {
 			public boolean accept(File dir, String name) {
 				return name.contains(version);
 			}
 		};
 
-		File[] patches = f.listFiles(versionFilter);
-		List<String> ret = new ArrayList<>();
+		final File[] patches = f.listFiles(versionFilter);
+		final List<String> ret = new ArrayList<>();
 
 		for (File file : patches) {
 			ret.add(file.toURI().toString());
@@ -121,27 +125,27 @@ public class Patcher {
 	 * @return array of string with file uris
 	 */
 	private static String[] getPatchByName() {
-		String patch = System.getProperty(FaframConstant.PATCH);
+		final String patch = System.getProperty(FaframConstant.PATCH);
 
 		// Parse the fuse version, returns 6.1 or 6.2, etc.
 		final String version = StringUtils.substring(SystemProperty.FUSE_VERSION, 0, 3);
 
-		String[] patchNames = patch.split(",");
+		final String[] patchNames = patch.split(",");
 
 		Arrays.sort(patchNames);
 
 		// Get all the files
-		Collection<File> files = FileUtils.listFiles(new File(DEFAULT_PATCH_LOCATION),
+		final Collection<File> files = FileUtils.listFiles(new File(DEFAULT_PATCH_LOCATION),
 				new WildcardFileFilter("*" + version + "*"), DirectoryFileFilter.DIRECTORY);
 
-		List<File> fileList = new ArrayList<>();
+		final List<File> fileList = new ArrayList<>();
 		for (File f : files) {
 			if (f.getName().contains(version)) {
 				fileList.add(f);
 			}
 		}
 
-		List<String> patchPathList = new ArrayList<>();
+		final List<String> patchPathList = new ArrayList<>();
 
 		for (String patchString : patchNames) {
 			for (File f : fileList) {
