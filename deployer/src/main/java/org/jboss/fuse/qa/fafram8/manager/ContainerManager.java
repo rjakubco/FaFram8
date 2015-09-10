@@ -1,11 +1,11 @@
 package org.jboss.fuse.qa.fafram8.manager;
 
-import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 
 import org.jboss.fuse.qa.fafram8.exception.EmptyContainerListException;
 import org.jboss.fuse.qa.fafram8.executor.Executor;
 import org.jboss.fuse.qa.fafram8.patcher.Patcher;
+import org.jboss.fuse.qa.fafram8.property.FaframConstant;
 import org.jboss.fuse.qa.fafram8.property.SystemProperty;
 import org.jboss.fuse.qa.fafram8.ssh.SSHClient;
 
@@ -23,11 +23,11 @@ public class ContainerManager {
 	@Getter
 	private Executor executor;
 
-	// Setup fabric?
-	@Setter
-	@Getter
-	private boolean fabric = false;
-
+	/**
+	 * Constructor.
+	 *
+	 * @param client ssh client
+	 */
 	public ContainerManager(SSHClient client) {
 		this.executor = new Executor(client);
 	}
@@ -35,9 +35,8 @@ public class ContainerManager {
 	/**
 	 * Sets up fabric.
 	 */
-	//TODO implement fabric:create options
 	public void setupFabric() {
-		executor.executeCommand("fabric:create");
+		executor.executeCommand("fabric:create " + System.getProperty(FaframConstant.FABRIC));
 		try {
 			executor.waitForProvisioning("root");
 		} catch (RuntimeException ex) {
@@ -50,7 +49,7 @@ public class ContainerManager {
 	 * Patch fuse.
 	 */
 	public void patchFuse() {
-		if (!fabric) {
+		if (System.getProperty(FaframConstant.FABRIC) == null) {
 			patchStandalone();
 		} else {
 			patchFabric();
@@ -120,14 +119,17 @@ public class ContainerManager {
 	/**
 	 * Execute container-create-ssh command for all containers on the list.
 	 *
-	 * @param containerList
+	 * @param containerList container list
 	 */
 	public void createSSHContainer(List<Container> containerList) throws EmptyContainerListException {
-		if(containerList.isEmpty()) {
-			throw new EmptyContainerListException("List of containers is empty. Root container should be provided in configuration file at least.");
+		if (containerList.isEmpty()) {
+			throw new EmptyContainerListException(
+					"List of containers is empty. Root container should be provided in configuration file at least.");
 		}
-		for(Container container: containerList) {
-			if(!container.isRoot()) createSSHContainer(container.getHostIP(), container.getName());
+		for (Container container : containerList) {
+			if (!container.isRoot()) {
+				createSSHContainer(container.getHostIP(), container.getName());
+			}
 		}
 	}
 }

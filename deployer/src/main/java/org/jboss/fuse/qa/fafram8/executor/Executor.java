@@ -202,7 +202,8 @@ public class Executor {
 		while (!isSuccessful) {
 			if (retries > SystemProperty.PATCH_WAIT_TIME) {
 				log.error("Container failed to install patch after " + SystemProperty.PATCH_WAIT_TIME + " seconds.");
-				throw new RuntimeException("Container failed to install patch after " + SystemProperty.PATCH_WAIT_TIME + " seconds.");
+				throw new RuntimeException(
+						"Container failed to install patch after " + SystemProperty.PATCH_WAIT_TIME + " seconds.");
 			}
 
 			String reason = "";

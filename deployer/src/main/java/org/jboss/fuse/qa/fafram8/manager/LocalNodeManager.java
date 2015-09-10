@@ -19,7 +19,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import net.lingala.zip4j.core.ZipFile;
 
@@ -90,8 +89,7 @@ public class LocalNodeManager implements NodeManager {
 		// Fix for long jenkins paths
 		if (jenkins) {
 			targetPath = new File(System.getenv("WORKSPACE") + SEP + new Date().getTime()).getAbsolutePath();
-		}
-		else {
+		} else {
 			targetPath = new File("target" + SEP + "container" + SEP + new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss")
 					.format(new Date())).getAbsolutePath();
 		}
@@ -178,9 +176,7 @@ public class LocalNodeManager implements NodeManager {
 		}
 	}
 
-	/**
-	 * Stops the container and cleans up if desired.
-	 */
+	@Override
 	public void stopAndClean() {
 		if (!stopped) {
 			unsetProperties();
@@ -250,17 +246,17 @@ public class LocalNodeManager implements NodeManager {
 		}
 	}
 
-	/**
-	 * Adds a new user.
-	 *
-	 * @param user user
-	 * @param pass password
-	 * @param roles comma-separated roles
-	 */
+	@Override
 	public void addUser(String user, String pass, String roles) {
-		this.modifierExecutor.addModifiers(putProperty("etc/users.properties", user, pass + "," + roles));
+		addProperty("etc/users.properties", user, pass + "," + roles);
 	}
 
+	@Override
+	public void addProperty(String filePath, String key, String value) {
+		this.modifierExecutor.addModifiers(putProperty(filePath, key, value));
+	}
+
+	@Override
 	public void replaceFile(String fileToReplace, String fileToUse) {
 		this.modifierExecutor.addModifiers(moveFile(fileToReplace, fileToUse));
 	}

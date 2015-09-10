@@ -58,4 +58,7 @@ public class FaframConstant {
 
 	// Patch
 	public static final String PATCH = "patch";
+
+	// Fabric
+	public static final String FABRIC = "fabric";
 }

@@ -12,6 +12,7 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
 /**
+ * Remote property modifier class.
  * @author : Roman Jakubco (rjakubco@redhat.com)
  */
 @Slf4j
