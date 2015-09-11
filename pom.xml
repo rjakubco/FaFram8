@@ -85,41 +85,55 @@
 					<target>1.7</target>
 				</configuration>
 			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-checkstyle-plugin</artifactId>
-				<version>2.16</version>
-				<dependencies>
-					<dependency>
-						<groupId>com.puppycrawl.tools</groupId>
-						<artifactId>checkstyle</artifactId>
-						<version>5.8</version>
-					</dependency>
-					<dependency>
-						<groupId>org.jboss.soa.qa</groupId>
-						<artifactId>checkstyle-extension</artifactId>
-						<version>1.0</version>
-					</dependency>
-				</dependencies>
-				<executions>
-					<execution>
-						<id>validate</id>
-						<phase>validate</phase>
-						<configuration>
-							<configLocation>checkstyle/java-checkstyle.xml</configLocation>
-							<encoding>UTF-8</encoding>
-							<consoleOutput>true</consoleOutput>
-							<failsOnError>true</failsOnError>
-							<linkXRef>false</linkXRef>
-						</configuration>
-						<goals>
-							<goal>check</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
 		</plugins>
 	</build>
+
+	<profiles>
+		<profile>
+			<id>checkstyle</id>
+			<activation>
+				<property>
+					<name>checkstyle</name>
+				</property>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-checkstyle-plugin</artifactId>
+						<version>2.16</version>
+						<dependencies>
+							<dependency>
+								<groupId>com.puppycrawl.tools</groupId>
+								<artifactId>checkstyle</artifactId>
+								<version>5.8</version>
+							</dependency>
+							<dependency>
+								<groupId>org.jboss.soa.qa</groupId>
+								<artifactId>checkstyle-extension</artifactId>
+								<version>1.0.0</version>
+							</dependency>
+						</dependencies>
+						<executions>
+							<execution>
+								<id>validate</id>
+								<phase>validate</phase>
+								<configuration>
+									<configLocation>checkstyle/java-checkstyle.xml</configLocation>
+									<encoding>UTF-8</encoding>
+									<consoleOutput>true</consoleOutput>
+									<failsOnError>true</failsOnError>
+								</configuration>
+								<goals>
+									<goal>check</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 
 	<repositories>
 		<repository>
