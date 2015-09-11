@@ -17,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @ToString
-public class RemotePropertyModifier implements Modifier {
+public final class RemotePropertyModifier implements Modifier {
 	private Executor executor;
 	private String filePath;
 	private String key;
@@ -32,11 +32,11 @@ public class RemotePropertyModifier implements Modifier {
 
 	@Override
 	public void execute() {
-		String path = System.getProperty(FaframConstant.FUSE_PATH) + File.separator + filePath;
+		final String path = System.getProperty(FaframConstant.FUSE_PATH) + File.separator + filePath;
 
-		String response = executor.executeCommand("(grep -v '[#]' " + path + " | grep -q '" + key + "' ) && sed -i \"s/^\\s*\\(" +
-				StringUtils.replace(key, ".", "\\.") + "\\).*\\$/\\1=" + value + "/\" " + path + " || echo '\n" +
-				key + "=" + value + "' >> " + path);
+		final String response = executor.executeCommand("(grep -v '[#]' " + path + " | grep -q '" + key + "' ) && sed"
+				+ " -i \"s/^\\s*\\(" + StringUtils.replace(key, ".", "\\.") + "\\).*\\$/\\1=" + value + "/\" " + path
+				+ " || echo '\n" + key + "=" + value + "' >> " + path);
 		if (!response.isEmpty()) {
 			log.error("Setting property on remote host failed. Response should be empty but was: {}.", response);
 			throw new RuntimeException("Setting property on remote host failed (response should be empty): " + response);
@@ -44,7 +44,7 @@ public class RemotePropertyModifier implements Modifier {
 	}
 
 	/**
-	 * Static method for creating modifier capable of adding or changing Fuse property on remote host
+	 * Static method for creating modifier capable of adding or changing Fuse property on remote host.
 	 *
 	 * @param filePath path to file where the property should be set
 	 * @param key key of the property
@@ -53,7 +53,7 @@ public class RemotePropertyModifier implements Modifier {
 	 * @return RemotePropertyModifier
 	 */
 	public static RemotePropertyModifier putRemoteProperty(final String filePath, final String key,
-														   final String value, final Executor executor) {
+															final String value, final Executor executor) {
 		return new RemotePropertyModifier(filePath, key, value, executor);
 	}
 }

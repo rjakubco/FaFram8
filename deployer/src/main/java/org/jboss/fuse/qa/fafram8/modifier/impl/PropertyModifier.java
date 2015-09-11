@@ -21,7 +21,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @ToString
-public class PropertyModifier implements Modifier {
+public final class PropertyModifier implements Modifier {
 	private String filePath;
 	private String key;
 	private String value;
@@ -36,7 +36,7 @@ public class PropertyModifier implements Modifier {
 
 	@Override
 	public void execute() {
-		Properties p = new Properties();
+		final Properties p = new Properties();
 
 		Path path = Paths.get(filePath);
 		if (!path.isAbsolute()) {

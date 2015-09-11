@@ -4,7 +4,14 @@ package org.jboss.fuse.qa.fafram8.property;
  * System property class.
  * Created by avano on 20.8.15.
  */
-public class SystemProperty {
+public final class SystemProperty {
+
+	/**
+	 * Private constructor.
+	 */
+	private SystemProperty() {
+	}
+
 	// Remote host
 	public static final String HOST = System.getProperty(FaframConstant.HOST);
 

@@ -9,10 +9,10 @@ import org.jboss.fuse.qa.fafram8.property.FaframConstant;
 import org.jboss.fuse.qa.fafram8.property.SystemProperty;
 import org.jboss.fuse.qa.fafram8.ssh.SSHClient;
 
+import java.util.List;
+
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.List;
 
 /**
  * Container manager class.
@@ -61,7 +61,7 @@ public class ContainerManager {
 	 */
 	private void patchStandalone() {
 		for (String s : Patcher.getPatches()) {
-			String patchName = getPatchName(executor.executeCommand("patch:add " + s));
+			final String patchName = getPatchName(executor.executeCommand("patch:add " + s));
 			executor.executeCommand("patch:install " + patchName);
 			executor.waitForPatch(patchName);
 		}
@@ -72,7 +72,7 @@ public class ContainerManager {
 	 */
 	private void patchFabric() {
 		// Create a new version
-		String version = executor.executeCommand("version-create").split(" ")[2];
+		final String version = executor.executeCommand("version-create").split(" ")[2];
 
 		for (String s : Patcher.getPatches()) {
 			executor.executeCommand("patch-apply -u " + SystemProperty.FUSE_USER + " -p " + SystemProperty
@@ -97,7 +97,7 @@ public class ContainerManager {
 		response = response.replaceAll(" +", " ").trim();
 
 		// Get the first string in this line
-		String patchName = response.split(" ")[0];
+		final String patchName = response.split(" ")[0];
 		log.debug("Patch name is " + patchName);
 		return patchName;
 	}
@@ -108,9 +108,9 @@ public class ContainerManager {
 	 * @param hostIP IP address of host node
 	 * @param containerName Name of container
 	 */
-	//TODO throw authentization fail exception, implement parallel container spawn
+	//TODO(ecervena): throw authentization fail exception, implement parallel container spawn
 	private void createSSHContainer(String hostIP, String containerName) {
-		String command = String.format("container-create-ssh --host %s --user %s --password %s --resolver %s %s",
+		final String command = String.format("container-create-ssh --host %s --user %s --password %s --resolver %s %s",
 				hostIP, SystemProperty.HOST_USER, SystemProperty.HOST_PASSWORD, "localip", containerName);
 		executor.executeCommand(command);
 		executor.waitForProvisioning(containerName);
@@ -120,6 +120,7 @@ public class ContainerManager {
 	 * Execute container-create-ssh command for all containers on the list.
 	 *
 	 * @param containerList container list
+	 * @throws EmptyContainerListException when the container list is empty
 	 */
 	public void createSSHContainer(List<Container> containerList) throws EmptyContainerListException {
 		if (containerList.isEmpty()) {

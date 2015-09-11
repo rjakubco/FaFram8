@@ -56,6 +56,9 @@ public abstract class SSHClient {
 
 	protected JSch ssh = new JSch();
 
+	private static final int DEFAULT_NODE_PORT = 22;
+	private static final int DEFAULT_FUSE_PORT = 8101;
+
 	/**
 	 * Method for executing command on connected SSH server. Each implementation has some specific small hacks.
 	 *
@@ -111,43 +114,81 @@ public abstract class SSHClient {
 		return IOUtils.toString(is, "UTF-8");
 	}
 
+	/**
+	 * Sets the hostname.
+	 * @param host hostname
+	 * @return this
+	 */
 	public SSHClient hostname(String host) {
 		this.hostname = host;
 		return this;
 	}
 
+	/**
+	 * Sets the port.
+	 * @param port port
+	 * @return this
+	 */
 	public SSHClient port(int port) {
 		this.port = port;
 		return this;
 	}
 
+	/**
+	 * Sets the username.
+	 * @param username username
+	 * @return this
+	 */
 	public SSHClient username(String username) {
 		this.username = username;
 		return this;
 	}
 
+	/**
+	 * Sets the password.
+	 * @param password password
+	 * @return this
+	 */
 	public SSHClient password(String password) {
 		this.password = password;
 		return this;
 	}
 
+	/**
+	 * Sets the private key.
+	 * @param privateKey private key
+	 * @return this
+	 */
 	public SSHClient privateKey(String privateKey) {
 		this.privateKey = privateKey;
 		return this;
 	}
 
+	/**
+	 * Sets the passphrase.
+	 * @param passphrase passphrase
+	 * @return this
+	 */
 	public SSHClient passphrase(String passphrase) {
 		this.passphrase = passphrase;
 		return this;
 	}
 
+	/**
+	 * Sets the default ssh port.
+	 * @return this
+	 */
 	public SSHClient defaultSSHPort() {
-		this.port = 22;
+		this.port = DEFAULT_NODE_PORT;
 		return this;
 	}
 
+	/**
+	 * Sets the default fuse port.
+	 * @return this
+	 */
 	public SSHClient fuseSSHPort() {
-		this.port = 8101;
+		this.port = DEFAULT_FUSE_PORT;
 		return this;
 	}
 }

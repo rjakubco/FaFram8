@@ -16,7 +16,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @ToString
-public class RemoteFileModifier implements Modifier {
+public final class RemoteFileModifier implements Modifier {
 	private String remoteFilePath;
 	private String localFilePath;
 	private Executor executor;
@@ -29,7 +29,7 @@ public class RemoteFileModifier implements Modifier {
 
 	@Override
 	public void execute() {
-		String path = System.getProperty(FaframConstant.FUSE_PATH) + File.separator + remoteFilePath;
+		final String path = System.getProperty(FaframConstant.FUSE_PATH) + File.separator + remoteFilePath;
 
 		try {
 			log.debug("Copying file: {} to remote location: {}", localFilePath, path);
@@ -41,7 +41,7 @@ public class RemoteFileModifier implements Modifier {
 	}
 
 	/**
-	 * Static method for creating modifier that copies file to remote location
+	 * Static method for creating modifier that copies file to remote location.
 	 *
 	 * @param fileToReplace path to file inside Fuse folder that should be replaced or where the new file should
 	 * be copied to

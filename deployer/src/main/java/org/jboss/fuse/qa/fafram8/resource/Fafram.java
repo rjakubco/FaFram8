@@ -22,6 +22,9 @@ public class Fafram extends ExternalResource {
 	// Deployer instance
 	private Deployer deployer;
 
+	/**
+	 * Constructor.
+	 */
 	public Fafram() {
 		if (SystemProperty.HOST == null) {
 			log.info("Setting up local deployment");
@@ -68,8 +71,10 @@ public class Fafram extends ExternalResource {
 		// Don't use fabric by default on localhost
 		System.clearProperty("fabric");
 
+		final int defaultPort = 8101;
+
 		// Create a local deployer with local SSH Client and assign to deployer variable
-		deployer = new LocalDeployer(new FuseSSHClient().hostname("localhost").port(8101).username(SystemProperty
+		deployer = new LocalDeployer(new FuseSSHClient().hostname("localhost").port(defaultPort).username(SystemProperty
 				.FUSE_USER).password(SystemProperty.FUSE_PASSWORD));
 	}
 
@@ -96,7 +101,7 @@ public class Fafram extends ExternalResource {
 	}
 
 	/**
-	 * Execute command in root container shell
+	 * Executes a command in root container shell.
 	 *
 	 * @param command fabric command to execute on root container
 	 * @return command stdo
@@ -132,6 +137,7 @@ public class Fafram extends ExternalResource {
 
 	/**
 	 * Provide deployment with Fabric environment.
+	 *
 	 * @return this
 	 */
 	public Fafram withFabric() {
@@ -140,6 +146,7 @@ public class Fafram extends ExternalResource {
 
 	/**
 	 * Provide deployment with Fabric environment.
+	 *
 	 * @param opts fabric create options
 	 * @return this
 	 */

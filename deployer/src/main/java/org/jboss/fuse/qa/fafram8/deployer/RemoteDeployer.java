@@ -35,7 +35,7 @@ public class RemoteDeployer implements Deployer {
 
 	@Override
 	public void setup() {
-		// TODO add clean and only connect options for manipulating the test
+		// TODO(rjakubco): add clean and only connect options for manipulating the test
 		try {
 			nm.stopAndClean();
 			nm.prepareZip();
@@ -44,7 +44,7 @@ public class RemoteDeployer implements Deployer {
 			nm.startFuse();
 			if (System.getProperty(FaframConstant.FABRIC) != null) {
 				cm.setupFabric();
-				// TODO rework this when we will have the container parser
+				// TODO(ecervena): rework this when we will have the container parser
 				cm.createSSHContainer(configurationParser.getContainerList());
 			}
 		} catch (RuntimeException ex) {
@@ -55,7 +55,7 @@ public class RemoteDeployer implements Deployer {
 
 	@Override
 	public void tearDown() {
-		// TODO nothing to do ? ?? clean system properties
+		// TODO(rjakubco): nothing to do ? ?? clean system properties
 	}
 
 	@Override

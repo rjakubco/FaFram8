@@ -24,10 +24,15 @@ import lombok.extern.slf4j.Slf4j;
  * Created by avano on 19.8.15.
  */
 @Slf4j
-public class Downloader {
-
+public final class Downloader {
 	// File separator
 	private static final String SEP = File.separator;
+
+	/**
+	 * Private constructor.
+	 */
+	private Downloader() {
+	}
 
 	/**
 	 * Downloads/Gets the product zip on localhost.
@@ -65,7 +70,7 @@ public class Downloader {
 	 */
 	private static String getProductFromMaven() {
 		locateMaven();
-		String localRepo = getMavenLocalRepository();
+		final String localRepo = getMavenLocalRepository();
 		return getArtifactPath(localRepo);
 	}
 
@@ -76,7 +81,7 @@ public class Downloader {
 	 */
 	private static String getProductFromUrl() {
 		// Get the protocol from the property
-		String protocol = StringUtils.substringBefore(SystemProperty.FUSE_ZIP, ":");
+		final String protocol = StringUtils.substringBefore(SystemProperty.FUSE_ZIP, ":");
 		String location;
 		switch (protocol) {
 			case "http":
@@ -95,21 +100,21 @@ public class Downloader {
 	}
 
 	/**
-	 * TODO working dir?
-	 * TODO other possible protocols
+	 * TODO(rjakubco): working dir?
+	 * TODO(avano): other possible protocols
 	 * Gets the product zip from url on remote.
 	 *
 	 * @return absolute path to the file
 	 */
 	private static String getProductFromUrl(Executor executor) {
 		// Get the protocol from the property
-		String protocol = StringUtils.substringBefore(SystemProperty.FUSE_ZIP, ":");
+		final String protocol = StringUtils.substringBefore(SystemProperty.FUSE_ZIP, ":");
 		String location;
 		switch (protocol) {
 			case "http":
 				log.info(executor.executeCommand(
-						"wget --no-check-certificate -q -P " + SystemProperty.FAFRAM_FOLDER + " " +
-								SystemProperty.FUSE_ZIP));
+						"wget --no-check-certificate -q -P " + SystemProperty.FAFRAM_FOLDER + " "
+								+ SystemProperty.FUSE_ZIP));
 				location = executor.executeCommand("ls -d -1 $PWD" + SEP + SystemProperty.FAFRAM_FOLDER + SEP + "*");
 				break;
 			case "scp":
@@ -146,8 +151,8 @@ public class Downloader {
 			return;
 		}
 
-		String path = System.getenv("PATH");
-		String[] pathParts = path.split(File.pathSeparator);
+		final String path = System.getenv("PATH");
+		final String[] pathParts = path.split(File.pathSeparator);
 
 		for (String part : pathParts) {
 			log.debug("Checking path for mvn: " + part);
@@ -175,14 +180,14 @@ public class Downloader {
 	 */
 	private static String getMavenLocalRepository() {
 		// Get effective settings from maven
-		InvocationRequest req = new DefaultInvocationRequest();
+		final InvocationRequest req = new DefaultInvocationRequest();
 		req.setGoals(Collections.singletonList("help:effective-settings"));
 
-		Invoker invoker = new DefaultInvoker();
+		final Invoker invoker = new DefaultInvoker();
 
 		// Redirect invoker output to variable
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		PrintStream ps = new PrintStream(baos);
+		final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		final PrintStream ps = new PrintStream(baos);
 		invoker.setOutputHandler(new PrintStreamHandler(ps, true));
 
 		try {
@@ -214,17 +219,17 @@ public class Downloader {
 	 * @return artifact path
 	 */
 	private static String getArtifactPath(String localRepositoryPath) {
-		final String SEP = File.separator;
-		String groupPath = SystemProperty.FUSE_GROUP.replaceAll("\\.", SEP + SEP);
+		final String sep = File.separator;
+		final String groupPath = SystemProperty.FUSE_GROUP.replaceAll("\\.", sep + sep);
 
 		// Construct the path to the artifact in local repo
-		String artifactPath = localRepositoryPath + SEP + groupPath + SEP + SystemProperty.FUSE_ID + SEP +
-				SystemProperty.FUSE_VERSION + SEP + SystemProperty.FUSE_ID + "-" + SystemProperty.FUSE_VERSION + "" +
-				".zip";
+		final String artifactPath = localRepositoryPath + sep + groupPath + sep + SystemProperty.FUSE_ID + sep
+				+ SystemProperty.FUSE_VERSION + sep + SystemProperty.FUSE_ID + "-" + SystemProperty.FUSE_VERSION + ""
+				+ ".zip";
 
 		log.debug("Artifact path is " + artifactPath);
 
-		File artifact = new File(artifactPath);
+		final File artifact = new File(artifactPath);
 		return artifact.getAbsolutePath();
 	}
 }
