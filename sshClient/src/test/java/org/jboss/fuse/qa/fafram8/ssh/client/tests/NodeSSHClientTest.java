@@ -4,6 +4,7 @@ import org.jboss.fuse.qa.fafram8.ssh.SSHClient;
 import org.jboss.fuse.qa.fafram8.ssh.NodeSSHClient;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -15,6 +16,7 @@ public class NodeSSHClientTest {
 
 	private static final String HOST = "10.8.50.177";
 
+	@Ignore
 	@Test
 	public void testFluent() throws Exception {
 		Assert.fail("TODO rjakubco");
@@ -25,6 +27,7 @@ public class NodeSSHClientTest {
 		Assert.assertTrue(response.contains("PING google.com"));
 	}
 
+	@Ignore
 	@Test
 	public void testSetters() throws Exception {
 		Assert.fail("TODO(rjakubco): implement");
@@ -43,6 +46,7 @@ public class NodeSSHClientTest {
 		Assert.assertTrue(response.contains("PING google.com"));
 	}
 
+	@Ignore
 	@Test//(expected = SSHClientException.class)
 	public void testWrongPort() throws Exception {
 		Assert.fail("TODO(rjakubco): implement");
@@ -52,6 +56,7 @@ public class NodeSSHClientTest {
 		System.out.println(client.executeCommand("ping -c 1 google.com", false));
 	}
 
+	@Ignore
 	@Test//(expected = SSHClientException.class)
 	public void testWrongHost() throws Exception {
 		Assert.fail("TODO(rjakubco): implement");
@@ -61,6 +66,7 @@ public class NodeSSHClientTest {
 		System.out.println(client.executeCommand("ping -c 1 google.com", false));
 	}
 
+	@Ignore
 	@Test//(expected = SSHClientException.class)
 	public void testAuthFail() throws Exception {
 		Assert.fail("TODO(rjakubco): implement");
