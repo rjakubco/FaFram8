@@ -5,7 +5,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.jboss.fuse.qa.fafram8.exception.EmptyContainerListException;
 import org.jboss.fuse.qa.fafram8.executor.Executor;
 import org.jboss.fuse.qa.fafram8.patcher.Patcher;
-import org.jboss.fuse.qa.fafram8.property.FaframConstant;
 import org.jboss.fuse.qa.fafram8.property.SystemProperty;
 import org.jboss.fuse.qa.fafram8.ssh.SSHClient;
 
@@ -36,7 +35,7 @@ public class ContainerManager {
 	 * Sets up fabric.
 	 */
 	public void setupFabric() {
-		executor.executeCommand("fabric:create " + System.getProperty(FaframConstant.FABRIC));
+		executor.executeCommand("fabric:create " + SystemProperty.getFabric());
 		try {
 			executor.waitForProvisioning("root");
 		} catch (RuntimeException ex) {
@@ -49,10 +48,12 @@ public class ContainerManager {
 	 * Patch fuse.
 	 */
 	public void patchFuse() {
-		if (System.getProperty(FaframConstant.FABRIC) == null) {
-			patchStandalone();
-		} else {
-			patchFabric();
+		if (SystemProperty.getPatch() != null) {
+			if (SystemProperty.isFabric()) {
+				patchFabric();
+			} else {
+				patchStandalone();
+			}
 		}
 	}
 
@@ -75,8 +76,8 @@ public class ContainerManager {
 		final String version = executor.executeCommand("version-create").split(" ")[2];
 
 		for (String s : Patcher.getPatches()) {
-			executor.executeCommand("patch-apply -u " + SystemProperty.FUSE_USER + " -p " + SystemProperty
-					.FUSE_PASSWORD + " --version " + version + " " + s);
+			executor.executeCommand("patch-apply -u " + SystemProperty.getFuseUser() + " -p " + SystemProperty
+					.getFusePassword() + " --version " + version + " " + s);
 		}
 
 		executor.executeCommand("container-upgrade " + version + " root");
@@ -111,7 +112,7 @@ public class ContainerManager {
 	//TODO(ecervena): throw authentization fail exception, implement parallel container spawn
 	private void createSSHContainer(String hostIP, String containerName) {
 		final String command = String.format("container-create-ssh --host %s --user %s --password %s --resolver %s %s",
-				hostIP, SystemProperty.HOST_USER, SystemProperty.HOST_PASSWORD, "localip", containerName);
+				hostIP, SystemProperty.getHostUser(), SystemProperty.getHostPassword(), "localip", containerName);
 		executor.executeCommand(command);
 		executor.waitForProvisioning(containerName);
 	}

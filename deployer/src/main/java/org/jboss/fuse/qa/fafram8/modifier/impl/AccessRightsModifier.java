@@ -1,7 +1,7 @@
 package org.jboss.fuse.qa.fafram8.modifier.impl;
 
 import org.jboss.fuse.qa.fafram8.modifier.Modifier;
-import org.jboss.fuse.qa.fafram8.property.FaframConstant;
+import org.jboss.fuse.qa.fafram8.property.SystemProperty;
 
 import java.io.File;
 
@@ -22,7 +22,7 @@ public class AccessRightsModifier implements Modifier {
 	@Override
 	public void execute() {
 		for (String path : paths) {
-			new File(System.getProperty(FaframConstant.FUSE_PATH) + File.separator + path).setExecutable(true);
+			new File(SystemProperty.getFusePath() + File.separator + path).setExecutable(true);
 		}
 	}
 

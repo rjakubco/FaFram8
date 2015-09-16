@@ -5,7 +5,6 @@ import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.io.filefilter.WildcardFileFilter;
 import org.apache.commons.lang3.StringUtils;
 
-import org.jboss.fuse.qa.fafram8.property.FaframConstant;
 import org.jboss.fuse.qa.fafram8.property.SystemProperty;
 import org.jboss.fuse.qa.fafram8.ssh.SSHClient;
 
@@ -24,11 +23,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public final class Patcher {
-	// TODO(avano): change this
-	private static final String DEFAULT_PATCH_LOCATION = "/home/fuse/patches";
-	// Do not use patch sys property - the tests are setting the system property for every testMethod
-	// and SystemProperty is evaluated when the SystemProperty class is instantiated, therefore it just
-	// uses one value for all tests
+	private static final String DEFAULT_PATCH_LOCATION = "/home/fuse/storage/patches";
 
 	private Patcher() {
 	}
@@ -49,7 +44,7 @@ public final class Patcher {
 	 * @return array of string with file uris
 	 */
 	public static String[] getPatches(SSHClient client) {
-		final String patch = System.getProperty(FaframConstant.PATCH);
+		final String patch = SystemProperty.getPatch();
 
 		// If the property is not set, return empty array
 		if (patch == null) {
@@ -60,7 +55,7 @@ public final class Patcher {
 			return getPatchFromDefaultLocation();
 		}
 
-		String prefix = "";
+		String prefix;
 		try {
 			prefix = StringUtils.substringBefore(patch, ":");
 		} catch (Exception ignored) {
@@ -87,7 +82,7 @@ public final class Patcher {
 	 */
 	private static String[] getPatchFromDefaultLocation() {
 		// Parse the fuse version, returns 6.1 or 6.2, etc.
-		final String version = StringUtils.substring(SystemProperty.FUSE_VERSION, 0, 3);
+		final String version = StringUtils.substring(SystemProperty.getFuseVersion(), 0, 3);
 
 		// Path to default patch directory
 		final File f = new File(DEFAULT_PATCH_LOCATION + File.separator + "latest");
@@ -125,10 +120,10 @@ public final class Patcher {
 	 * @return array of string with file uris
 	 */
 	private static String[] getPatchByName() {
-		final String patch = System.getProperty(FaframConstant.PATCH);
+		final String patch = SystemProperty.getPatch();
 
 		// Parse the fuse version, returns 6.1 or 6.2, etc.
-		final String version = StringUtils.substring(SystemProperty.FUSE_VERSION, 0, 3);
+		final String version = StringUtils.substring(SystemProperty.getFuseVersion(), 0, 3);
 
 		final String[] patchNames = patch.split(",");
 

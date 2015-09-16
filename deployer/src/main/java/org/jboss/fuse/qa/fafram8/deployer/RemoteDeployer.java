@@ -6,7 +6,7 @@ import org.jboss.fuse.qa.fafram8.exceptions.SSHClientException;
 import org.jboss.fuse.qa.fafram8.manager.ContainerManager;
 import org.jboss.fuse.qa.fafram8.manager.NodeManager;
 import org.jboss.fuse.qa.fafram8.manager.RemoteNodeManager;
-import org.jboss.fuse.qa.fafram8.property.FaframConstant;
+import org.jboss.fuse.qa.fafram8.property.SystemProperty;
 import org.jboss.fuse.qa.fafram8.ssh.SSHClient;
 
 /**
@@ -42,7 +42,7 @@ public class RemoteDeployer implements Deployer {
 			nm.unzipArtifact();
 			nm.prepareFuse();
 			nm.startFuse();
-			if (System.getProperty(FaframConstant.FABRIC) != null) {
+			if (SystemProperty.isFabric()) {
 				cm.setupFabric();
 				// TODO(ecervena): rework this when we will have the container parser
 				cm.createSSHContainer(configurationParser.getContainerList());
@@ -55,7 +55,7 @@ public class RemoteDeployer implements Deployer {
 
 	@Override
 	public void tearDown() {
-		// TODO(rjakubco): nothing to do ? ?? clean system properties
+		// TODO(rjakubco): what to do here
 	}
 
 	@Override

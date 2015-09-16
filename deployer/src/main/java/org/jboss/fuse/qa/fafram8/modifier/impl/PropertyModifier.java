@@ -1,7 +1,7 @@
 package org.jboss.fuse.qa.fafram8.modifier.impl;
 
 import org.jboss.fuse.qa.fafram8.modifier.Modifier;
-import org.jboss.fuse.qa.fafram8.property.FaframConstant;
+import org.jboss.fuse.qa.fafram8.property.SystemProperty;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,7 +40,7 @@ public final class PropertyModifier implements Modifier {
 
 		Path path = Paths.get(filePath);
 		if (!path.isAbsolute()) {
-			path = Paths.get(System.getProperty(FaframConstant.FUSE_PATH) + File.separator + filePath);
+			path = Paths.get(SystemProperty.getFusePath() + File.separator + filePath);
 		}
 		// load property file if it exists
 		if (Files.exists(path)) {
