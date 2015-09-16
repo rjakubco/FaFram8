@@ -8,6 +8,7 @@ import org.jboss.fuse.qa.fafram8.property.SystemProperty;
 import org.jboss.fuse.qa.fafram8.resource.Fafram;
 
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -17,9 +18,13 @@ import org.junit.Test;
 public class LocalCustomZipTest {
 	private Fafram fafram;
 
+	@Before
+	public void init() {
+		System.setProperty(FaframConstant.FUSE_ZIP, "file:///home/fuse/storage/jboss-fuse-full-6.1.0.redhat-379.zip");
+	}
+
 	@Test
 	public void customZipTest() {
-		assertNotNull("Please specify " + FaframConstant.FUSE_ZIP + " property", SystemProperty.getFuseZip());
 		fafram = new Fafram();
 		fafram.setup();
 
@@ -41,5 +46,7 @@ public class LocalCustomZipTest {
 		if (fafram != null) {
 			fafram.tearDown();
 		}
+
+		System.clearProperty(FaframConstant.FUSE_ZIP);
 	}
 }

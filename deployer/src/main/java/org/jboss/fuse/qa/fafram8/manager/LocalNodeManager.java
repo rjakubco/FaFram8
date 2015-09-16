@@ -236,7 +236,7 @@ public class LocalNodeManager implements NodeManager {
 	 * Force-Delete target dir.
 	 */
 	private void deleteTargetDir() {
-		if (SystemProperty.isKeepFolder()) {
+		if (!SystemProperty.isKeepFolder()) {
 			try {
 				log.debug("Deleting " + targetPath);
 				FileUtils.forceDelete(new File(targetPath));

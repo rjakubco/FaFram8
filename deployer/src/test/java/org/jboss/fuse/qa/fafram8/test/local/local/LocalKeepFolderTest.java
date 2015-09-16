@@ -20,7 +20,7 @@ public class LocalKeepFolderTest {
 
 	@Before
 	public void before() {
-		System.setProperty("keepFolder", "true");
+		System.setProperty(FaframConstant.KEEP_FOLDER, "");
 	}
 
 	@Test
@@ -40,5 +40,7 @@ public class LocalKeepFolderTest {
 		if (fafram != null) {
 			fafram.tearDown();
 		}
+
+		System.clearProperty(FaframConstant.KEEP_FOLDER);
 	}
 }
