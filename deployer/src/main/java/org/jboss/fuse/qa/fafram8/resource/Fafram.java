@@ -8,6 +8,7 @@ import org.jboss.fuse.qa.fafram8.property.FaframConstant;
 import org.jboss.fuse.qa.fafram8.property.SystemProperty;
 import org.jboss.fuse.qa.fafram8.ssh.FuseSSHClient;
 import org.jboss.fuse.qa.fafram8.ssh.NodeSSHClient;
+import org.jboss.fuse.qa.fafram8.ssh.SSHClient;
 
 import org.junit.rules.ExternalResource;
 
@@ -26,11 +27,12 @@ public class Fafram extends ExternalResource {
 	 * Constructor.
 	 */
 	public Fafram() {
-		if (SystemProperty.HOST == null) {
+		if (SystemProperty.getHost() == null) {
 			log.info("Setting up local deployment");
 			setupLocalDeployment();
 		} else {
-			log.info("Setting up remote deployment on host " + SystemProperty.HOST + ":" + SystemProperty.HOST_PORT);
+			log.info("Setting up remote deployment on host " + SystemProperty.getHost() + ":" + SystemProperty
+					.getHostPort());
 			try {
 				setupRemoteDeployment();
 			} catch (SSHClientException e) {
@@ -69,13 +71,13 @@ public class Fafram extends ExternalResource {
 	 */
 	private void setupLocalDeployment() {
 		// Don't use fabric by default on localhost
-		System.clearProperty("fabric");
+		System.clearProperty(FaframConstant.FABRIC);
 
 		final int defaultPort = 8101;
 
 		// Create a local deployer with local SSH Client and assign to deployer variable
 		deployer = new LocalDeployer(new FuseSSHClient().hostname("localhost").port(defaultPort).username(SystemProperty
-				.FUSE_USER).password(SystemProperty.FUSE_PASSWORD));
+				.getFuseUser()).password(SystemProperty.getFusePassword()));
 	}
 
 	/**
@@ -84,10 +86,11 @@ public class Fafram extends ExternalResource {
 	private void setupRemoteDeployment() throws SSHClientException {
 		// Use fabric by default on remote
 		System.setProperty(FaframConstant.FABRIC, "");
-		deployer = new RemoteDeployer(new NodeSSHClient().hostname(SystemProperty.HOST).port(SystemProperty.HOST_PORT)
-				.username(SystemProperty.HOST_USER).password(SystemProperty.HOST_PASSWORD),
-				new FuseSSHClient().hostname(SystemProperty.HOST).fuseSSHPort().username(SystemProperty.FUSE_USER)
-						.password(SystemProperty.FUSE_USER));
+		final SSHClient node = new NodeSSHClient().hostname(SystemProperty.getHost()).port(SystemProperty.getHostPort())
+				.username(SystemProperty.getHostUser()).password(SystemProperty.getHostPassword());
+		final SSHClient fuse = new FuseSSHClient().hostname(SystemProperty.getHost()).fuseSSHPort().username(
+				SystemProperty.getFuseUser()).password(SystemProperty.getFusePassword());
+		deployer = new RemoteDeployer(node, fuse);
 	}
 
 	/**

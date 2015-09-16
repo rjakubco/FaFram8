@@ -4,7 +4,7 @@ import org.jboss.fuse.qa.fafram8.exception.FaframException;
 import org.jboss.fuse.qa.fafram8.manager.ContainerManager;
 import org.jboss.fuse.qa.fafram8.manager.LocalNodeManager;
 import org.jboss.fuse.qa.fafram8.manager.NodeManager;
-import org.jboss.fuse.qa.fafram8.property.FaframConstant;
+import org.jboss.fuse.qa.fafram8.property.SystemProperty;
 import org.jboss.fuse.qa.fafram8.ssh.SSHClient;
 
 /**
@@ -36,7 +36,7 @@ public class LocalDeployer implements Deployer {
 			nm.unzipArtifact();
 			nm.prepareFuse();
 			nm.startFuse();
-			if (System.getProperty(FaframConstant.FABRIC) != null) {
+			if (SystemProperty.isFabric()) {
 				cm.setupFabric();
 			}
 			cm.patchFuse();

@@ -3,7 +3,7 @@ package org.jboss.fuse.qa.fafram8.modifier.impl;
 import org.apache.commons.io.FileUtils;
 
 import org.jboss.fuse.qa.fafram8.modifier.Modifier;
-import org.jboss.fuse.qa.fafram8.property.FaframConstant;
+import org.jboss.fuse.qa.fafram8.property.SystemProperty;
 
 import java.io.File;
 
@@ -27,7 +27,7 @@ public final class FileModifier implements Modifier {
 
 	@Override
 	public void execute() {
-		final String oldFilePath = System.getProperty(FaframConstant.FUSE_PATH) + File.separator + fileToReplace;
+		final String oldFilePath = SystemProperty.getFusePath() + File.separator + fileToReplace;
 		try {
 			FileUtils.forceDelete(new File(oldFilePath));
 		} catch (Exception ex) {

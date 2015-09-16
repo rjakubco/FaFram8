@@ -123,8 +123,8 @@ public class LocalNodeManager implements NodeManager {
 		}
 
 		// Add default user
-		modifierExecutor.addModifiers(putProperty("etc/users.properties", SystemProperty.FUSE_USER,
-				SystemProperty.FUSE_PASSWORD + ",admin,manager,viewer,Monitor, Operator, Maintainer, Deployer, "
+		modifierExecutor.addModifiers(putProperty("etc/users.properties", SystemProperty.getFuseUser(),
+				SystemProperty.getFusePassword() + ",admin,manager,viewer,Monitor, Operator, Maintainer, Deployer, "
 						+ "Auditor, Administrator, SuperUser"));
 
 		modifierExecutor.executeModifiers();
@@ -142,12 +142,12 @@ public class LocalNodeManager implements NodeManager {
 		log.debug("Executing " + executablePath);
 
 		try {
-			if (SystemProperty.FUSE_ZIP != null) {
+			if (SystemProperty.getFuseZip() != null) {
 				// If we run custom zip
 				log.info("Starting container");
 			} else {
 				// If we run artifact from mvn
-				log.info("Starting " + (amq ? "A-MQ" : "Fuse") + " " + SystemProperty.FUSE_VERSION);
+				log.info("Starting " + (amq ? "A-MQ" : "Fuse") + " " + SystemProperty.getFuseVersion());
 			}
 			productProcess = Runtime.getRuntime().exec(executablePath);
 			log.info("Waiting for the container to be online");
@@ -168,7 +168,7 @@ public class LocalNodeManager implements NodeManager {
 			log.debug("We're on Unix");
 		}
 
-		if (SystemProperty.FUSE_ID.contains("a-mq")) {
+		if (SystemProperty.getFuseId().contains("a-mq")) {
 			log.debug("We're working with A-MQ");
 			amq = true;
 		} else {
@@ -189,7 +189,7 @@ public class LocalNodeManager implements NodeManager {
 	 * Unsets system properties.
 	 */
 	private void unsetProperties() {
-		System.clearProperty("fabric");
+		System.clearProperty(FaframConstant.FABRIC);
 		System.clearProperty(FaframConstant.FUSE_PATH);
 	}
 
@@ -206,12 +206,12 @@ public class LocalNodeManager implements NodeManager {
 		log.debug("Executing " + executablePath);
 
 		try {
-			if (SystemProperty.FUSE_ZIP != null) {
+			if (SystemProperty.getFuseZip() != null) {
 				// If we run custom zip
 				log.info("Stopping container");
 			} else {
 				// If we run artifact from mvn
-				log.info("Stopping " + (amq ? "A-MQ" : "Fuse") + " " + SystemProperty.FUSE_VERSION);
+				log.info("Stopping " + (amq ? "A-MQ" : "Fuse") + " " + SystemProperty.getFuseVersion());
 			}
 			Runtime.getRuntime().exec(executablePath).waitFor();
 			executor.waitForShutdown();
@@ -236,7 +236,7 @@ public class LocalNodeManager implements NodeManager {
 	 * Force-Delete target dir.
 	 */
 	private void deleteTargetDir() {
-		if (SystemProperty.KEEP_FOLDER == null) {
+		if (SystemProperty.isKeepFolder()) {
 			try {
 				log.debug("Deleting " + targetPath);
 				FileUtils.forceDelete(new File(targetPath));

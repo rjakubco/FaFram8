@@ -41,12 +41,12 @@ public final class Downloader {
 	 */
 	public static String getProduct() {
 		// If the FUSE_ZIP is not set, get the artifact from maven
-		if (SystemProperty.FUSE_ZIP == null) {
+		if (SystemProperty.getFuseZip() == null) {
 			log.info("Getting product from local repository");
 			return getProductFromMaven();
 		} else {
 			// We are using custom zip on local
-			log.info("Getting product from " + SystemProperty.FUSE_ZIP);
+			log.info("Getting product from " + SystemProperty.getFuseZip());
 			return getProductFromUrl();
 		}
 	}
@@ -59,7 +59,7 @@ public final class Downloader {
 	 */
 	public static String getProduct(Executor executor) {
 		// We are using custom zip on local
-		log.info("Getting product from " + SystemProperty.FUSE_ZIP);
+		log.info("Getting product from " + SystemProperty.getFuseZip());
 		return getProductFromUrl(executor);
 	}
 
@@ -81,7 +81,7 @@ public final class Downloader {
 	 */
 	private static String getProductFromUrl() {
 		// Get the protocol from the property
-		final String protocol = StringUtils.substringBefore(SystemProperty.FUSE_ZIP, ":");
+		final String protocol = StringUtils.substringBefore(SystemProperty.getFuseZip(), ":");
 		String location;
 		switch (protocol) {
 			case "http":
@@ -91,7 +91,7 @@ public final class Downloader {
 				throw new UnsupportedOperationException("not implemented");
 			case "file":
 				// Strip the protocol from the path
-				location = StringUtils.substringAfter(SystemProperty.FUSE_ZIP, ":");
+				location = StringUtils.substringAfter(SystemProperty.getFuseZip(), ":");
 				break;
 			default:
 				throw new RuntimeException("Unsupported protocol " + protocol);
@@ -108,20 +108,20 @@ public final class Downloader {
 	 */
 	private static String getProductFromUrl(Executor executor) {
 		// Get the protocol from the property
-		final String protocol = StringUtils.substringBefore(SystemProperty.FUSE_ZIP, ":");
+		final String protocol = StringUtils.substringBefore(SystemProperty.getFuseZip(), ":");
 		String location;
 		switch (protocol) {
 			case "http":
 				log.info(executor.executeCommand(
-						"wget --no-check-certificate -q -P " + SystemProperty.FAFRAM_FOLDER + " "
-								+ SystemProperty.FUSE_ZIP));
-				location = executor.executeCommand("ls -d -1 $PWD" + SEP + SystemProperty.FAFRAM_FOLDER + SEP + "*");
+						"wget --no-check-certificate -q -P " + SystemProperty.getFaframFolder() + " "
+								+ SystemProperty.getFuseZip()));
+				location = executor.executeCommand("ls -d -1 $PWD" + SEP + SystemProperty.getFaframFolder() + SEP + "*");
 				break;
 			case "scp":
 				throw new UnsupportedOperationException("not implemented");
 			case "file":
 				// Strip the protocol from the path
-				location = StringUtils.substringAfter(SystemProperty.FUSE_ZIP, ":");
+				location = StringUtils.substringAfter(SystemProperty.getFuseZip(), ":");
 				break;
 			default:
 				throw new RuntimeException("Unsupported protocol " + protocol);
@@ -220,12 +220,12 @@ public final class Downloader {
 	 */
 	private static String getArtifactPath(String localRepositoryPath) {
 		final String sep = File.separator;
-		final String groupPath = SystemProperty.FUSE_GROUP.replaceAll("\\.", sep + sep);
+		final String groupPath = SystemProperty.getFuseGroup().replaceAll("\\.", sep + sep);
 
 		// Construct the path to the artifact in local repo
-		final String artifactPath = localRepositoryPath + sep + groupPath + sep + SystemProperty.FUSE_ID + sep
-				+ SystemProperty.FUSE_VERSION + sep + SystemProperty.FUSE_ID + "-" + SystemProperty.FUSE_VERSION + ""
-				+ ".zip";
+		final String artifactPath = localRepositoryPath + sep + groupPath + sep + SystemProperty.getFuseId() + sep
+				+ SystemProperty.getFuseVersion() + sep + SystemProperty.getFuseId() + "-" + SystemProperty
+				.getFuseVersion() + ".zip";
 
 		log.debug("Artifact path is " + artifactPath);
 

@@ -82,11 +82,11 @@ public class Executor {
 
 		while (!online) {
 			// Check if the time is up
-			if (elapsed > SystemProperty.START_WAIT_TIME) {
-				log.error("Connection couldn't be established after " + SystemProperty.START_WAIT_TIME
+			if (elapsed > SystemProperty.getStartWaitTime()) {
+				log.error("Connection couldn't be established after " + SystemProperty.getStartWaitTime()
 						+ " seconds");
 				throw new RuntimeException("Connection couldn't be established after "
-						+ SystemProperty.START_WAIT_TIME + " seconds");
+						+ SystemProperty.getStartWaitTime() + " seconds");
 			}
 
 			try {
@@ -96,7 +96,7 @@ public class Executor {
 				online = true;
 				log.info("Container online");
 			} catch (Exception ex) {
-				log.debug("Remaining time: " + (SystemProperty.START_WAIT_TIME - elapsed) + " seconds. ");
+				log.debug("Remaining time: " + (SystemProperty.getStartWaitTime() - elapsed) + " seconds. ");
 				elapsed += step;
 			}
 			sleep(timeout);
@@ -115,16 +115,16 @@ public class Executor {
 
 		while (online) {
 			// Check if the time is up
-			if (elapsed > SystemProperty.STOP_WAIT_TIME) {
-				log.error("Connection could be established after " + SystemProperty.STOP_WAIT_TIME + " seconds");
+			if (elapsed > SystemProperty.getStopWaitTime()) {
+				log.error("Connection could be established after " + SystemProperty.getStopWaitTime() + " seconds");
 				throw new RuntimeException(
-						"Connection could be established after " + SystemProperty.STOP_WAIT_TIME + " seconds");
+						"Connection could be established after " + SystemProperty.getStopWaitTime() + " seconds");
 			}
 
 			try {
 				// Check if we are still connected
 				online = client.isConnected();
-				log.debug("Remaining time: " + (SystemProperty.STOP_WAIT_TIME - elapsed) + " seconds. ");
+				log.debug("Remaining time: " + (SystemProperty.getStopWaitTime() - elapsed) + " seconds. ");
 				elapsed += step;
 			} catch (Exception ex) {
 				online = false;
@@ -151,7 +151,7 @@ public class Executor {
 		boolean isSuccessful = false;
 
 		while (!isSuccessful) {
-			if (retries > SystemProperty.PROVISION_WAIT_TIME) {
+			if (retries > SystemProperty.getProvisionWaitTime()) {
 				log.error("Container root failed to provision in time");
 				throw new RuntimeException("Container root failed to provision in time");
 			}
@@ -175,9 +175,8 @@ public class Executor {
 			}
 
 			if (!isSuccessful) {
-				log.debug("Remaining time: " + (SystemProperty.PROVISION_WAIT_TIME - retries) + " seconds. " + ("".equals(
-						reason) ? ""
-						: "(" + reason + ")"));
+				log.debug("Remaining time: " + (SystemProperty.getProvisionWaitTime() - retries) + " seconds. " + (""
+						.equals(reason) ? "" : "(" + reason + ")"));
 				retries += step;
 				try {
 					Thread.sleep(timeout);
@@ -217,10 +216,10 @@ public class Executor {
 		log.info("Waiting for patch to be installed");
 
 		while (!isSuccessful) {
-			if (retries > SystemProperty.PATCH_WAIT_TIME) {
-				log.error("Container failed to install patch after " + SystemProperty.PATCH_WAIT_TIME + " seconds.");
+			if (retries > SystemProperty.getPatchWaitTime()) {
+				log.error("Container failed to install patch after " + SystemProperty.getPatchWaitTime() + " seconds.");
 				throw new RuntimeException(
-						"Container failed to install patch after " + SystemProperty.PATCH_WAIT_TIME + " seconds.");
+						"Container failed to install patch after " + SystemProperty.getPatchWaitTime() + " seconds.");
 			}
 
 			String reason = "";
@@ -240,8 +239,8 @@ public class Executor {
 			}
 
 			if (!isSuccessful) {
-				log.debug("Remaining time: " + (SystemProperty.PATCH_WAIT_TIME - retries) + " seconds. " + ("".equals(reason) ? ""
-						: "(" + reason + ")"));
+				log.debug("Remaining time: " + (SystemProperty.getPatchWaitTime() - retries) + " seconds. " + (""
+						.equals(reason) ? "" : "(" + reason + ")"));
 				retries += step;
 			}
 			sleep(timeout);

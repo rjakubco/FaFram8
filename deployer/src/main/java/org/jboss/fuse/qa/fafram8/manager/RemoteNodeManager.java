@@ -61,7 +61,7 @@ public class RemoteNodeManager implements NodeManager {
 	public void prepareZip() {
 		// TODO(rjakubco): workingDir on perf?
 		log.info("Preparing zip");
-		executor.executeCommand("mkdir " + SystemProperty.FAFRAM_FOLDER);
+		executor.executeCommand("mkdir " + SystemProperty.getFaframFolder());
 		productZipPath = Downloader.getProduct(executor);
 		log.debug("Zip path is " + productZipPath);
 	}
@@ -70,8 +70,8 @@ public class RemoteNodeManager implements NodeManager {
 	public void unzipArtifact() {
 		log.info("Unzipping fuse from " + productZipPath);
 
-		log.debug(executor.executeCommand("unzip -q -d " + SystemProperty.FAFRAM_FOLDER + " " + productZipPath));
-		productPath = executor.executeCommand("ls -d $PWD" + SEP + SystemProperty.FAFRAM_FOLDER + SEP + "*" + SEP);
+		log.debug(executor.executeCommand("unzip -q -d " + SystemProperty.getFaframFolder() + " " + productZipPath));
+		productPath = executor.executeCommand("ls -d $PWD" + SEP + SystemProperty.getFaframFolder() + SEP + "*" + SEP);
 
 		log.debug("Product path is " + productPath);
 		System.setProperty(FaframConstant.FUSE_PATH, productPath);
@@ -80,8 +80,8 @@ public class RemoteNodeManager implements NodeManager {
 	@Override
 	public void prepareFuse() {
 		// Add default user
-		modifierExecutor.addModifiers(putRemoteProperty("etc/users.properties", SystemProperty.FUSE_USER,
-				SystemProperty.FUSE_PASSWORD + ",admin,manager,viewer,Monitor, Operator, Maintainer, Deployer, "
+		modifierExecutor.addModifiers(putRemoteProperty("etc/users.properties", SystemProperty.getFuseUser(),
+				SystemProperty.getFusePassword() + ",admin,manager,viewer,Monitor, Operator, Maintainer, Deployer, "
 						+ "Auditor, Administrator, SuperUser", executor));
 
 		modifierExecutor.executeModifiers();
@@ -101,9 +101,12 @@ public class RemoteNodeManager implements NodeManager {
 
 	@Override
 	public void stopAndClean() {
-		log.info("Cleaning " + SystemProperty.HOST);
+		log.info("Cleaning " + SystemProperty.getHost());
 		executor.executeCommand("pkill -9 -f karaf");
-		executor.executeCommand("rm -rf " + SystemProperty.FAFRAM_FOLDER);
+		executor.executeCommand("rm -rf " + SystemProperty.getFaframFolder());
+
+		System.clearProperty(FaframConstant.FABRIC);
+		System.clearProperty(FaframConstant.FUSE_PATH);
 	}
 
 	@Override

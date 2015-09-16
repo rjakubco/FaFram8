@@ -2,7 +2,7 @@ package org.jboss.fuse.qa.fafram8.modifier.impl;
 
 import org.jboss.fuse.qa.fafram8.executor.Executor;
 import org.jboss.fuse.qa.fafram8.modifier.Modifier;
-import org.jboss.fuse.qa.fafram8.property.FaframConstant;
+import org.jboss.fuse.qa.fafram8.property.SystemProperty;
 
 import org.codehaus.plexus.util.StringUtils;
 
@@ -32,7 +32,7 @@ public final class RemotePropertyModifier implements Modifier {
 
 	@Override
 	public void execute() {
-		final String path = System.getProperty(FaframConstant.FUSE_PATH) + File.separator + filePath;
+		final String path = SystemProperty.getFusePath() + File.separator + filePath;
 
 		final String response = executor.executeCommand("(grep -v '[#]' " + path + " | grep -q '" + key + "' ) && sed"
 				+ " -i \"s/^\\s*\\(" + StringUtils.replace(key, ".", "\\.") + "\\).*\\$/\\1=" + value + "/\" " + path
