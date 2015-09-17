@@ -171,4 +171,12 @@ public final class SystemProperty {
 	public static String getPatch() {
 		return System.getProperty(FaframConstant.PATCH);
 	}
+
+	/**
+	 * Getter.
+	 * @return absolute path to working directory
+	 */
+	public static String getWorkingDirectory() {
+		return System.getProperty(FaframConstant.WORKING_DIRECTORY, "");
+	}
 }

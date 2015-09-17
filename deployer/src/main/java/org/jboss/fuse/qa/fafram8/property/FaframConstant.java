@@ -68,4 +68,8 @@ public final class FaframConstant {
 
 	// Fabric
 	public static final String FABRIC = "fabric";
+
+	// special working directory on machine where fafram folder should be created.
+	// Use when working on perf machines.
+	public static final String WORKING_DIRECTORY = "fafram.working.directory";
 }

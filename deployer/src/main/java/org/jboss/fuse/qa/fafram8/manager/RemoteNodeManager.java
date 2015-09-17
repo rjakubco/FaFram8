@@ -59,9 +59,8 @@ public class RemoteNodeManager implements NodeManager {
 
 	@Override
 	public void prepareZip() {
-		// TODO(rjakubco): workingDir on perf?
-		log.info("Preparing zip");
-		executor.executeCommand("mkdir " + SystemProperty.getFaframFolder());
+		log.info("Preparing zip...");
+		executor.executeCommand("mkdir " + getFolder());
 		productZipPath = Downloader.getProduct(executor);
 		log.debug("Zip path is " + productZipPath);
 	}
@@ -70,8 +69,8 @@ public class RemoteNodeManager implements NodeManager {
 	public void unzipArtifact() {
 		log.info("Unzipping fuse from " + productZipPath);
 
-		log.debug(executor.executeCommand("unzip -q -d " + SystemProperty.getFaframFolder() + " " + productZipPath));
-		productPath = executor.executeCommand("ls -d $PWD" + SEP + SystemProperty.getFaframFolder() + SEP + "*" + SEP);
+		log.debug(executor.executeCommand("unzip -q -d " + getFolder() + " " + productZipPath));
+		productPath = executor.executeCommand("ls -d $PWD" + SEP + getFolder() + SEP + "*" + SEP);
 
 		log.debug("Product path is " + productPath);
 		System.setProperty(FaframConstant.FUSE_PATH, productPath);
@@ -123,5 +122,21 @@ public class RemoteNodeManager implements NodeManager {
 	@Override
 	public void replaceFile(String fileToReplace, String fileToUse) {
 		this.modifierExecutor.addModifiers(moveRemoteFile(fileToReplace, fileToUse, executor));
+	}
+
+	/**
+	 * Creates folder path on remote machines.
+	 * Checking if property fafram.working.directory is set.
+	 *
+	 * @return path where fafram8 folder should be created
+	 */
+	public static String getFolder() {
+		String folder;
+		if ("".equals(SystemProperty.getWorkingDirectory())) {
+			folder = SystemProperty.getFaframFolder();
+		} else {
+			folder = SystemProperty.getWorkingDirectory() + SEP + SystemProperty.getFaframFolder();
+		}
+		return folder;
 	}
 }

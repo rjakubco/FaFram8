@@ -1,5 +1,6 @@
 package org.jboss.fuse.qa.fafram8.downloader;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.shared.invoker.DefaultInvocationRequest;
 import org.apache.maven.shared.invoker.DefaultInvoker;
@@ -8,13 +9,16 @@ import org.apache.maven.shared.invoker.Invoker;
 import org.apache.maven.shared.invoker.MavenInvocationException;
 import org.apache.maven.shared.invoker.PrintStreamHandler;
 
+import org.jboss.fuse.qa.fafram8.exception.FaframException;
 import org.jboss.fuse.qa.fafram8.executor.Executor;
+import org.jboss.fuse.qa.fafram8.manager.RemoteNodeManager;
 import org.jboss.fuse.qa.fafram8.property.SystemProperty;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.net.URL;
 import java.util.Collections;
 
 import lombok.extern.slf4j.Slf4j;
@@ -86,7 +90,14 @@ public final class Downloader {
 		switch (protocol) {
 			case "http":
 				// wget
-				throw new UnsupportedOperationException("not implemented");
+				try {
+					final File fuseZip = new File("target" + SEP + StringUtils.substringAfterLast(SystemProperty.getFuseZip(), "/"));
+					FileUtils.copyURLToFile(new URL(SystemProperty.getFuseZip()), fuseZip);
+					location = fuseZip.getAbsolutePath();
+					break;
+				} catch (IOException e) {
+					throw new FaframException("Provided property \"fuse.zip\" cannot be converted to URL!", e);
+				}
 			case "scp":
 				throw new UnsupportedOperationException("not implemented");
 			case "file":
@@ -96,6 +107,7 @@ public final class Downloader {
 			default:
 				throw new RuntimeException("Unsupported protocol " + protocol);
 		}
+
 		return location;
 	}
 
@@ -104,6 +116,15 @@ public final class Downloader {
 	 * TODO(avano): other possible protocols
 	 * Gets the product zip from url on remote.
 	 *
+	 *
+	 * @return absolute path to the file
+	 */
+
+	/**
+	 * TODO(avano): other possible protocols
+	 * Gets the product zip from url on remote.
+	 *
+	 * @param executor executor with ssh client connected to desired remote host
 	 * @return absolute path to the file
 	 */
 	private static String getProductFromUrl(Executor executor) {
@@ -112,12 +133,12 @@ public final class Downloader {
 		String location;
 		switch (protocol) {
 			case "http":
-				log.info(executor.executeCommand(
-						"wget --no-check-certificate -q -P " + SystemProperty.getFaframFolder() + " "
-								+ SystemProperty.getFuseZip()));
+				log.info(executor.executeCommand("wget --no-check-certificate -q -P " + RemoteNodeManager.getFolder() + " "
+						+ SystemProperty.getFuseZip()));
 				location = executor.executeCommand("ls -d -1 $PWD" + SEP + SystemProperty.getFaframFolder() + SEP + "*");
 				break;
 			case "scp":
+				// impossible to provide password to scp command without third party library ssh-pass
 				throw new UnsupportedOperationException("not implemented");
 			case "file":
 				// Strip the protocol from the path
