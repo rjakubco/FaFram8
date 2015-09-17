@@ -12,6 +12,7 @@ import org.apache.maven.shared.invoker.PrintStreamHandler;
 import org.jboss.fuse.qa.fafram8.exception.FaframException;
 import org.jboss.fuse.qa.fafram8.executor.Executor;
 import org.jboss.fuse.qa.fafram8.manager.RemoteNodeManager;
+import org.jboss.fuse.qa.fafram8.property.FaframConstant;
 import org.jboss.fuse.qa.fafram8.property.SystemProperty;
 
 import java.io.ByteArrayOutputStream;
@@ -96,7 +97,7 @@ public final class Downloader {
 					location = fuseZip.getAbsolutePath();
 					break;
 				} catch (IOException e) {
-					throw new FaframException("Provided property \"fuse.zip\" cannot be converted to URL!", e);
+					throw new FaframException("Provided property " + FaframConstant.FUSE_ZIP + " cannot be converted to URL!", e);
 				}
 			case "scp":
 				throw new UnsupportedOperationException("not implemented");
@@ -115,7 +116,6 @@ public final class Downloader {
 	 * TODO(rjakubco): working dir?
 	 * TODO(avano): other possible protocols
 	 * Gets the product zip from url on remote.
-	 *
 	 *
 	 * @return absolute path to the file
 	 */
