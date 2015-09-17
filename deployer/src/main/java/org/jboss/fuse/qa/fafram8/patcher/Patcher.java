@@ -23,7 +23,8 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public final class Patcher {
-	private static final String DEFAULT_PATCH_LOCATION = "/home/fuse/storage/patches";
+	// TODO(avano): change this
+	private static final String DEFAULT_PATCH_LOCATION = "/home/fuse/patches";
 
 	private Patcher() {
 	}
