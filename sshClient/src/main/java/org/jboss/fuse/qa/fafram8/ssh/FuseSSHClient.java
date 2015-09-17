@@ -22,6 +22,7 @@ public class FuseSSHClient extends SSHClient {
 
 	@Override
 	public void connect(boolean supressLog) throws VerifyFalseException, SSHClientException {
+		final int sessionTimeout = 20000;
 		try {
 			if (!"none".equals(privateKey)) {
 				if (passphrase != null) {
@@ -36,7 +37,7 @@ public class FuseSSHClient extends SSHClient {
 			session.setConfig("StrictHostKeyChecking", "no");
 			session.setPassword(password);
 
-			session.connect(20000);
+			session.connect(sessionTimeout);
 
 			log.info("Connection established.");
 		} catch (JSchException ex) {
@@ -49,9 +50,9 @@ public class FuseSSHClient extends SSHClient {
 
 			if (ex.getMessage().contains("timeout: socket is not established")) {
 				log.error("Unable to connect to specified host: " + session.getHost() + ":" + session.getPort()
-						+ " after 20 seconds");
+						+ " after " + sessionTimeout + " miliseconds");
 				throw new SSHClientException("Unable to connect to specified host: " + session.getHost() + ":"
-						+ session.getPort() + " after 20 seconds");
+						+ session.getPort() + " after " + sessionTimeout + " miliseconds");
 			}
 
 			if (!supressLog) {
@@ -66,6 +67,8 @@ public class FuseSSHClient extends SSHClient {
 			SSHClientException {
 		log.info("Executing command: " + command);
 
+		final int retriesCount = 2;
+		final long commandRetryTimeout = 5000L;
 		try {
 			// If we should retry the command
 			boolean retry;
@@ -74,7 +77,7 @@ public class FuseSSHClient extends SSHClient {
 
 			String returnString = "";
 			do {
-				if (retries == 2) {
+				if (retries == retriesCount) {
 					// If we retried it 2 times already, break
 					break;
 				}
@@ -90,12 +93,12 @@ public class FuseSSHClient extends SSHClient {
 
 				returnString = convertStreamToString(in);
 				if (returnString.contains("not found")) {
-					log.debug("Retrying command in 5 seconds");
+					log.debug("Retrying command in " + commandRetryTimeout + " miliseconds");
 					retry = true;
 					retries++;
 					// Wait for 5 sec before executing command
 					try {
-						Thread.sleep(5000L);
+						Thread.sleep(commandRetryTimeout);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}

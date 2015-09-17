@@ -4,26 +4,30 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * Class representing FUSE container
+ * Class representing FUSE container.
  * Created by ecervena on 9/8/15.
  */
 public class Container {
 
-    public Container(String name, String hostIP) {
-        this.name = name;
-        this.hostIP = hostIP;
-    }
+	/**
+	 * Constructor.
+	 * @param name name
+	 * @param hostIP host ip
+	 */
+	public Container(String name, String hostIP) {
+		this.name = name;
+		this.hostIP = hostIP;
+	}
 
-    @Getter
-    @Setter
-    private String name;
+	@Getter
+	@Setter
+	private String name;
 
-    @Getter
-    @Setter
-    private String hostIP;
+	@Getter
+	@Setter
+	private String hostIP;
 
-    @Getter
-    @Setter
-    private boolean root = false;
-
+	@Getter
+	@Setter
+	private boolean root = false;
 }

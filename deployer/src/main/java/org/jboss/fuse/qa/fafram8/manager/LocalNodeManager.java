@@ -7,10 +7,10 @@ import static org.jboss.fuse.qa.fafram8.modifier.impl.PropertyModifier.putProper
 import org.apache.commons.io.FileUtils;
 
 import org.jboss.fuse.qa.fafram8.downloader.Downloader;
+import org.jboss.fuse.qa.fafram8.executor.Executor;
 import org.jboss.fuse.qa.fafram8.modifier.ModifierExecutor;
 import org.jboss.fuse.qa.fafram8.property.FaframConstant;
 import org.jboss.fuse.qa.fafram8.property.SystemProperty;
-import org.jboss.fuse.qa.fafram8.executor.Executor;
 import org.jboss.fuse.qa.fafram8.ssh.SSHClient;
 
 import java.io.File;
@@ -19,7 +19,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import net.lingala.zip4j.core.ZipFile;
 
@@ -90,8 +89,7 @@ public class LocalNodeManager implements NodeManager {
 		// Fix for long jenkins paths
 		if (jenkins) {
 			targetPath = new File(System.getenv("WORKSPACE") + SEP + new Date().getTime()).getAbsolutePath();
-		}
-		else {
+		} else {
 			targetPath = new File("target" + SEP + "container" + SEP + new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss")
 					.format(new Date())).getAbsolutePath();
 		}
@@ -99,7 +97,7 @@ public class LocalNodeManager implements NodeManager {
 		log.debug("Unzipping to " + targetPath);
 
 		try {
-			ZipFile zipFile = new ZipFile(new File(productZipPath).getAbsolutePath());
+			final ZipFile zipFile = new ZipFile(new File(productZipPath).getAbsolutePath());
 			zipFile.extractAll(targetPath);
 		} catch (Exception ex) {
 			log.error("Exception caught during unzipping!");
@@ -107,7 +105,7 @@ public class LocalNodeManager implements NodeManager {
 		}
 
 		// Construct the full path to product root - get the subdir name in targetPath
-		String folderName = new File(targetPath).list()[0];
+		final String folderName = new File(targetPath).list()[0];
 
 		// Use the subdir name to construct the product path
 		productPath = targetPath + SEP + folderName;
@@ -125,31 +123,31 @@ public class LocalNodeManager implements NodeManager {
 		}
 
 		// Add default user
-		modifierExecutor.addModifiers(putProperty("etc/users.properties", SystemProperty.FUSE_USER,
-				SystemProperty.FUSE_PASSWORD + ",admin,manager,viewer,Monitor, Operator, Maintainer, Deployer, " +
-						"Auditor, Administrator, SuperUser"));
+		modifierExecutor.addModifiers(putProperty("etc/users.properties", SystemProperty.getFuseUser(),
+				SystemProperty.getFusePassword() + ",admin,manager,viewer,Monitor, Operator, Maintainer, Deployer, "
+						+ "Auditor, Administrator, SuperUser"));
 
 		modifierExecutor.executeModifiers();
 	}
 
 	@Override
 	public void startFuse() {
-		String executable = "start";
-		String extension = windows ? ".bat" : "";
+		final String executable = "start";
+		final String extension = windows ? ".bat" : "";
 
 		log.debug("Executable file is \"" + executable + extension + "\"");
 
 		// Construct the path to the executable file
-		String executablePath = productPath + SEP + "bin" + SEP + executable + extension;
+		final String executablePath = productPath + SEP + "bin" + SEP + executable + extension;
 		log.debug("Executing " + executablePath);
 
 		try {
-			if (SystemProperty.FUSE_ZIP != null) {
+			if (SystemProperty.getFuseZip() != null) {
 				// If we run custom zip
 				log.info("Starting container");
 			} else {
 				// If we run artifact from mvn
-				log.info("Starting " + (amq ? "A-MQ" : "Fuse") + " " + SystemProperty.FUSE_VERSION);
+				log.info("Starting " + (amq ? "A-MQ" : "Fuse") + " " + SystemProperty.getFuseVersion());
 			}
 			productProcess = Runtime.getRuntime().exec(executablePath);
 			log.info("Waiting for the container to be online");
@@ -170,7 +168,7 @@ public class LocalNodeManager implements NodeManager {
 			log.debug("We're on Unix");
 		}
 
-		if (SystemProperty.FUSE_ID.contains("a-mq")) {
+		if (SystemProperty.getFuseId().contains("a-mq")) {
 			log.debug("We're working with A-MQ");
 			amq = true;
 		} else {
@@ -178,9 +176,7 @@ public class LocalNodeManager implements NodeManager {
 		}
 	}
 
-	/**
-	 * Stops the container and cleans up if desired.
-	 */
+	@Override
 	public void stopAndClean() {
 		if (!stopped) {
 			unsetProperties();
@@ -193,7 +189,7 @@ public class LocalNodeManager implements NodeManager {
 	 * Unsets system properties.
 	 */
 	private void unsetProperties() {
-		System.clearProperty("fabric");
+		System.clearProperty(FaframConstant.FABRIC);
 		System.clearProperty(FaframConstant.FUSE_PATH);
 	}
 
@@ -201,21 +197,21 @@ public class LocalNodeManager implements NodeManager {
 	 * Stops the container.
 	 */
 	private void stop() {
-		String executable = "stop";
-		String extension = windows ? ".bat" : "";
+		final String executable = "stop";
+		final String extension = windows ? ".bat" : "";
 
 		log.debug("Executable file is \"" + executable + extension + "\"");
 
-		String executablePath = productPath + SEP + "bin" + SEP + executable + extension;
+		final String executablePath = productPath + SEP + "bin" + SEP + executable + extension;
 		log.debug("Executing " + executablePath);
 
 		try {
-			if (SystemProperty.FUSE_ZIP != null) {
+			if (SystemProperty.getFuseZip() != null) {
 				// If we run custom zip
 				log.info("Stopping container");
 			} else {
 				// If we run artifact from mvn
-				log.info("Stopping " + (amq ? "A-MQ" : "Fuse") + " " + SystemProperty.FUSE_VERSION);
+				log.info("Stopping " + (amq ? "A-MQ" : "Fuse") + " " + SystemProperty.getFuseVersion());
 			}
 			Runtime.getRuntime().exec(executablePath).waitFor();
 			executor.waitForShutdown();
@@ -240,7 +236,7 @@ public class LocalNodeManager implements NodeManager {
 	 * Force-Delete target dir.
 	 */
 	private void deleteTargetDir() {
-		if (SystemProperty.KEEP_FOLDER == null) {
+		if (SystemProperty.isKeepFolder()) {
 			try {
 				log.debug("Deleting " + targetPath);
 				FileUtils.forceDelete(new File(targetPath));
@@ -250,17 +246,17 @@ public class LocalNodeManager implements NodeManager {
 		}
 	}
 
-	/**
-	 * Adds a new user.
-	 *
-	 * @param user user
-	 * @param pass password
-	 * @param roles comma-separated roles
-	 */
+	@Override
 	public void addUser(String user, String pass, String roles) {
-		this.modifierExecutor.addModifiers(putProperty("etc/users.properties", user, pass + "," + roles));
+		addProperty("etc/users.properties", user, pass + "," + roles);
 	}
 
+	@Override
+	public void addProperty(String filePath, String key, String value) {
+		this.modifierExecutor.addModifiers(putProperty(filePath, key, value));
+	}
+
+	@Override
 	public void replaceFile(String fileToReplace, String fileToUse) {
 		this.modifierExecutor.addModifiers(moveFile(fileToReplace, fileToUse));
 	}

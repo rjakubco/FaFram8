@@ -19,11 +19,11 @@ public class LocalCustomZipTest {
 
 	@Test
 	public void customZipTest() {
-		assertNotNull("Please specify " + FaframConstant.FUSE_ZIP + " property", SystemProperty.FUSE_ZIP);
+		assertNotNull("Please specify " + FaframConstant.FUSE_ZIP + " property", SystemProperty.getFuseZip());
 		fafram = new Fafram();
 		fafram.setup();
 
-		String artifactName = SystemProperty.FUSE_ZIP.substring(SystemProperty.FUSE_ZIP.lastIndexOf("/") + 1);
+		String artifactName = SystemProperty.getFuseZip().substring(SystemProperty.getFuseZip().lastIndexOf("/") + 1);
 
 		// Fuse zip contains 'full' in the zip, but not in folder name
 		artifactName = artifactName.replace("full-", "");

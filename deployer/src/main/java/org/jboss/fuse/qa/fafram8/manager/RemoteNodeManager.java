@@ -59,9 +59,9 @@ public class RemoteNodeManager implements NodeManager {
 
 	@Override
 	public void prepareZip() {
-		// TODO workingDir on perf?
+		// TODO(rjakubco): workingDir on perf?
 		log.info("Preparing zip");
-		executor.executeCommand("mkdir " + SystemProperty.FAFRAM_FOLDER);
+		executor.executeCommand("mkdir " + SystemProperty.getFaframFolder());
 		productZipPath = Downloader.getProduct(executor);
 		log.debug("Zip path is " + productZipPath);
 	}
@@ -70,8 +70,8 @@ public class RemoteNodeManager implements NodeManager {
 	public void unzipArtifact() {
 		log.info("Unzipping fuse from " + productZipPath);
 
-		log.debug(executor.executeCommand("unzip -q -d " + SystemProperty.FAFRAM_FOLDER + " " + productZipPath));
-		productPath = executor.executeCommand("ls -d $PWD" + SEP + SystemProperty.FAFRAM_FOLDER + SEP + "*" + SEP);
+		log.debug(executor.executeCommand("unzip -q -d " + SystemProperty.getFaframFolder() + " " + productZipPath));
+		productPath = executor.executeCommand("ls -d $PWD" + SEP + SystemProperty.getFaframFolder() + SEP + "*" + SEP);
 
 		log.debug("Product path is " + productPath);
 		System.setProperty(FaframConstant.FUSE_PATH, productPath);
@@ -80,9 +80,9 @@ public class RemoteNodeManager implements NodeManager {
 	@Override
 	public void prepareFuse() {
 		// Add default user
-		modifierExecutor.addModifiers(putRemoteProperty("etc/users.properties", SystemProperty.FUSE_USER,
-				SystemProperty.FUSE_PASSWORD + ",admin,manager,viewer,Monitor, Operator, Maintainer, Deployer, " +
-						"Auditor, Administrator, SuperUser", executor));
+		modifierExecutor.addModifiers(putRemoteProperty("etc/users.properties", SystemProperty.getFuseUser(),
+				SystemProperty.getFusePassword() + ",admin,manager,viewer,Monitor, Operator, Maintainer, Deployer, "
+						+ "Auditor, Administrator, SuperUser", executor));
 
 		modifierExecutor.executeModifiers();
 	}
@@ -90,7 +90,7 @@ public class RemoteNodeManager implements NodeManager {
 	@Override
 	public void startFuse() {
 		try {
-			// TODO add changing java before start
+			// TODO(rjakubco): add changing java before start
 			log.info("Starting fuse");
 			executor.executeCommand(productPath + SEP + "bin" + SEP + "start");
 			fuseExecutor.waitForBoot();
@@ -99,43 +99,28 @@ public class RemoteNodeManager implements NodeManager {
 		}
 	}
 
-	/**
-	 * Kills Karaf and deletes the fafram folder on remote host.
-	 */
+	@Override
 	public void stopAndClean() {
-		log.info("Cleaning " + SystemProperty.HOST);
+		log.info("Cleaning " + SystemProperty.getHost());
 		executor.executeCommand("pkill -9 -f karaf");
-		executor.executeCommand("rm -rf " + SystemProperty.FAFRAM_FOLDER);
+		executor.executeCommand("rm -rf " + SystemProperty.getFaframFolder());
+
+		System.clearProperty(FaframConstant.FABRIC);
+		System.clearProperty(FaframConstant.FUSE_PATH);
 	}
 
-	/**
-	 * Adds/Replaces property in given file.
-	 *
- 	 * @param path path to file where property should be set
-	 * @param key key of the property
-	 * @param value value of the propety
-	 */
+	@Override
 	public void addProperty(String path, String key, String value) {
 		this.modifierExecutor.addModifiers(putRemoteProperty(path, key, value, executor));
 	}
 
-	/**
-	 * Adds a new user.
-	 *
-	 * @param user user
-	 * @param pass password
-	 * @param roles comma-separated roles
-	 */
+	@Override
 	public void addUser(String user, String pass, String roles) {
-		this.modifierExecutor.addModifiers(putRemoteProperty("etc/users.properties", user, pass + "," + roles, executor));
+		this.modifierExecutor
+				.addModifiers(putRemoteProperty("etc/users.properties", user, pass + "," + roles, executor));
 	}
 
-	/**
-	 * Replaces file.
-	 *
-	 * @param fileToReplace file from localhost
-	 * @param fileToUse file path on remote
-	 */
+	@Override
 	public void replaceFile(String fileToReplace, String fileToUse) {
 		this.modifierExecutor.addModifiers(moveRemoteFile(fileToReplace, fileToUse, executor));
 	}

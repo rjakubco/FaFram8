@@ -1,8 +1,10 @@
 package org.jboss.fuse.qa.fafram8.deployer;
 
+import org.jboss.fuse.qa.fafram8.exception.FaframException;
 import org.jboss.fuse.qa.fafram8.manager.ContainerManager;
 import org.jboss.fuse.qa.fafram8.manager.LocalNodeManager;
 import org.jboss.fuse.qa.fafram8.manager.NodeManager;
+import org.jboss.fuse.qa.fafram8.property.SystemProperty;
 import org.jboss.fuse.qa.fafram8.ssh.SSHClient;
 
 /**
@@ -15,6 +17,7 @@ public class LocalDeployer implements Deployer {
 
 	/**
 	 * Constructor.
+	 *
 	 * @param client ssh client instance
 	 */
 	public LocalDeployer(SSHClient client) {
@@ -23,7 +26,7 @@ public class LocalDeployer implements Deployer {
 	}
 
 	/**
-	 * Setup FUSE root container on localhost
+	 * Setup FUSE root container on localhost.
 	 */
 	@Override
 	public void setup() {
@@ -33,17 +36,16 @@ public class LocalDeployer implements Deployer {
 			nm.unzipArtifact();
 			nm.prepareFuse();
 			nm.startFuse();
-			if (cm.isFabric()) cm.setupFabric();
+			if (SystemProperty.isFabric()) {
+				cm.setupFabric();
+			}
 			cm.patchFuse();
 		} catch (RuntimeException ex) {
 			nm.stopAndClean();
-			throw ex;
+			throw new FaframException(ex);
 		}
 	}
 
-	/**
-	 * Stop root container and delete FUSE home directory on localhost
-	 */
 	@Override
 	public void tearDown() {
 		nm.stopAndClean();

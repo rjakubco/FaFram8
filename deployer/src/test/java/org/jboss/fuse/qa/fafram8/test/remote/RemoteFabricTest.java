@@ -2,6 +2,9 @@ package org.jboss.fuse.qa.fafram8.test.remote;
 
 import org.jboss.fuse.qa.fafram8.property.FaframConstant;
 import org.jboss.fuse.qa.fafram8.resource.Fafram;
+
+import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -25,4 +28,10 @@ public class RemoteFabricTest {
     public void fabricTest() {
         assertTrue(fafram.executeFuseCommand("container-list | grep root").contains("success"));
     }
+
+	@AfterClass
+	public static void clean() {
+		System.clearProperty(FaframConstant.HOST);
+		System.clearProperty(FaframConstant.FUSE_ZIP);
+	}
 }

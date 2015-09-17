@@ -26,6 +26,7 @@ public class NodeSSHClient extends SSHClient {
 
 	@Override
 	public void connect(boolean supressLog) throws VerifyFalseException, SSHClientException {
+		final int sessionTimeout = 20000;
 		try {
 			if (!"none".equals(privateKey)) {
 				if (passphrase != null) {
@@ -40,7 +41,7 @@ public class NodeSSHClient extends SSHClient {
 			session.setConfig("StrictHostKeyChecking", "no");
 			session.setPassword(password);
 
-			session.connect(20000);
+			session.connect(sessionTimeout);
 
 			log.info("Connection established.");
 		} catch (JSchException ex) {

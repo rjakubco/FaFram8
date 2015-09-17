@@ -1,6 +1,5 @@
 package org.jboss.fuse.qa.fafram8.manager;
 
-import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 
 import org.jboss.fuse.qa.fafram8.exception.EmptyContainerListException;
@@ -9,10 +8,10 @@ import org.jboss.fuse.qa.fafram8.patcher.Patcher;
 import org.jboss.fuse.qa.fafram8.property.SystemProperty;
 import org.jboss.fuse.qa.fafram8.ssh.SSHClient;
 
+import java.util.List;
+
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.List;
 
 /**
  * Container manager class.
@@ -23,11 +22,11 @@ public class ContainerManager {
 	@Getter
 	private Executor executor;
 
-	// Setup fabric?
-	@Setter
-	@Getter
-	private boolean fabric = false;
-
+	/**
+	 * Constructor.
+	 *
+	 * @param client ssh client
+	 */
 	public ContainerManager(SSHClient client) {
 		this.executor = new Executor(client);
 	}
@@ -35,9 +34,8 @@ public class ContainerManager {
 	/**
 	 * Sets up fabric.
 	 */
-	//TODO implement fabric:create options
 	public void setupFabric() {
-		executor.executeCommand("fabric:create");
+		executor.executeCommand("fabric:create " + SystemProperty.getFabric());
 		try {
 			executor.waitForProvisioning("root");
 		} catch (RuntimeException ex) {
@@ -50,10 +48,12 @@ public class ContainerManager {
 	 * Patch fuse.
 	 */
 	public void patchFuse() {
-		if (!fabric) {
-			patchStandalone();
-		} else {
-			patchFabric();
+		if (SystemProperty.getPatch() != null) {
+			if (SystemProperty.isFabric()) {
+				patchFabric();
+			} else {
+				patchStandalone();
+			}
 		}
 	}
 
@@ -62,7 +62,7 @@ public class ContainerManager {
 	 */
 	private void patchStandalone() {
 		for (String s : Patcher.getPatches()) {
-			String patchName = getPatchName(executor.executeCommand("patch:add " + s));
+			final String patchName = getPatchName(executor.executeCommand("patch:add " + s));
 			executor.executeCommand("patch:install " + patchName);
 			executor.waitForPatch(patchName);
 		}
@@ -73,11 +73,11 @@ public class ContainerManager {
 	 */
 	private void patchFabric() {
 		// Create a new version
-		String version = executor.executeCommand("version-create").split(" ")[2];
+		final String version = executor.executeCommand("version-create").split(" ")[2];
 
 		for (String s : Patcher.getPatches()) {
-			executor.executeCommand("patch-apply -u " + SystemProperty.FUSE_USER + " -p " + SystemProperty
-					.FUSE_PASSWORD + " --version " + version + " " + s);
+			executor.executeCommand("patch-apply -u " + SystemProperty.getFuseUser() + " -p " + SystemProperty
+					.getFusePassword() + " --version " + version + " " + s);
 		}
 
 		executor.executeCommand("container-upgrade " + version + " root");
@@ -98,7 +98,7 @@ public class ContainerManager {
 		response = response.replaceAll(" +", " ").trim();
 
 		// Get the first string in this line
-		String patchName = response.split(" ")[0];
+		final String patchName = response.split(" ")[0];
 		log.debug("Patch name is " + patchName);
 		return patchName;
 	}
@@ -109,10 +109,10 @@ public class ContainerManager {
 	 * @param hostIP IP address of host node
 	 * @param containerName Name of container
 	 */
-	//TODO throw authentization fail exception, implement parallel container spawn
+	//TODO(ecervena): throw authentization fail exception, implement parallel container spawn
 	private void createSSHContainer(String hostIP, String containerName) {
-		String command = String.format("container-create-ssh --host %s --user %s --password %s --resolver %s %s",
-				hostIP, SystemProperty.HOST_USER, SystemProperty.HOST_PASSWORD, "localip", containerName);
+		final String command = String.format("container-create-ssh --host %s --user %s --password %s --resolver %s %s",
+				hostIP, SystemProperty.getHostUser(), SystemProperty.getHostPassword(), "localip", containerName);
 		executor.executeCommand(command);
 		executor.waitForProvisioning(containerName);
 	}
@@ -120,14 +120,18 @@ public class ContainerManager {
 	/**
 	 * Execute container-create-ssh command for all containers on the list.
 	 *
-	 * @param containerList
+	 * @param containerList container list
+	 * @throws EmptyContainerListException when the container list is empty
 	 */
 	public void createSSHContainer(List<Container> containerList) throws EmptyContainerListException {
-		if(containerList.isEmpty()) {
-			throw new EmptyContainerListException("List of containers is empty. Root container should be provided in configuration file at least.");
+		if (containerList.isEmpty()) {
+			throw new EmptyContainerListException(
+					"List of containers is empty. Root container should be provided in configuration file at least.");
 		}
-		for(Container container: containerList) {
-			if(!container.isRoot()) createSSHContainer(container.getHostIP(), container.getName());
+		for (Container container : containerList) {
+			if (!container.isRoot()) {
+				createSSHContainer(container.getHostIP(), container.getName());
+			}
 		}
 	}
 }

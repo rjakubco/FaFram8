@@ -3,7 +3,7 @@ package org.jboss.fuse.qa.fafram8.modifier.impl;
 import org.apache.commons.io.FileUtils;
 
 import org.jboss.fuse.qa.fafram8.modifier.Modifier;
-import org.jboss.fuse.qa.fafram8.property.FaframConstant;
+import org.jboss.fuse.qa.fafram8.property.SystemProperty;
 
 import java.io.File;
 
@@ -16,7 +16,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @ToString
-public class FileModifier implements Modifier {
+public final class FileModifier implements Modifier {
 	private String fileToReplace;
 	private String fileToUse;
 
@@ -27,24 +27,24 @@ public class FileModifier implements Modifier {
 
 	@Override
 	public void execute() {
-		String oldFilePath = System.getProperty(FaframConstant.FUSE_PATH) + File.separator + fileToReplace;
+		final String oldFilePath = SystemProperty.getFusePath() + File.separator + fileToReplace;
 		try {
 			FileUtils.forceDelete(new File(oldFilePath));
 		} catch (Exception ex) {
 			log.error("Delete of " + oldFilePath + " failed! " + ex);
 		}
 
-		File newFile = new File(fileToUse);
-		File oldFile = new File(oldFilePath);
+		final File newFile = new File(fileToUse);
+		final File oldFile = new File(oldFilePath);
 
 		try {
 			FileUtils.copyFile(newFile, oldFile);
 		} catch (Exception ex) {
-			log.error("Copy from " + newFile.getAbsolutePath() + " to " + oldFile.getAbsolutePath() +
-					" failed! " + ex);
+			log.error("Copy from " + newFile.getAbsolutePath() + " to " + oldFile.getAbsolutePath()
+					+ " failed! " + ex);
 			throw new RuntimeException(
-					"Copy from " + newFile.getAbsolutePath() + " to " + oldFile.getAbsolutePath() +
-							" failed! " + ex);
+					"Copy from " + newFile.getAbsolutePath() + " to " + oldFile.getAbsolutePath()
+							+ " failed! " + ex);
 		}
 	}
 

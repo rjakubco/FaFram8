@@ -6,18 +6,34 @@ package org.jboss.fuse.qa.fafram8.exceptions;
  * @author : Roman Jakubco (rjakubco@redhat.com)
  */
 public class CopyFileException extends Exception {
+	/**
+	 * Constructor.
+	 */
 	public CopyFileException() {
 		super();
 	}
 
+	/**
+	 * Constructor.
+	 * @param cause cause
+	 */
 	public CopyFileException(Throwable cause) {
 		super(cause);
 	}
 
+	/**
+	 * Constructor.
+	 * @param message message
+	 */
 	public CopyFileException(String message) {
 		super(message);
 	}
 
+	/**
+	 * Constructor.
+	 * @param message message
+	 * @param cause cause
+	 */
 	public CopyFileException(String message, Throwable cause) {
 		super(message, cause);
 	}
