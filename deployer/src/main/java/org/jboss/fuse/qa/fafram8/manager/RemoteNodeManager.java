@@ -1,7 +1,7 @@
 package org.jboss.fuse.qa.fafram8.manager;
 
-import static org.jboss.fuse.qa.fafram8.modifier.impl.RemoteFileModifier.moveRemoteFile;
-import static org.jboss.fuse.qa.fafram8.modifier.impl.RemotePropertyModifier.putRemoteProperty;
+import static org.jboss.fuse.qa.fafram8.modifier.impl.FileModifier.moveFile;
+import static org.jboss.fuse.qa.fafram8.modifier.impl.PropertyModifier.putProperty;
 
 import org.jboss.fuse.qa.fafram8.downloader.Downloader;
 import org.jboss.fuse.qa.fafram8.exceptions.SSHClientException;
@@ -79,7 +79,7 @@ public class RemoteNodeManager implements NodeManager {
 	@Override
 	public void prepareFuse() {
 		// Add default user
-		modifierExecutor.addModifiers(putRemoteProperty("etc/users.properties", SystemProperty.getFuseUser(),
+		modifierExecutor.addModifiers(putProperty("etc/users.properties", SystemProperty.getFuseUser(),
 				SystemProperty.getFusePassword() + ",admin,manager,viewer,Monitor, Operator, Maintainer, Deployer, "
 						+ "Auditor, Administrator, SuperUser", executor));
 
@@ -110,18 +110,18 @@ public class RemoteNodeManager implements NodeManager {
 
 	@Override
 	public void addProperty(String path, String key, String value) {
-		this.modifierExecutor.addModifiers(putRemoteProperty(path, key, value, executor));
+		this.modifierExecutor.addModifiers(putProperty(path, key, value, executor));
 	}
 
 	@Override
 	public void addUser(String user, String pass, String roles) {
 		this.modifierExecutor
-				.addModifiers(putRemoteProperty("etc/users.properties", user, pass + "," + roles, executor));
+				.addModifiers(putProperty("etc/users.properties", user, pass + "," + roles, executor));
 	}
 
 	@Override
 	public void replaceFile(String fileToReplace, String fileToUse) {
-		this.modifierExecutor.addModifiers(moveRemoteFile(fileToReplace, fileToUse, executor));
+		this.modifierExecutor.addModifiers(moveFile(fileToReplace, fileToUse, executor));
 	}
 
 	/**
