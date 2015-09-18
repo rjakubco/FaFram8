@@ -4,6 +4,7 @@ import org.jboss.fuse.qa.fafram8.ssh.SSHClient;
 import org.jboss.fuse.qa.fafram8.ssh.FuseSSHClient;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -15,6 +16,7 @@ public class FuseSSHClientTest {
 	private static final String HOST = "10.8.50.177";
 
 	// TODO(rjakubco): need to test this somehow -> find easiest solution
+	@Ignore
 	@Test
 	public void testFuseSSHFluent() throws Exception {
 		Assert.fail("TODO rjakubco");
@@ -26,21 +28,25 @@ public class FuseSSHClientTest {
 //		Assert.assertTrue(response.contains("PING google.com"));
 	}
 
+	@Ignore
 	@Test
 	public void testFuseSSHSetters() throws Exception {
 		Assert.fail("TODO rjakubco");
 	}
 
+	@Ignore
 	@Test
 	public void testWrongPort() throws Exception {
 		Assert.fail("TODO rjakubco");
 	}
 
+	@Ignore
 	@Test
 	public void testWrongHost() throws Exception {
 		Assert.fail("TODO rjakubco");
 	}
 
+	@Ignore
 	@Test
 	public void testAuthFail() throws Exception {
 		Assert.fail("TODO rjakubco");
