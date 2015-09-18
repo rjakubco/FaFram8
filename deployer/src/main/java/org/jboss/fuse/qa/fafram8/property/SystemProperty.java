@@ -129,7 +129,7 @@ public final class SystemProperty {
 	 * @return keep folder
 	 */
 	public static boolean isKeepFolder() {
-		return Boolean.parseBoolean(System.getProperty(FaframConstant.KEEP_FOLDER, "false"));
+		return System.getProperty(FaframConstant.KEEP_FOLDER) != null;
 	}
 
 	/**

@@ -3,6 +3,7 @@ package org.jboss.fuse.qa.fafram8.manager;
 import static org.jboss.fuse.qa.fafram8.modifier.impl.AccessRightsModifier.setExecutable;
 import static org.jboss.fuse.qa.fafram8.modifier.impl.FileModifier.moveFile;
 import static org.jboss.fuse.qa.fafram8.modifier.impl.PropertyModifier.putProperty;
+import static org.jboss.fuse.qa.fafram8.modifier.impl.RandomModifier.applyOpenstackFix;
 
 import org.apache.commons.io.FileUtils;
 
@@ -127,6 +128,9 @@ public class LocalNodeManager implements NodeManager {
 				SystemProperty.getFusePassword() + ",admin,manager,viewer,Monitor, Operator, Maintainer, Deployer, "
 						+ "Auditor, Administrator, SuperUser"));
 
+		// Apply openstack /dev/random fix
+		modifierExecutor.addModifiers(applyOpenstackFix());
+
 		modifierExecutor.executeModifiers();
 	}
 
@@ -236,7 +240,7 @@ public class LocalNodeManager implements NodeManager {
 	 * Force-Delete target dir.
 	 */
 	private void deleteTargetDir() {
-		if (SystemProperty.isKeepFolder()) {
+		if (!SystemProperty.isKeepFolder()) {
 			try {
 				log.debug("Deleting " + targetPath);
 				FileUtils.forceDelete(new File(targetPath));
