@@ -113,14 +113,6 @@ public final class Downloader {
 	}
 
 	/**
-	 * TODO(rjakubco): working dir?
-	 * TODO(avano): other possible protocols
-	 * Gets the product zip from url on remote.
-	 *
-	 * @return absolute path to the file
-	 */
-
-	/**
 	 * TODO(avano): other possible protocols
 	 * Gets the product zip from url on remote.
 	 *
