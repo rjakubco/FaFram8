@@ -14,6 +14,7 @@ public final class SystemProperty {
 
 	/**
 	 * Getter.
+	 *
 	 * @return remote host
 	 */
 	public static String getHost() {
@@ -22,6 +23,7 @@ public final class SystemProperty {
 
 	/**
 	 * Getter.
+	 *
 	 * @return host ssh port
 	 */
 	public static int getHostPort() {
@@ -30,6 +32,7 @@ public final class SystemProperty {
 
 	/**
 	 * Getter.
+	 *
 	 * @return host login
 	 */
 	public static String getHostUser() {
@@ -38,6 +41,7 @@ public final class SystemProperty {
 
 	/**
 	 * Getter.
+	 *
 	 * @return host password
 	 */
 	public static String getHostPassword() {
@@ -46,6 +50,7 @@ public final class SystemProperty {
 
 	/**
 	 * Getter.
+	 *
 	 * @return fuse user
 	 */
 	public static String getFuseUser() {
@@ -54,6 +59,7 @@ public final class SystemProperty {
 
 	/**
 	 * Getter.
+	 *
 	 * @return fuse password
 	 */
 	public static String getFusePassword() {
@@ -62,6 +68,7 @@ public final class SystemProperty {
 
 	/**
 	 * Getter.
+	 *
 	 * @return product group id
 	 */
 	public static String getFuseGroup() {
@@ -70,6 +77,7 @@ public final class SystemProperty {
 
 	/**
 	 * Getter.
+	 *
 	 * @return product artifact id
 	 */
 	public static String getFuseId() {
@@ -78,6 +86,7 @@ public final class SystemProperty {
 
 	/**
 	 * Getter.
+	 *
 	 * @return product version
 	 */
 	public static String getFuseVersion() {
@@ -86,6 +95,7 @@ public final class SystemProperty {
 
 	/**
 	 * Getter.
+	 *
 	 * @return product url
 	 */
 	public static String getFuseZip() {
@@ -94,6 +104,7 @@ public final class SystemProperty {
 
 	/**
 	 * Getter.
+	 *
 	 * @return karaf start wait time
 	 */
 	public static int getStartWaitTime() {
@@ -102,6 +113,7 @@ public final class SystemProperty {
 
 	/**
 	 * Getter.
+	 *
 	 * @return karaf stop wait time
 	 */
 	public static int getStopWaitTime() {
@@ -110,6 +122,7 @@ public final class SystemProperty {
 
 	/**
 	 * Getter.
+	 *
 	 * @return fabric provision wait time
 	 */
 	public static int getProvisionWaitTime() {
@@ -118,6 +131,7 @@ public final class SystemProperty {
 
 	/**
 	 * Getter.
+	 *
 	 * @return patch install wait time
 	 */
 	public static int getPatchWaitTime() {
@@ -126,6 +140,7 @@ public final class SystemProperty {
 
 	/**
 	 * Getter.
+	 *
 	 * @return keep folder
 	 */
 	public static boolean isKeepFolder() {
@@ -134,6 +149,7 @@ public final class SystemProperty {
 
 	/**
 	 * Getter.
+	 *
 	 * @return fafram folder name
 	 */
 	public static String getFaframFolder() {
@@ -142,6 +158,7 @@ public final class SystemProperty {
 
 	/**
 	 * Getter.
+	 *
 	 * @return fabric flag
 	 */
 	public static boolean isFabric() {
@@ -150,6 +167,7 @@ public final class SystemProperty {
 
 	/**
 	 * Getter.
+	 *
 	 * @return fabric settings
 	 */
 	public static String getFabric() {
@@ -158,6 +176,7 @@ public final class SystemProperty {
 
 	/**
 	 * Getter.
+	 *
 	 * @return fuse path
 	 */
 	public static String getFusePath() {
@@ -166,6 +185,7 @@ public final class SystemProperty {
 
 	/**
 	 * Getter.
+	 *
 	 * @return patch
 	 */
 	public static String getPatch() {
@@ -174,6 +194,7 @@ public final class SystemProperty {
 
 	/**
 	 * Getter.
+	 *
 	 * @return absolute path to working directory
 	 */
 	public static String getWorkingDirectory() {

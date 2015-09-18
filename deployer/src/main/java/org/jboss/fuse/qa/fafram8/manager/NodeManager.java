@@ -62,6 +62,8 @@ public interface NodeManager {
 
 	/**
 	 * Stops the container and cleans the workspace if necessary.
+	 *
+	 * @param ignoreExceptions ignore exceptions true/false
 	 */
-	void stopAndClean();
+	void stopAndClean(boolean ignoreExceptions);
 }
