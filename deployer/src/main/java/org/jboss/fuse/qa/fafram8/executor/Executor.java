@@ -205,6 +205,7 @@ public class Executor {
 
 	/**
 	 * Waits for the patch to be applied.
+	 *
 	 * @param patchName patch name
 	 */
 	public void waitForPatch(String patchName) {

@@ -15,7 +15,6 @@ import org.jboss.fuse.qa.fafram8.property.SystemProperty;
 import org.jboss.fuse.qa.fafram8.ssh.SSHClient;
 
 import java.io.File;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -181,11 +180,11 @@ public class LocalNodeManager implements NodeManager {
 	}
 
 	@Override
-	public void stopAndClean() {
+	public void stopAndClean(boolean ignoreExceptions) {
 		if (!stopped) {
 			unsetProperties();
-			stop();
-			deleteTargetDir();
+			stop(ignoreExceptions);
+			deleteTargetDir(ignoreExceptions);
 		}
 	}
 
@@ -199,8 +198,10 @@ public class LocalNodeManager implements NodeManager {
 
 	/**
 	 * Stops the container.
+	 *
+	 * @param ignoreExceptions ignore exceptions flag
 	 */
-	private void stop() {
+	private void stop(boolean ignoreExceptions) {
 		final String executable = "stop";
 		final String extension = windows ? ".bat" : "";
 
@@ -229,8 +230,10 @@ public class LocalNodeManager implements NodeManager {
 					ex.printStackTrace();
 				}
 			}
-			// Throw the exception because something was wrong
-			throw new RuntimeException("Could not stop container: " + e);
+			if (!ignoreExceptions) {
+				// Throw the exception because something was wrong
+				throw new RuntimeException("Could not stop container: " + e);
+			}
 		}
 
 		stopped = true;
@@ -238,14 +241,18 @@ public class LocalNodeManager implements NodeManager {
 
 	/**
 	 * Force-Delete target dir.
+	 *
+	 * @param ignoreExceptions ignore exceptions flag
 	 */
-	private void deleteTargetDir() {
+	private void deleteTargetDir(boolean ignoreExceptions) {
 		if (!SystemProperty.isKeepFolder()) {
 			try {
 				log.debug("Deleting " + targetPath);
 				FileUtils.forceDelete(new File(targetPath));
-			} catch (IOException e) {
-				e.printStackTrace();
+			} catch (Exception e) {
+				if (!ignoreExceptions) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}

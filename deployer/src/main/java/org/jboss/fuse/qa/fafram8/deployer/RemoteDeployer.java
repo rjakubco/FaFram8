@@ -37,7 +37,7 @@ public class RemoteDeployer implements Deployer {
 	public void setup() {
 		// TODO(rjakubco): add clean and only connect options for manipulating the test
 		try {
-			nm.stopAndClean();
+			nm.stopAndClean(true);
 			nm.prepareZip();
 			nm.unzipArtifact();
 			nm.prepareFuse();
@@ -48,7 +48,7 @@ public class RemoteDeployer implements Deployer {
 				cm.createSSHContainer(configurationParser.getContainerList());
 			}
 		} catch (RuntimeException ex) {
-			nm.stopAndClean();
+			nm.stopAndClean(true);
 			throw new FaframException(ex);
 		}
 	}

@@ -14,6 +14,7 @@ public class FaframException extends RuntimeException {
 
 	/**
 	 * Constructor.
+	 *
 	 * @param message message
 	 */
 	public FaframException(String message) {
@@ -22,6 +23,7 @@ public class FaframException extends RuntimeException {
 
 	/**
 	 * Constructor.
+	 *
 	 * @param cause cause
 	 */
 	public FaframException(Throwable cause) {
@@ -30,6 +32,7 @@ public class FaframException extends RuntimeException {
 
 	/**
 	 * Constructor.
+	 *
 	 * @param message message
 	 * @param cause cause
 	 */

@@ -41,14 +41,14 @@ public class LocalDeployer implements Deployer {
 			}
 			cm.patchFuse();
 		} catch (RuntimeException ex) {
-			nm.stopAndClean();
+			nm.stopAndClean(true);
 			throw new FaframException(ex);
 		}
 	}
 
 	@Override
 	public void tearDown() {
-		nm.stopAndClean();
+		nm.stopAndClean(false);
 	}
 
 	@Override

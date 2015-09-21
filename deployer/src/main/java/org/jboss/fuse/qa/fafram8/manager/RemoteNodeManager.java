@@ -99,7 +99,7 @@ public class RemoteNodeManager implements NodeManager {
 	}
 
 	@Override
-	public void stopAndClean() {
+	public void stopAndClean(boolean ignoreExceptions) {
 		log.info("Cleaning " + SystemProperty.getHost());
 		executor.executeCommand("pkill -9 -f karaf");
 		executor.executeCommand("rm -rf " + SystemProperty.getFaframFolder());
