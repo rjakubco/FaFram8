@@ -1,7 +1,10 @@
 package org.jboss.fuse.qa.fafram8.modifier.impl;
 
+import org.jboss.fuse.qa.fafram8.executor.Executor;
 import org.jboss.fuse.qa.fafram8.modifier.Modifier;
 import org.jboss.fuse.qa.fafram8.property.SystemProperty;
+
+import org.codehaus.plexus.util.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,16 +29,29 @@ public final class PropertyModifier implements Modifier {
 	private String key;
 	private String value;
 	private boolean extend;
+	private Executor executor;
 
-	private PropertyModifier(String filePath, String key, String value, boolean extend) {
+	private PropertyModifier(String filePath, String key, String value, boolean extend, Executor executor) {
 		this.filePath = filePath;
 		this.key = key;
 		this.value = value;
 		this.extend = extend;
+		this.executor = executor;
 	}
 
 	@Override
 	public void execute() {
+		if (executor == null) {
+			localExecute();
+		} else {
+			remoteExecute();
+		}
+	}
+
+	/**
+	 * Modifies properties on localhost.
+	 */
+	private void localExecute() {
 		final Properties p = new Properties();
 
 		Path path = Paths.get(filePath);
@@ -69,6 +85,21 @@ public final class PropertyModifier implements Modifier {
 	}
 
 	/**
+	 * Modifies properties on remote.
+	 */
+	private void remoteExecute() {
+		final String path = SystemProperty.getFusePath() + File.separator + filePath;
+
+		final String response = executor.executeCommand("(grep -v '[#]' " + path + " | grep -q '" + key + "' ) && sed"
+				+ " -i \"s/^\\s*\\(" + StringUtils.replace(key, ".", "\\.") + "\\).*\\$/\\1=" + value + "/\" " + path
+				+ " || echo '\n" + key + "=" + value + "' >> " + path);
+		if (!response.isEmpty()) {
+			log.error("Setting property on remote host failed. Response should be empty but was: {}.", response);
+			throw new RuntimeException("Setting property on remote host failed (response should be empty): " + response);
+		}
+	}
+
+	/**
 	 * Factory method - command for put/replace entry in property file.
 	 *
 	 * @param filePath path to property file - absolute, or relative to $FUSE_HOME
@@ -77,7 +108,20 @@ public final class PropertyModifier implements Modifier {
 	 * @return command instance
 	 */
 	public static PropertyModifier putProperty(final String filePath, final String key, final String value) {
-		return new PropertyModifier(filePath, key, value, false);
+		return new PropertyModifier(filePath, key, value, false, null);
+	}
+
+	/**
+	 * Static method for creating modifier capable of adding or changing Fuse property on remote host.
+	 *
+	 * @param filePath path to file where the property should be set
+	 * @param key key of the property
+	 * @param value value that should be set for this property
+	 * @param executor executor with ssh client connected to desired remote host
+	 * @return RemotePropertyModifier
+	 */
+	public static PropertyModifier putProperty(final String filePath, final String key, final String value, final Executor executor) {
+		return new PropertyModifier(filePath, key, value, false, executor);
 	}
 
 	/**
@@ -89,6 +133,6 @@ public final class PropertyModifier implements Modifier {
 	 * @return command instance
 	 */
 	public static PropertyModifier extendProperty(final String filePath, final String key, final String value) {
-		return new PropertyModifier(filePath, key, value, true);
+		return new PropertyModifier(filePath, key, value, true, null);
 	}
 }
