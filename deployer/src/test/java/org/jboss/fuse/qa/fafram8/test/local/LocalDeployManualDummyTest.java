@@ -1,4 +1,4 @@
-package org.jboss.fuse.qa.fafram8.test.local.local;
+package org.jboss.fuse.qa.fafram8.test.local;
 
 import org.jboss.fuse.qa.fafram8.resource.Fafram;
 

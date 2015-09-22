@@ -1,6 +1,5 @@
-package org.jboss.fuse.qa.fafram8.test.local.local;
+package org.jboss.fuse.qa.fafram8.test.local;
 
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import org.jboss.fuse.qa.fafram8.property.FaframConstant;

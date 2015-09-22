@@ -1,4 +1,4 @@
-package org.jboss.fuse.qa.fafram8.test.local.local;
+package org.jboss.fuse.qa.fafram8.test.common;
 
 import org.jboss.fuse.qa.fafram8.exception.FaframException;
 import org.jboss.fuse.qa.fafram8.property.FaframConstant;
@@ -18,7 +18,7 @@ public class StartupExceptionTest {
 
 	@Before
 	public void before() {
-		System.setProperty(FaframConstant.FUSE_ZIP, "file://nonexistent");
+		System.setProperty(FaframConstant.FUSE_ZIP, "file:///home/fuse/patches/test.zip");
 	}
 
 	@Test(expected = FaframException.class)

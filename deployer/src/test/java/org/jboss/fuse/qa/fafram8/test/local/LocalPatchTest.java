@@ -1,4 +1,4 @@
-package org.jboss.fuse.qa.fafram8.test.local.local;
+package org.jboss.fuse.qa.fafram8.test.local;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
