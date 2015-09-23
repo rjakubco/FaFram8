@@ -23,7 +23,7 @@ public class LocalRestartTest {
 		fafram.setup();
 		log.info("Sleeping for 120sec");
 		Thread.sleep(120000L);
-		assertTrue(fafram.executeCommand("shell:info | grep Uptime").contains("2 minutes"));
+		assertTrue(fafram.executeCommand("shell:info | grep Uptime").contains("minutes"));
 		fafram.restart();
 		assertTrue(fafram.executeCommand("shell:info | grep Uptime").contains("seconds"));
 	}

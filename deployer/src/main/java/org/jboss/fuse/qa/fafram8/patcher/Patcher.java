@@ -48,11 +48,11 @@ public final class Patcher {
 		final String patch = SystemProperty.getPatch();
 
 		// If the property is not set, return empty array
-		if (patch == null) {
+		if (patch == null || "".equals(patch)) {
 			return new String[0];
 		}
 
-		if ("".equals(patch)) {
+		if ("latest".equals(patch)) {
 			return getPatchFromDefaultLocation();
 		}
 
