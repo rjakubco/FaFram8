@@ -155,6 +155,7 @@ public class LocalNodeManager implements NodeManager {
 			productProcess = Runtime.getRuntime().exec(executablePath);
 			log.info("Waiting for the container to be online");
 			executor.waitForBoot();
+			stopped = false;
 		} catch (Exception e) {
 			throw new RuntimeException("Could not start container: " + e);
 		}
@@ -270,5 +271,13 @@ public class LocalNodeManager implements NodeManager {
 	@Override
 	public void replaceFile(String fileToReplace, String fileToUse) {
 		this.modifierExecutor.addModifiers(moveFile(fileToReplace, fileToUse));
+	}
+
+	/**
+	 * Restarts the container.
+	 */
+	public void restart() {
+		stop(false);
+		startFuse();
 	}
 }

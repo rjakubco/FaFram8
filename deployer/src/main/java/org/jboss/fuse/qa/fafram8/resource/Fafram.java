@@ -4,6 +4,7 @@ import org.jboss.fuse.qa.fafram8.deployer.Deployer;
 import org.jboss.fuse.qa.fafram8.deployer.LocalDeployer;
 import org.jboss.fuse.qa.fafram8.deployer.RemoteDeployer;
 import org.jboss.fuse.qa.fafram8.exceptions.SSHClientException;
+import org.jboss.fuse.qa.fafram8.manager.LocalNodeManager;
 import org.jboss.fuse.qa.fafram8.property.FaframConstant;
 import org.jboss.fuse.qa.fafram8.property.SystemProperty;
 import org.jboss.fuse.qa.fafram8.ssh.FuseSSHClient;
@@ -158,5 +159,13 @@ public class Fafram extends ExternalResource {
 	public Fafram withFabric(String opts) {
 		System.setProperty(FaframConstant.FABRIC, opts);
 		return this;
+	}
+
+	/**
+	 * Restarts the container.
+	 */
+	public void restart() {
+		// TODO(avano): probably won't be needed on remote
+		((LocalNodeManager) deployer.getNodeManager()).restart();
 	}
 }
