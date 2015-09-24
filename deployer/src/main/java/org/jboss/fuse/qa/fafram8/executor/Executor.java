@@ -216,11 +216,12 @@ public class Executor {
 	}
 
 	/**
-	 * Waits for the patch to be applied.
+	 * Waits for the patch defined status.
 	 *
 	 * @param patchName patch name
+	 * @param status status of patch to wait for
 	 */
-	public void waitForPatch(String patchName) {
+	public void waitForPatchStatus(String patchName, boolean status) {
 		final int step = 3;
 		final long timeout = step * 1000L;
 		int retries = 0;
@@ -231,15 +232,24 @@ public class Executor {
 		while (!isSuccessful) {
 			if (retries > SystemProperty.getPatchWaitTime()) {
 				log.error("Container failed to install patch after " + SystemProperty.getPatchWaitTime() + " seconds.");
-				throw new RuntimeException(
-						"Container failed to install patch after " + SystemProperty.getPatchWaitTime() + " seconds.");
+				if ("true".equals(String.valueOf(status))) {
+					log.error("Standalone container failed to install patch after " + SystemProperty.getPatchWaitTime() + " seconds.");
+					throw new RuntimeException(
+							"Container failed to install patch after " + SystemProperty.getPatchWaitTime() + " seconds.");
+				} else {
+					log.error("Standalone container failed to rollback patch after " + SystemProperty.getPatchWaitTime() + " seconds.");
+					throw new RuntimeException(
+							"Container failed to rollback patch after " + SystemProperty.getPatchWaitTime() + " seconds.");
+				}
+
+
 			}
 
 			String reason = "";
 
 			// TODO(avano): command, connection established, remaining time
 			try {
-				isSuccessful = client.executeCommand("patch:list | grep " + patchName, true).contains("true");
+				isSuccessful = client.executeCommand("patch:list | grep " + patchName, true).contains(String.valueOf(status));
 			} catch (Exception e) {
 				reason = e.getMessage();
 
