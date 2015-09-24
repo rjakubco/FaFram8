@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * Random modifier class.
+ * Modifier for better performance of Fuse on Openstack machines.
  * Created by avano on 16.9.15.
  */
 @Slf4j
@@ -41,6 +42,17 @@ public final class RandomModifier implements Modifier {
 
 	@Override
 	public void execute() {
+		if (executor == null) {
+			localExecute();
+		} else {
+			remoteExecute();
+		}
+	}
+
+	/**
+	 * Adds random modifier to bin/karaf on localhost.
+	 */
+	public void localExecute() {
 		try {
 			final String filePath = SystemProperty.getFusePath() + File.separator + "bin" + File.separator + "karaf";
 			final FileInputStream fis = new FileInputStream(filePath);
@@ -56,4 +68,16 @@ public final class RandomModifier implements Modifier {
 			log.error("Error while manipulating the files " + ex);
 		}
 	}
+
+	/**
+	 * Adds random modifier to bin/karaf on remote host.
+	 */
+	public void remoteExecute() {
+		final String filePath = SystemProperty.getFusePath() + File.separator + "bin" + File.separator + "karaf";
+
+		final String response = executor.executeCommand("sed -i \"s/\\(exec \"\\$JAVA\"\\)/  exec \"\\$JAVA\" -Djava.security.egd=file:/dev/./urandom/g\" " + filePath);
+		if (!response.isEmpty()) {
+			log.error("Setting property on remote host failed. Response should be empty but was: {}.", response);
+		}
+	}	
 }
