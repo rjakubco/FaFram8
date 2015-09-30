@@ -100,12 +100,8 @@ public class RemoteNodeManager implements NodeManager {
 
 	@Override
 	public void stopAndClean(boolean ignoreExceptions) {
-		log.info("Cleaning " + SystemProperty.getHost());
-		executor.executeCommand("pkill -9 -f karaf");
-		executor.executeCommand("rm -rf " + SystemProperty.getFaframFolder());
-
-		System.clearProperty(FaframConstant.FABRIC);
-		System.clearProperty(FaframConstant.FUSE_PATH);
+		stop();
+		cleanProperties();
 	}
 
 	@Override
@@ -122,6 +118,23 @@ public class RemoteNodeManager implements NodeManager {
 	@Override
 	public void replaceFile(String fileToReplace, String fileToUse) {
 		this.modifierExecutor.addModifiers(moveFile(fileToReplace, fileToUse, executor));
+	}
+
+	/**
+	 * Stops all karaf instances and removes them.
+	 */
+	public void stop() {
+		log.info("Cleaning " + SystemProperty.getHost());
+		executor.executeCommand("pkill -9 -f karaf");
+		executor.executeCommand("rm -rf " + SystemProperty.getFaframFolder());
+	}
+
+	/**
+	 * Cleans the system properties.
+	 */
+	public void cleanProperties() {
+		System.clearProperty(FaframConstant.FABRIC);
+		System.clearProperty(FaframConstant.FUSE_PATH);
 	}
 
 	/**
