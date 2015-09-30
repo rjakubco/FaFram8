@@ -270,16 +270,20 @@ public class SystemProperty {
 	}
 
 	/**
-	 * Getter
+	 * Getter.
 	 *
 	 * @return whether to keep OS nodes after test or release them
 	 */
-	public static String isKeepOsResources() {return System.getProperty(FaframConstant.KEEP_OS_RESOURCES, "false"); }
+	public static boolean isKeepOsResources() {
+		return "true".equals(System.getProperty(FaframConstant.KEEP_OS_RESOURCES, "false"));
+	}
 
 	/**
-	 * Getter
+	 * Getter.
 	 *
 	 * @return whether to run local deployer
 	 */
-	public static boolean isLocalDeployment() { return  System.getProperty(FaframConstant.LOCAL_DEPLOYMENT)  != null; }
+	public static boolean isLocalDeployment() {
+		return System.getProperty(FaframConstant.LOCAL_DEPLOYMENT) != null;
+	}
 }

@@ -6,7 +6,6 @@ import org.jboss.fuse.qa.fafram8.exceptions.SSHClientException;
 import org.jboss.fuse.qa.fafram8.manager.ContainerManager;
 import org.jboss.fuse.qa.fafram8.manager.NodeManager;
 import org.jboss.fuse.qa.fafram8.manager.RemoteNodeManager;
-import org.jboss.fuse.qa.fafram8.property.FaframConstant;
 import org.jboss.fuse.qa.fafram8.property.SystemProperty;
 import org.jboss.fuse.qa.fafram8.ssh.SSHClient;
 
@@ -58,7 +57,6 @@ public class RemoteDeployer implements Deployer {
 	@Override
 	public void tearDown() {
 		// TODO(rjakubco): what to do here
-
 	}
 
 	@Override

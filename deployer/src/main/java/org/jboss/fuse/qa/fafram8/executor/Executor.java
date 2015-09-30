@@ -58,6 +58,7 @@ public class Executor {
 
 	//TODO(rjakubco): wrong javadoc
 	//TODO(ecervena): provide smarter canConnect loop + log something
+
 	/**
 	 * Checks if the client can connect.
 	 *
@@ -65,9 +66,9 @@ public class Executor {
 	 */
 	public void connect() throws SSHClientException {
 		try {
-			while(!canConnect()) {
+			while (!canConnect()) {
 				System.out.println("waiting...");
-				Thread.sleep(1000);
+				Thread.sleep(1004);
 			}
 			client.connect(false);
 		} catch (VerifyFalseException ex) {

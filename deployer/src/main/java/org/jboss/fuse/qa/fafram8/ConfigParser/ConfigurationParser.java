@@ -41,12 +41,12 @@ public class ConfigurationParser {
 	}
 
 	/**
-	 * Should be used to access ConfigurationParser singleton instance
+	 * Should be used to access ConfigurationParser singleton instance.
 	 *
 	 * @return ConfigurationParser instance
 	 */
 	public static ConfigurationParser getInstance() {
-		if(configurationParser == null) {
+		if (configurationParser == null) {
 			configurationParser = new ConfigurationParser();
 		}
 		return configurationParser;

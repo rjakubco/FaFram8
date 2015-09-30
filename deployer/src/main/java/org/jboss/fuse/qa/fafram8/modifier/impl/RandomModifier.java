@@ -50,6 +50,7 @@ public final class RandomModifier implements Modifier {
 
 	/**
 	 * Factory method.
+	 *
 	 * @return random modifier instance
 	 */
 	public static RandomModifier changeRandomSource() {

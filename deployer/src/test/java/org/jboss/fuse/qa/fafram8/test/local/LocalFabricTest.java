@@ -15,12 +15,6 @@ import org.junit.Test;
  */
 public class LocalFabricTest {
 
-	@BeforeClass
-	public static void init() {
-		System.setProperty(FaframConstant.LOCAL_DEPLOYMENT, "true");
-		System.setProperty(FaframConstant.FUSE_ZIP, "file:/home/ecervena/fuse/build/jboss-fuse-full-6.2.0.redhat-133.zip");
-	}
-
 	@Rule
 	public Fafram fafram = new Fafram().withFabric();
 
