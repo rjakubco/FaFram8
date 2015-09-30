@@ -200,4 +200,12 @@ public final class SystemProperty {
 	public static String getWorkingDirectory() {
 		return System.getProperty(FaframConstant.WORKING_DIRECTORY, "");
 	}
+
+	/**
+	 * Getter.
+	 * @return patch directory
+	 */
+	public static String getPatchDir() {
+		return System.getProperty(FaframConstant.PATCH_DIR, "/home/fuse/patches");
+	}
 }

@@ -133,7 +133,7 @@ public final class Validator {
 	 */
 	private static byte[] convertHost() {
 		final String[] host = SystemProperty.getHost().split("\\.");
-		byte[] hostByte = new byte[host.length];
+		final byte[] hostByte = new byte[host.length];
 		for (int i = 0; i < host.length; i++) {
 			hostByte[i] = Byte.parseByte(host[i]);
 		}
