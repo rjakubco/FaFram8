@@ -21,7 +21,7 @@ public class LocalPatchTest {
 
 	@Test
 	public void karafLatestPatchTest() {
-		System.setProperty(FaframConstant.PATCH, "");
+		System.setProperty(FaframConstant.PATCH, "latest");
 		log.info("System property is \'" + System.getProperty(FaframConstant.PATCH) + "\'");
 		fafram = new Fafram();
 		fafram.setup();
@@ -30,7 +30,7 @@ public class LocalPatchTest {
 
 	@Test
 	public void fabricLatestPatchTest() {
-		System.setProperty(FaframConstant.PATCH, "");
+		System.setProperty(FaframConstant.PATCH, "latest");
 		log.info("System property is \'" + System.getProperty(FaframConstant.PATCH) + "\'");
 		fafram = new Fafram().withFabric();
 		fafram.setup();

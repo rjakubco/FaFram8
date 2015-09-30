@@ -108,7 +108,7 @@ public final class Validator {
 		final String patch = SystemProperty.getPatch();
 
 		// Do nothing if we don't have a patch
-		if (patch == null) {
+		if (patch == null || "".equals(patch)) {
 			return;
 		}
 
