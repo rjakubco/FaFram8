@@ -37,7 +37,7 @@ public class RemoteDeployer implements Deployer {
 	public void setup() {
 		// TODO(rjakubco): add clean and only connect options for manipulating the test
 		try {
-			nm.stopAndClean(true);
+			nm.stop();
 			nm.prepareZip();
 			nm.unzipArtifact();
 			nm.prepareFuse();
