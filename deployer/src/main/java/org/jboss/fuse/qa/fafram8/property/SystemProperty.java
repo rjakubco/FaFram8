@@ -253,6 +253,14 @@ public class SystemProperty {
 
 	/**
 	 * Getter.
+	 * @return patch directory
+	 */
+	public static String getPatchDir() {
+		return System.getProperty(FaframConstant.PATCH_DIR, "/home/fuse/patches");
+	}
+
+	/**
+	 * Getter.
 	 *
 	 * @return patch directory
 	 */
