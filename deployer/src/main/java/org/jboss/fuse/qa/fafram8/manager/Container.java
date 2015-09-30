@@ -12,7 +12,16 @@ public class Container {
 	/**
 	 * Constructor.
 	 *
-	 * @param name name
+	 * @param name name of container
+	 */
+	public Container(String name) {
+		this.name = name;
+	}
+
+	/**
+	 * Constructor.
+	 *
+	 * @param name name of container
 	 * @param hostIP host ip
 	 */
 	public Container(String name, String hostIP) {
@@ -31,4 +40,8 @@ public class Container {
 	@Getter
 	@Setter
 	private boolean root = false;
+
+	@Getter
+	@Setter
+	private String openStackServerId;
 }

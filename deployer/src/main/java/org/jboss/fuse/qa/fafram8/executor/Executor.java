@@ -56,6 +56,8 @@ public class Executor {
 		}
 	}
 
+	//TODO(rjakubco): wrong javadoc
+	//TODO(ecervena): provide smarter canConnect loop + log something
 	/**
 	 * Checks if the client can connect.
 	 *
@@ -63,10 +65,16 @@ public class Executor {
 	 */
 	public void connect() throws SSHClientException {
 		try {
+			while(!canConnect()) {
+				System.out.println("waiting...");
+				Thread.sleep(1000);
+			}
 			client.connect(false);
 		} catch (VerifyFalseException ex) {
 			// TODO(rjakubco): recursion -> bad idea?
 			connect();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
 		}
 	}
 

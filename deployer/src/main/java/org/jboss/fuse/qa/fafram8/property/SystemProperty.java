@@ -1,10 +1,5 @@
 package org.jboss.fuse.qa.fafram8.property;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import lombok.Getter;
-
 /**
  * System property class.
  * Created by avano on 20.8.15.
@@ -273,4 +268,18 @@ public class SystemProperty {
 	public static boolean skipDefaultUser() {
 		return System.getProperty(FaframConstant.SKIP_DEFAULT_USER) != null;
 	}
+
+	/**
+	 * Getter
+	 *
+	 * @return whether to keep OS nodes after test or release them
+	 */
+	public static String isKeepOsResources() {return System.getProperty(FaframConstant.KEEP_OS_RESOURCES, "false"); }
+
+	/**
+	 * Getter
+	 *
+	 * @return whether to run local deployer
+	 */
+	public static boolean isLocalDeployment() { return  System.getProperty(FaframConstant.LOCAL_DEPLOYMENT)  != null; }
 }

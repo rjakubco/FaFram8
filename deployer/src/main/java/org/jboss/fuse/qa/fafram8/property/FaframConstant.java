@@ -73,6 +73,12 @@ public final class FaframConstant {
 	// Use when working on perf machines.
 	public static final String WORKING_DIRECTORY = "fafram.working.directory";
 
+	// If "true" OpenStackManager will not release OS nodes after test
+	public static final String KEEP_OS_RESOURCES = "keep.os.resources";
+
+	// If "true" fafram will use local deployer
+	public static final String LOCAL_DEPLOYMENT = "local.deployment";
+
 	// Patches folder
 	public static final String PATCH_DIR = "fafram.patch.dir";
 
