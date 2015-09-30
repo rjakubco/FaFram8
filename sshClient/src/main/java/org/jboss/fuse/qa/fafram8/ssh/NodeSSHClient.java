@@ -3,7 +3,6 @@ package org.jboss.fuse.qa.fafram8.ssh;
 import org.jboss.fuse.qa.fafram8.exceptions.CopyFileException;
 import org.jboss.fuse.qa.fafram8.exceptions.KarafSessionDownException;
 import org.jboss.fuse.qa.fafram8.exceptions.SSHClientException;
-import org.jboss.fuse.qa.fafram8.exceptions.VerifyFalseException;
 
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.ChannelSftp;
@@ -23,47 +22,6 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class NodeSSHClient extends SSHClient {
-
-	@Override
-	public void connect(boolean supressLog) throws VerifyFalseException, SSHClientException {
-		final int sessionTimeout = 20000;
-		try {
-			if (!"none".equals(privateKey)) {
-				if (passphrase != null) {
-					ssh.addIdentity(privateKey, passphrase);
-				} else {
-					ssh.addIdentity(privateKey);
-				}
-			}
-
-			session = ssh.getSession(username, hostname, port);
-
-			session.setConfig("StrictHostKeyChecking", "no");
-			session.setPassword(password);
-
-			session.connect(sessionTimeout);
-
-			log.info("Connection established.");
-		} catch (JSchException ex) {
-			if (ex.getMessage().contains("verify false")) {
-				if (!supressLog) {
-					log.debug("JschException caught - Verify false");
-				}
-				throw new VerifyFalseException(ex);
-			}
-
-			if (ex.getMessage().contains("timeout: socket is not established")) {
-				log.error("Unable to connect to specified host: " + session.getHost() + ":" + session.getPort()
-						+ " after 20 seconds");
-				throw new SSHClientException("Unable to connect to specified host: " + session.getHost() + ":"
-						+ session.getPort() + " after 20 seconds");
-			}
-
-			log.error(ex.getLocalizedMessage());
-			throw new SSHClientException(ex);
-		}
-	}
-
 	@Override
 	public String executeCommand(String command, boolean supressLog) throws KarafSessionDownException,
 			SSHClientException {

@@ -8,18 +8,21 @@ import org.jboss.fuse.qa.fafram8.exceptions.VerifyFalseException;
 
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.JSch;
+import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 
 import java.io.IOException;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Abstract class for SSHClients.
  *
  * @author : Roman Jakubco (rjakubco@redhat.com)
  */
+@Slf4j
 public abstract class SSHClient {
 
 	@Getter
@@ -79,7 +82,46 @@ public abstract class SSHClient {
 	 * @throws VerifyFalseException throw this exception when JschClient drop connection
 	 * @throws SSHClientException common exception for sshclient when there is some problem in executing command
 	 */
-	public abstract void connect(boolean supressLog) throws VerifyFalseException, SSHClientException;
+	public void connect(boolean supressLog) throws VerifyFalseException, SSHClientException {
+		final int sessionTimeout = 20000;
+		try {
+			if (!"none".equals(privateKey)) {
+				if (passphrase != null) {
+					ssh.addIdentity(privateKey, passphrase);
+				} else {
+					ssh.addIdentity(privateKey);
+				}
+			}
+
+			session = ssh.getSession(username, hostname, port);
+
+			session.setConfig("StrictHostKeyChecking", "no");
+			session.setPassword(password);
+
+			session.connect(sessionTimeout);
+
+			log.info("Connection established.");
+		} catch (JSchException ex) {
+			if (ex.getMessage().contains("verify false")) {
+				if (!supressLog) {
+					log.error("JschException caught - Verify false");
+				}
+				throw new VerifyFalseException(ex);
+			}
+
+			if (ex.getMessage().contains("timeout: socket is not established")) {
+				log.error("Unable to connect to specified host: " + session.getHost() + ":" + session.getPort()
+						+ " after " + sessionTimeout + " miliseconds");
+				throw new SSHClientException("Unable to connect to specified host: " + session.getHost() + ":"
+						+ session.getPort() + " after " + sessionTimeout + " miliseconds");
+			}
+
+			if (!supressLog) {
+				log.error(ex.getLocalizedMessage());
+			}
+			throw new SSHClientException(ex);
+		}
+	}
 
 	/**
 	 * Disconnects channel and session.
