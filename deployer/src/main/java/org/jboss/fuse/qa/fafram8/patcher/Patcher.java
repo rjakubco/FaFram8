@@ -23,8 +23,6 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public final class Patcher {
-	// TODO(avano): change this
-	private static final String DEFAULT_PATCH_LOCATION = "/home/fuse/patches";
 
 	private Patcher() {
 	}
@@ -86,7 +84,7 @@ public final class Patcher {
 		final String version = StringUtils.substring(SystemProperty.getFuseVersion(), 0, 3);
 
 		// Path to default patch directory
-		final File f = new File(DEFAULT_PATCH_LOCATION + File.separator + "latest");
+		final File f = new File(SystemProperty.getPatchDir() + File.separator + "latest");
 
 		// Get only the patches for current version
 		final FilenameFilter versionFilter = new FilenameFilter() {
@@ -131,7 +129,7 @@ public final class Patcher {
 		Arrays.sort(patchNames);
 
 		// Get all the files
-		final Collection<File> files = FileUtils.listFiles(new File(DEFAULT_PATCH_LOCATION),
+		final Collection<File> files = FileUtils.listFiles(new File(SystemProperty.getPatchDir()),
 				new WildcardFileFilter("*" + version + "*"), DirectoryFileFilter.DIRECTORY);
 
 		final List<File> fileList = new ArrayList<>();
