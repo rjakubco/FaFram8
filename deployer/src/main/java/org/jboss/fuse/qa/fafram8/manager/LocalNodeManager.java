@@ -110,7 +110,7 @@ public class LocalNodeManager implements NodeManager {
 		// Use the subdir name to construct the product path
 		productPath = targetPath + SEP + folderName;
 		log.debug("Product path is " + productPath);
-		System.setProperty(FaframConstant.FUSE_PATH, productPath);
+		SystemProperty.set(FaframConstant.FUSE_PATH, productPath);
 	}
 
 	@Override
@@ -183,18 +183,10 @@ public class LocalNodeManager implements NodeManager {
 	@Override
 	public void stopAndClean(boolean ignoreExceptions) {
 		if (!stopped) {
-			unsetProperties();
+			SystemProperty.clearAllProperties();
 			stop(ignoreExceptions);
 			deleteTargetDir(ignoreExceptions);
 		}
-	}
-
-	/**
-	 * Unsets system properties.
-	 */
-	private void unsetProperties() {
-		System.clearProperty(FaframConstant.FABRIC);
-		System.clearProperty(FaframConstant.FUSE_PATH);
 	}
 
 	/**

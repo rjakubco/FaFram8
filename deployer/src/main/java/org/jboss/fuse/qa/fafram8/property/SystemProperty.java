@@ -1,15 +1,37 @@
 package org.jboss.fuse.qa.fafram8.property;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import lombok.Getter;
+
 /**
  * System property class.
  * Created by avano on 20.8.15.
  */
-public final class SystemProperty {
+public class SystemProperty {
+	private static SystemProperty instance = null;
+	@Getter
+	private static Set<String> properties = null;
 
 	/**
-	 * Private constructor.
+	 * Constructor.
 	 */
-	private SystemProperty() {
+	protected SystemProperty() {
+	}
+
+	/**
+	 * Gets the instance.
+	 *
+	 * @return instance
+	 */
+	public static SystemProperty getInstance() {
+		if (instance == null) {
+			instance = new SystemProperty();
+			properties = new HashSet<>();
+		}
+
+		return instance;
 	}
 
 	/**
@@ -203,9 +225,36 @@ public final class SystemProperty {
 
 	/**
 	 * Getter.
+	 *
 	 * @return patch directory
 	 */
 	public static String getPatchDir() {
 		return System.getProperty(FaframConstant.PATCH_DIR, "/home/fuse/patches");
+	}
+
+	/**
+	 * Sets the system property and adds it to the set.
+	 *
+	 * @param property property
+	 * @param value value
+	 */
+	public static void set(String property, String value) {
+		// Force the initialization
+		SystemProperty.getInstance();
+
+		// Check if such property exists - if yes do nothing
+		if (System.getProperty(property) == null) {
+			System.setProperty(property, value);
+			getProperties().add(property);
+		}
+	}
+
+	/**
+	 * Clears all set properties.
+	 */
+	public static void clearAllProperties() {
+		for (String prop : getProperties()) {
+			System.clearProperty(prop);
+		}
 	}
 }

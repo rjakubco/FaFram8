@@ -73,7 +73,7 @@ public class RemoteNodeManager implements NodeManager {
 		productPath = executor.executeCommand("ls -d $PWD" + SEP + getFolder() + SEP + "*" + SEP);
 
 		log.debug("Product path is " + productPath);
-		System.setProperty(FaframConstant.FUSE_PATH, productPath);
+		SystemProperty.set(FaframConstant.FUSE_PATH, productPath);
 	}
 
 	@Override
@@ -101,7 +101,7 @@ public class RemoteNodeManager implements NodeManager {
 	@Override
 	public void stopAndClean(boolean ignoreExceptions) {
 		stop();
-		cleanProperties();
+		SystemProperty.clearAllProperties();
 	}
 
 	@Override
@@ -127,14 +127,6 @@ public class RemoteNodeManager implements NodeManager {
 		log.info("Cleaning " + SystemProperty.getHost());
 		executor.executeCommand("pkill -9 -f karaf");
 		executor.executeCommand("rm -rf " + SystemProperty.getFaframFolder());
-	}
-
-	/**
-	 * Cleans the system properties.
-	 */
-	public void cleanProperties() {
-		System.clearProperty(FaframConstant.FABRIC);
-		System.clearProperty(FaframConstant.FUSE_PATH);
 	}
 
 	/**

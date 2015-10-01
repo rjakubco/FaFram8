@@ -29,19 +29,6 @@ public class Fafram extends ExternalResource {
 	 * Constructor.
 	 */
 	public Fafram() {
-		Validator.validate();
-		if (SystemProperty.getHost() == null) {
-			log.info("Setting up local deployment");
-			setupLocalDeployment();
-		} else {
-			log.info("Setting up remote deployment on host " + SystemProperty.getHost() + ":" + SystemProperty
-					.getHostPort());
-			try {
-				setupRemoteDeployment();
-			} catch (SSHClientException e) {
-				e.printStackTrace();
-			}
-		}
 	}
 
 	@Override
@@ -58,6 +45,20 @@ public class Fafram extends ExternalResource {
 	 * Start method.
 	 */
 	public void setup() {
+		Validator.validate();
+		if (SystemProperty.getHost() == null) {
+			log.info("Setting up local deployment");
+			setupLocalDeployment();
+		} else {
+			log.info("Setting up remote deployment on host " + SystemProperty.getHost() + ":" + SystemProperty
+					.getHostPort());
+			try {
+				setupRemoteDeployment();
+			} catch (SSHClientException e) {
+				e.printStackTrace();
+			}
+		}
+
 		// Start deployer
 		deployer.setup();
 	}
@@ -88,7 +89,7 @@ public class Fafram extends ExternalResource {
 	 */
 	private void setupRemoteDeployment() throws SSHClientException {
 		// Use fabric by default on remote
-		System.setProperty(FaframConstant.FABRIC, "");
+		SystemProperty.set(FaframConstant.FABRIC, "");
 		final SSHClient node = new NodeSSHClient().hostname(SystemProperty.getHost()).port(SystemProperty.getHostPort())
 				.username(SystemProperty.getHostUser()).password(SystemProperty.getHostPassword());
 		final SSHClient fuse = new FuseSSHClient().hostname(SystemProperty.getHost()).fuseSSHPort().username(
@@ -157,7 +158,7 @@ public class Fafram extends ExternalResource {
 	 * @return this
 	 */
 	public Fafram withFabric(String opts) {
-		System.setProperty(FaframConstant.FABRIC, opts);
+		SystemProperty.set(FaframConstant.FABRIC, opts);
 		return this;
 	}
 
