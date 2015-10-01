@@ -1,5 +1,10 @@
 package org.jboss.fuse.qa.fafram8.property;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import lombok.Getter;
+
 /**
  * System property class.
  * Created by avano on 20.8.15.
@@ -28,38 +33,6 @@ public class SystemProperty {
 		}
 
 		return instance;
-	}
-
-	/**
-	 * Sets the system property and adds it to the set.
-	 *
-	 * @param property property
-	 * @param value value
-	 */
-	public static void set(String property, String value) {
-		// Force the initialization
-		SystemProperty.getInstance();
-
-		// Check if such property exists - if yes do nothing
-		if (System.getProperty(property) == null) {
-			System.setProperty(property, value);
-			getProperties().add(property);
-		}
-	}
-
-	/**
-	 * Clears all set properties.
-	 */
-	public static void clearAllProperties() {
-		// Force the initialization - for example when the unzip fails
-		SystemProperty.getInstance();
-
-		for (String prop : getProperties()) {
-			System.clearProperty(prop);
-		}
-
-		// Clear all the properties at the end so that they will not stay here when executing multiple tests
-		properties.clear();
 	}
 
 	/**
@@ -253,6 +226,7 @@ public class SystemProperty {
 
 	/**
 	 * Getter.
+	 *
 	 * @return patch directory
 	 */
 	public static String getPatchDir() {
@@ -260,12 +234,29 @@ public class SystemProperty {
 	}
 
 	/**
-	 * Getter.
+	 * Sets the system property and adds it to the set.
 	 *
-	 * @return patch directory
+	 * @param property property
+	 * @param value value
 	 */
-	public static String getPatchDir() {
-		return System.getProperty(FaframConstant.PATCH_DIR, "/home/fuse/patches");
+	public static void set(String property, String value) {
+		// Force the initialization
+		SystemProperty.getInstance();
+
+		// Check if such property exists - if yes do nothing
+		if (System.getProperty(property) == null) {
+			System.setProperty(property, value);
+			getProperties().add(property);
+		}
+	}
+
+	/**
+	 * Clears all set properties.
+	 */
+	public static void clearAllProperties() {
+		for (String prop : getProperties()) {
+			System.clearProperty(prop);
+		}
 	}
 
 	/**

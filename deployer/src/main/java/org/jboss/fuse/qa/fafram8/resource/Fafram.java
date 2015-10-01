@@ -3,7 +3,6 @@ package org.jboss.fuse.qa.fafram8.resource;
 import org.jboss.fuse.qa.fafram8.deployer.Deployer;
 import org.jboss.fuse.qa.fafram8.deployer.LocalDeployer;
 import org.jboss.fuse.qa.fafram8.deployer.RemoteDeployer;
-import org.jboss.fuse.qa.fafram8.environment.OpenStackManager;
 import org.jboss.fuse.qa.fafram8.exceptions.SSHClientException;
 import org.jboss.fuse.qa.fafram8.manager.LocalNodeManager;
 import org.jboss.fuse.qa.fafram8.modifier.ModifierExecutor;
