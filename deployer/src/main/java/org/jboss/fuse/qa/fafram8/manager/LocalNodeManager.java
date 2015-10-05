@@ -1,7 +1,6 @@
 package org.jboss.fuse.qa.fafram8.manager;
 
 import static org.jboss.fuse.qa.fafram8.modifier.impl.AccessRightsModifier.setExecutable;
-import static org.jboss.fuse.qa.fafram8.modifier.impl.FileModifier.moveFile;
 import static org.jboss.fuse.qa.fafram8.modifier.impl.PropertyModifier.putProperty;
 import static org.jboss.fuse.qa.fafram8.modifier.impl.RandomModifier.applyOpenstackFix;
 
@@ -54,9 +53,6 @@ public class LocalNodeManager implements NodeManager {
 
 	// Container process
 	private Process productProcess;
-
-	// Modifier executor
-	private ModifierExecutor modifierExecutor = new ModifierExecutor();
 
 	// Is jenkins?
 	private boolean jenkins = System.getenv("WORKSPACE") != null;
@@ -118,19 +114,18 @@ public class LocalNodeManager implements NodeManager {
 		if (!windows) {
 			// Restore execute rights to karaf, start, stop
 			log.debug("Setting executable flags to karaf, start, stop");
-			modifierExecutor.addModifiers(setExecutable("bin" + SEP + "karaf", "bin" + SEP + "start",
+			ModifierExecutor.addModifiers(setExecutable("bin" + SEP + "karaf", "bin" + SEP + "start",
 					"bin" + SEP + "stop"));
 		}
-
 		// Add default user
-		modifierExecutor.addModifiers(putProperty("etc/users.properties", SystemProperty.getFuseUser(),
+		ModifierExecutor.addModifiers(putProperty("etc/users.properties", SystemProperty.getFuseUser(),
 				SystemProperty.getFusePassword() + ",admin,manager,viewer,Monitor, Operator, Maintainer, Deployer, "
 						+ "Auditor, Administrator, SuperUser"));
 
 		// Apply openstack /dev/random fix
-		modifierExecutor.addModifiers(applyOpenstackFix());
+		ModifierExecutor.addModifiers(applyOpenstackFix());
 
-		modifierExecutor.executeModifiers();
+		ModifierExecutor.executeModifiers();
 	}
 
 	@Override
@@ -248,21 +243,6 @@ public class LocalNodeManager implements NodeManager {
 				}
 			}
 		}
-	}
-
-	@Override
-	public void addUser(String user, String pass, String roles) {
-		addProperty("etc/users.properties", user, pass + "," + roles);
-	}
-
-	@Override
-	public void addProperty(String filePath, String key, String value) {
-		this.modifierExecutor.addModifiers(putProperty(filePath, key, value));
-	}
-
-	@Override
-	public void replaceFile(String fileToReplace, String fileToUse) {
-		this.modifierExecutor.addModifiers(moveFile(fileToReplace, fileToUse));
 	}
 
 	/**

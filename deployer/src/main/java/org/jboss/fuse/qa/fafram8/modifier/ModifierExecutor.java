@@ -1,35 +1,73 @@
 package org.jboss.fuse.qa.fafram8.modifier;
 
+import org.jboss.fuse.qa.fafram8.executor.Executor;
+
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Modifier executor class.
- * Created by jludvice on 4.8.15.
+ * Modifier Executor class.
+ * Created by avano on 5.10.15.
  */
 @Slf4j
 public class ModifierExecutor {
-	private List<Modifier> modifierList = new LinkedList<>();
+	private static ModifierExecutor instance = null;
+	private static List<Modifier> modifiers = null;
 
 	/**
-	 * Add multiple modifiers to list for execution.
-	 *
-	 * @param modifiers to be executed
+	 * Constructor.
 	 */
-	public void addModifiers(Modifier... modifiers) {
-		Collections.addAll(modifierList, modifiers);
+	protected ModifierExecutor() {
 	}
 
 	/**
-	 * Execute all modifiers before fuse is started.
+	 * Gets the instance.
+	 *
+	 * @return instance
 	 */
-	public void executeModifiers() {
-		for (Modifier c : modifierList) {
+	public static ModifierExecutor getInstance() {
+		if (instance == null) {
+			instance = new ModifierExecutor();
+			modifiers = new ArrayList<>();
+		}
+
+		return instance;
+	}
+
+	/**
+	 * Adds the modifier into the modifier list.
+	 *
+	 * @param modifier modifiers
+	 */
+	public static void addModifiers(Modifier... modifier) {
+		// Force the initialization
+		ModifierExecutor.getInstance();
+
+		Collections.addAll(modifiers, modifier);
+	}
+
+	/**
+	 * Executes the modifiers before the fuse starts.
+	 */
+	public static void executeModifiers() {
+		executeModifiers(null);
+	}
+
+	/**
+	 * Executes the modifiers before the fuse starts.
+	 *
+	 * @param executor executor
+	 */
+	public static void executeModifiers(Executor executor) {
+		for (Modifier c : modifiers) {
 			log.debug("Executing modifier {}.", c);
 			try {
+				if (executor != null) {
+					c.setExecutor(executor);
+				}
 				c.execute();
 			} catch (Exception e) {
 				log.error("Failed to execute modifiers.", e);

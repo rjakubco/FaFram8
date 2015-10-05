@@ -15,6 +15,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Properties;
 
+import lombok.Setter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
@@ -29,14 +30,21 @@ public final class PropertyModifier implements Modifier {
 	private String key;
 	private String value;
 	private boolean extend;
+	@Setter
 	private Executor executor;
 
-	private PropertyModifier(String filePath, String key, String value, boolean extend, Executor executor) {
+	/**
+	 * Private constructor.
+	 * @param filePath file path
+	 * @param key key
+	 * @param value value
+	 * @param extend extend
+	 */
+	private PropertyModifier(String filePath, String key, String value, boolean extend) {
 		this.filePath = filePath;
 		this.key = key;
 		this.value = value;
 		this.extend = extend;
-		this.executor = executor;
 	}
 
 	@Override
@@ -108,20 +116,7 @@ public final class PropertyModifier implements Modifier {
 	 * @return command instance
 	 */
 	public static PropertyModifier putProperty(final String filePath, final String key, final String value) {
-		return new PropertyModifier(filePath, key, value, false, null);
-	}
-
-	/**
-	 * Static method for creating modifier capable of adding or changing Fuse property on remote host.
-	 *
-	 * @param filePath path to file where the property should be set
-	 * @param key key of the property
-	 * @param value value that should be set for this property
-	 * @param executor executor with ssh client connected to desired remote host
-	 * @return RemotePropertyModifier
-	 */
-	public static PropertyModifier putProperty(final String filePath, final String key, final String value, final Executor executor) {
-		return new PropertyModifier(filePath, key, value, false, executor);
+		return new PropertyModifier(filePath, key, value, false);
 	}
 
 	/**
@@ -133,6 +128,6 @@ public final class PropertyModifier implements Modifier {
 	 * @return command instance
 	 */
 	public static PropertyModifier extendProperty(final String filePath, final String key, final String value) {
-		return new PropertyModifier(filePath, key, value, true, null);
+		return new PropertyModifier(filePath, key, value, true);
 	}
 }

@@ -11,6 +11,7 @@ import lombok.Getter;
  */
 public class SystemProperty {
 	private static SystemProperty instance = null;
+
 	@Getter
 	private static Set<String> properties = null;
 

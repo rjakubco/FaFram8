@@ -1,10 +1,15 @@
 package org.jboss.fuse.qa.fafram8.resource;
 
+import static org.jboss.fuse.qa.fafram8.modifier.impl.FileModifier.moveFile;
+import static org.jboss.fuse.qa.fafram8.modifier.impl.PropertyModifier.extendProperty;
+import static org.jboss.fuse.qa.fafram8.modifier.impl.PropertyModifier.putProperty;
+
 import org.jboss.fuse.qa.fafram8.deployer.Deployer;
 import org.jboss.fuse.qa.fafram8.deployer.LocalDeployer;
 import org.jboss.fuse.qa.fafram8.deployer.RemoteDeployer;
 import org.jboss.fuse.qa.fafram8.exceptions.SSHClientException;
 import org.jboss.fuse.qa.fafram8.manager.LocalNodeManager;
+import org.jboss.fuse.qa.fafram8.modifier.ModifierExecutor;
 import org.jboss.fuse.qa.fafram8.property.FaframConstant;
 import org.jboss.fuse.qa.fafram8.property.SystemProperty;
 import org.jboss.fuse.qa.fafram8.ssh.FuseSSHClient;
@@ -98,22 +103,22 @@ public class Fafram extends ExternalResource {
 	}
 
 	/**
-	 * Executes a command.
+	 * Executes a command in node shell.
 	 *
 	 * @param command command
 	 * @return command response
 	 */
-	public String executeCommand(String command) {
+	public String executeNodeCommand(String command) {
 		return deployer.getNodeManager().getExecutor().executeCommand(command);
 	}
 
 	/**
 	 * Executes a command in root container shell.
 	 *
-	 * @param command fabric command to execute on root container
-	 * @return command stdo
+	 * @param command command to execute on root container
+	 * @return command response
 	 */
-	public String executeFuseCommand(String command) {
+	public String executeCommand(String command) {
 		return deployer.getContainerManager().getExecutor().executeCommand(command);
 	}
 
@@ -126,7 +131,26 @@ public class Fafram extends ExternalResource {
 	 * @return this
 	 */
 	public Fafram addUser(String user, String password, String roles) {
-		deployer.getNodeManager().addUser(user, password, roles);
+		ModifierExecutor.addModifiers(putProperty("etc/users.properties", user, password + "," + roles));
+		return this;
+	}
+
+	/**
+	 * Modifies (add/extend) a property.
+	 *
+	 * @param file file path relative to karaf home
+	 * @param key key
+	 * @param value value
+	 * @param extend extend flag
+	 * @return this
+	 */
+	public Fafram modifyProperty(String file, String key, String value, boolean extend) {
+		if (extend) {
+			ModifierExecutor.addModifiers(putProperty(file, key, value));
+		} else {
+			ModifierExecutor.addModifiers(extendProperty(file, key, value));
+		}
+
 		return this;
 	}
 
@@ -138,7 +162,7 @@ public class Fafram extends ExternalResource {
 	 * @return this
 	 */
 	public Fafram replaceFile(String fileToReplace, String fileToUse) {
-		deployer.getNodeManager().replaceFile(fileToReplace, fileToUse);
+		ModifierExecutor.addModifiers(moveFile(fileToReplace, fileToUse));
 		return this;
 	}
 
