@@ -3,6 +3,7 @@ package org.jboss.fuse.qa.fafram8.resource;
 import static org.jboss.fuse.qa.fafram8.modifier.impl.FileModifier.moveFile;
 import static org.jboss.fuse.qa.fafram8.modifier.impl.PropertyModifier.extendProperty;
 import static org.jboss.fuse.qa.fafram8.modifier.impl.PropertyModifier.putProperty;
+import static org.jboss.fuse.qa.fafram8.modifier.impl.RandomModifier.changeRandomSource;
 
 import org.jboss.fuse.qa.fafram8.deployer.Deployer;
 import org.jboss.fuse.qa.fafram8.deployer.LocalDeployer;
@@ -64,6 +65,8 @@ public class Fafram extends ExternalResource {
 			}
 		}
 
+		setDefaultModifiers();
+
 		// Start deployer
 		deployer.setup();
 	}
@@ -72,16 +75,30 @@ public class Fafram extends ExternalResource {
 	 * Stop method.
 	 */
 	public void tearDown() {
-		deployer.tearDown();
+		// Do nothing if deployer is null - when the validation fails.
+		if (deployer != null) {
+			deployer.tearDown();
+		}
+	}
+
+	/**
+	 * Sets the default modifiers common for both local and remote deploy.
+	 */
+	private void setDefaultModifiers() {
+		if (!SystemProperty.skipDefaultUser()) {
+			// Add default user
+			ModifierExecutor.addModifiers(putProperty("etc/users.properties", SystemProperty.getFuseUser(),
+					SystemProperty.getFusePassword() + ",admin,manager,viewer,Monitor, Operator, Maintainer, Deployer, "
+							+ "Auditor, Administrator, SuperUser"));
+		}
+
+		ModifierExecutor.addModifiers(changeRandomSource());
 	}
 
 	/**
 	 * Sets up the local deployment.
 	 */
 	private void setupLocalDeployment() {
-		// Don't use fabric by default on localhost
-		System.clearProperty(FaframConstant.FABRIC);
-
 		final int defaultPort = 8101;
 
 		// Create a local deployer with local SSH Client and assign to deployer variable
@@ -95,10 +112,13 @@ public class Fafram extends ExternalResource {
 	private void setupRemoteDeployment() throws SSHClientException {
 		// Use fabric by default on remote
 		SystemProperty.set(FaframConstant.FABRIC, "");
+
 		final SSHClient node = new NodeSSHClient().hostname(SystemProperty.getHost()).port(SystemProperty.getHostPort())
 				.username(SystemProperty.getHostUser()).password(SystemProperty.getHostPassword());
+
 		final SSHClient fuse = new FuseSSHClient().hostname(SystemProperty.getHost()).fuseSSHPort().username(
 				SystemProperty.getFuseUser()).password(SystemProperty.getFusePassword());
+
 		deployer = new RemoteDeployer(node, fuse);
 	}
 
@@ -183,6 +203,16 @@ public class Fafram extends ExternalResource {
 	 */
 	public Fafram withFabric(String opts) {
 		SystemProperty.set(FaframConstant.FABRIC, opts);
+		return this;
+	}
+
+	/**
+	 * Suppress the default user add.
+	 *
+	 * @return this
+	 */
+	public Fafram withoutDefaultUser() {
+		SystemProperty.set(FaframConstant.SKIP_DEFAULT_USER, "");
 		return this;
 	}
 

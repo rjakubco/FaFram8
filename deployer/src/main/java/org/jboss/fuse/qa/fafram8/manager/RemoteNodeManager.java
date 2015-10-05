@@ -1,7 +1,5 @@
 package org.jboss.fuse.qa.fafram8.manager;
 
-import static org.jboss.fuse.qa.fafram8.modifier.impl.PropertyModifier.putProperty;
-
 import org.jboss.fuse.qa.fafram8.downloader.Downloader;
 import org.jboss.fuse.qa.fafram8.exceptions.SSHClientException;
 import org.jboss.fuse.qa.fafram8.executor.Executor;
@@ -74,11 +72,6 @@ public class RemoteNodeManager implements NodeManager {
 
 	@Override
 	public void prepareFuse() {
-		// Add default user
-		ModifierExecutor.addModifiers(putProperty("etc/users.properties", SystemProperty.getFuseUser(),
-				SystemProperty.getFusePassword() + ",admin,manager,viewer,Monitor, Operator, Maintainer, Deployer, "
-						+ "Auditor, Administrator, SuperUser"));
-
 		ModifierExecutor.executeModifiers(executor);
 	}
 
@@ -96,8 +89,9 @@ public class RemoteNodeManager implements NodeManager {
 
 	@Override
 	public void stopAndClean(boolean ignoreExceptions) {
-		stop();
 		SystemProperty.clearAllProperties();
+		ModifierExecutor.clearAllModifiers();
+		stop();
 	}
 
 	/**

@@ -12,27 +12,35 @@ import org.junit.Test;
  * Created by avano on 21.9.15.
  */
 public class ZipValidatorTest {
+	private Fafram fafram;
+
 	@Test(expected = ValidatorException.class)
 	public void fuseZipValidationTest() {
 		System.setProperty(FaframConstant.FUSE_ZIP, "");
-		new Fafram();
+		fafram = new Fafram();
+		fafram.setup();
 	}
 
 	@Test(expected = ValidatorException.class)
 	public void fuseHostZipValidationTest() {
 		System.setProperty(FaframConstant.HOST, "1.2.3.4");
-		new Fafram();
+		fafram = new Fafram();
+		fafram.setup();
 	}
 
 	@Test(expected = ValidatorException.class)
 	public void fuseNonExistentZipValidationTest() {
 		System.setProperty(FaframConstant.FUSE_ZIP, "file:///nonexistent");
-		new Fafram();
+		fafram = new Fafram();
+		fafram.setup();
 	}
 
 	@After
 	public void after() {
 		System.clearProperty(FaframConstant.FUSE_ZIP);
 		System.clearProperty(FaframConstant.HOST);
+		if (fafram != null) {
+			fafram.tearDown();
+		}
 	}
 }

@@ -75,4 +75,12 @@ public class ModifierExecutor {
 			}
 		}
 	}
+
+	/**
+	 * Clears the modifiers.
+	 */
+	public static void clearAllModifiers() {
+		// Clear all the modifiers at the end so that they will not stay here when executing multiple tests
+		modifiers.clear();
+	}
 }

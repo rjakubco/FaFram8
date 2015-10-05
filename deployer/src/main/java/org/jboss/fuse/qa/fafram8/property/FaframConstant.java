@@ -75,4 +75,7 @@ public final class FaframConstant {
 
 	// Patches folder
 	public static final String PATCH_DIR = "fafram.patch.dir";
+
+	// Skip default user flag
+	public static final String SKIP_DEFAULT_USER = "fafram.skip.default.user";
 }

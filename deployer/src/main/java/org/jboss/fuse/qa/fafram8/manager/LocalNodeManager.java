@@ -1,8 +1,6 @@
 package org.jboss.fuse.qa.fafram8.manager;
 
 import static org.jboss.fuse.qa.fafram8.modifier.impl.AccessRightsModifier.setExecutable;
-import static org.jboss.fuse.qa.fafram8.modifier.impl.PropertyModifier.putProperty;
-import static org.jboss.fuse.qa.fafram8.modifier.impl.RandomModifier.applyOpenstackFix;
 
 import org.apache.commons.io.FileUtils;
 
@@ -117,13 +115,6 @@ public class LocalNodeManager implements NodeManager {
 			ModifierExecutor.addModifiers(setExecutable("bin" + SEP + "karaf", "bin" + SEP + "start",
 					"bin" + SEP + "stop"));
 		}
-		// Add default user
-		ModifierExecutor.addModifiers(putProperty("etc/users.properties", SystemProperty.getFuseUser(),
-				SystemProperty.getFusePassword() + ",admin,manager,viewer,Monitor, Operator, Maintainer, Deployer, "
-						+ "Auditor, Administrator, SuperUser"));
-
-		// Apply openstack /dev/random fix
-		ModifierExecutor.addModifiers(applyOpenstackFix());
 
 		ModifierExecutor.executeModifiers();
 	}
@@ -179,6 +170,7 @@ public class LocalNodeManager implements NodeManager {
 	public void stopAndClean(boolean ignoreExceptions) {
 		if (!stopped) {
 			SystemProperty.clearAllProperties();
+			ModifierExecutor.clearAllModifiers();
 			stop(ignoreExceptions);
 			deleteTargetDir(ignoreExceptions);
 		}

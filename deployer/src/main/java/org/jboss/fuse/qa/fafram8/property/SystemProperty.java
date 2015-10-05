@@ -36,6 +36,38 @@ public class SystemProperty {
 	}
 
 	/**
+	 * Sets the system property and adds it to the set.
+	 *
+	 * @param property property
+	 * @param value value
+	 */
+	public static void set(String property, String value) {
+		// Force the initialization
+		SystemProperty.getInstance();
+
+		// Check if such property exists - if yes do nothing
+		if (System.getProperty(property) == null) {
+			System.setProperty(property, value);
+			getProperties().add(property);
+		}
+	}
+
+	/**
+	 * Clears all set properties.
+	 */
+	public static void clearAllProperties() {
+		// Force the initialization - for example when the unzip fails
+		SystemProperty.getInstance();
+
+		for (String prop : getProperties()) {
+			System.clearProperty(prop);
+		}
+
+		// Clear all the properties at the end so that they will not stay here when executing multiple tests
+		properties.clear();
+	}
+
+	/**
 	 * Getter.
 	 *
 	 * @return remote host
@@ -234,28 +266,11 @@ public class SystemProperty {
 	}
 
 	/**
-	 * Sets the system property and adds it to the set.
+	 * Getter.
 	 *
-	 * @param property property
-	 * @param value value
+	 * @return skip default user flag
 	 */
-	public static void set(String property, String value) {
-		// Force the initialization
-		SystemProperty.getInstance();
-
-		// Check if such property exists - if yes do nothing
-		if (System.getProperty(property) == null) {
-			System.setProperty(property, value);
-			getProperties().add(property);
-		}
-	}
-
-	/**
-	 * Clears all set properties.
-	 */
-	public static void clearAllProperties() {
-		for (String prop : getProperties()) {
-			System.clearProperty(prop);
-		}
+	public static boolean skipDefaultUser() {
+		return System.getProperty(FaframConstant.SKIP_DEFAULT_USER) != null;
 	}
 }
