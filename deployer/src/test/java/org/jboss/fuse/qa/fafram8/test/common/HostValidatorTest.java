@@ -12,20 +12,27 @@ import org.junit.Test;
  * Created by avano on 22.9.15.
  */
 public class HostValidatorTest {
+	private Fafram fafram;
+
 	@Test(expected = ValidatorException.class)
 	public void nonExistentHostNameValidationTest() {
 		System.setProperty(FaframConstant.HOST, "1.2.3.4");
-		new Fafram();
+		fafram = new Fafram();
+		fafram.setup();
 	}
 
 	@Test(expected = ValidatorException.class)
 	public void emptyHostValidationTest() {
 		System.setProperty(FaframConstant.HOST, "");
-		new Fafram();
+		fafram = new Fafram();
+		fafram.setup();
 	}
 
 	@After
 	public void after() {
 		System.clearProperty(FaframConstant.HOST);
+		if (fafram != null) {
+			fafram.tearDown();
+		}
 	}
 }

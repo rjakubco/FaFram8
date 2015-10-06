@@ -3,7 +3,6 @@ package org.jboss.fuse.qa.fafram8.test.remote;
 import org.jboss.fuse.qa.fafram8.property.FaframConstant;
 import org.jboss.fuse.qa.fafram8.resource.Fafram;
 
-import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Ignore;
 import org.junit.Rule;
@@ -27,8 +26,8 @@ public class RemoteSSHContainerTest {
     @Test
 	@Ignore
     public void fabricTest() {
-        assertTrue(fafram.executeFuseCommand("container-list | grep root").contains("success"));
-        assertTrue(fafram.executeFuseCommand("container-list | grep node3").contains("success"));
+        assertTrue(fafram.executeCommand("container-list | grep root").contains("success"));
+        assertTrue(fafram.executeCommand("container-list | grep node3").contains("success"));
     }
 
 	@AfterClass

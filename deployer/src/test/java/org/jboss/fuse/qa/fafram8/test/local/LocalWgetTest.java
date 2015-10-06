@@ -9,6 +9,7 @@ import org.junit.Test;
 
 /**
  * Local downloading of Fuse from http via wget test.
+ *
  * @author : Roman Jakubco (rjakubco@redhat.com)
  */
 public class LocalWgetTest {
@@ -16,16 +17,15 @@ public class LocalWgetTest {
 
 	@Before
 	public void init() {
-		System.setProperty(FaframConstant.FUSE_ZIP, "http://download.eng.bos.redhat.com/brewroot/repos/jb-fuse-6.2-build/latest/maven/org/jboss/fuse/jboss-fuse-full/6.2.0.redhat-133/jboss-fuse-full-6.2.0.redhat-133.zip");
-
-		fafram = new Fafram();
-		fafram.setup();
+		System.setProperty(FaframConstant.FUSE_ZIP,
+				"http://download.eng.bos.redhat.com/brewroot/repos/jb-fuse-6.2-build/latest/maven/org/jboss/fuse/jboss-fuse-full/6.2.0" +
+						".redhat-133/jboss-fuse-full-6.2.0.redhat-133.zip");
 	}
 
 	@Test
 	public void testWgetZip() throws Exception {
-
-
+		fafram = new Fafram();
+		fafram.setup();
 	}
 
 	@After
@@ -34,6 +34,5 @@ public class LocalWgetTest {
 			fafram.tearDown();
 		}
 		System.clearProperty(FaframConstant.FUSE_ZIP);
-
 	}
 }

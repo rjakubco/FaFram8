@@ -75,25 +75,26 @@ Remote deployment todo rjakubco
 ### System properties
 The workflow or properties can be modified using system properties. Full list of system properties is
 
-    host - Host IP address
-    host.port - Host port
-    host.user - Host SSH login
-    host.password - Host SSH password
+	host - Host IP address
+	host.port - Host port
+	host.user - Host SSH login
+	host.password - Host SSH password
 	fuse.user - Fuse user
 	fuse.password - Fuse password
-    fuse.group - Fuse artifact maven group id
-    fuse.id - Fuse artifact maven artifact id
-    fuse.version - Fuse version, for example 6.2.0.redhat-133
-    fuse.zip - Fuse zip location
-    start.wait.time - Karaf start wait time
-    stop.wait.time - Karaf stop wait time
-    provision.wait.time - Fabric provision wait time
-    patch.wait.time - Patch install wait time
-    keepFolder - Flag if the folder should be kept after the execution
-    fafram.folder - Name of the working folder on remote host
-    patch - Patch location
-    fafram.working.directory - Special working directory on remote machine
+	fuse.group - Fuse artifact maven group id
+	fuse.id - Fuse artifact maven artifact id
+	fuse.version - Fuse version, for example 6.2.0.redhat-133
+	fuse.zip - Fuse zip location
+	start.wait.time - Karaf start wait time
+	stop.wait.time - Karaf stop wait time
+	provision.wait.time - Fabric provision wait time
+	patch.wait.time - Patch install wait time
+	keepFolder - Flag if the folder should be kept after the execution
+	fafram.folder - Name of the working folder on remote host
+	patch - Patch location
+	fafram.working.directory - Special working directory on remote machine
 	fafram.patch.dir - Patch directory location
+	fafram.skip.default.user - Skip default user add
 
 ### Patches
 

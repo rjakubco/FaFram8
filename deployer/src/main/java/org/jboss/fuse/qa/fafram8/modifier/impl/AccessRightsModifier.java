@@ -1,22 +1,34 @@
 package org.jboss.fuse.qa.fafram8.modifier.impl;
 
+import org.jboss.fuse.qa.fafram8.executor.Executor;
 import org.jboss.fuse.qa.fafram8.modifier.Modifier;
 import org.jboss.fuse.qa.fafram8.property.SystemProperty;
 
 import java.io.File;
 
-import lombok.AllArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 
 /**
  * Access rights modifier.
  * Created by avano on 20.8.15.
  */
-@AllArgsConstructor
 @ToString
-public class AccessRightsModifier implements Modifier {
+public final class AccessRightsModifier implements Modifier {
+	@Setter
+	private Executor executor;
+
 	@SuppressWarnings("MismatchedReadAndWriteOfArray")
 	private String[] paths;
+
+	/**
+	 * Private constructor.
+	 *
+	 * @param paths paths
+	 */
+	private AccessRightsModifier(String[] paths) {
+		this.paths = paths;
+	}
 
 	@SuppressWarnings("ResultOfMethodCallIgnored")
 	@Override

@@ -154,13 +154,13 @@ public final class Downloader {
 
 		log.debug("M2_HOME system property is " + System.getProperty("M2_HOME"));
 		if (System.getProperty("M2_HOME") != null) {
-			System.setProperty("maven.home", System.getProperty("M2_HOME"));
+			SystemProperty.set("maven.home", System.getProperty("M2_HOME"));
 			return;
 		}
 
 		log.debug("M2_HOME env property is " + System.getenv("M2_HOME"));
 		if (System.getenv("M2_HOME") != null) {
-			System.setProperty("maven.home", System.getenv("M2_HOME"));
+			SystemProperty.set("maven.home", System.getenv("M2_HOME"));
 			return;
 		}
 
@@ -178,7 +178,7 @@ public final class Downloader {
 					mvnLocation = part;
 				}
 
-				System.setProperty("maven.home", mvnLocation);
+				SystemProperty.set("maven.home", mvnLocation);
 				log.debug("Maven found in " + mvnLocation);
 
 				return;

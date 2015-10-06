@@ -1,8 +1,5 @@
 package org.jboss.fuse.qa.fafram8.manager;
 
-import static org.jboss.fuse.qa.fafram8.modifier.impl.FileModifier.moveFile;
-import static org.jboss.fuse.qa.fafram8.modifier.impl.PropertyModifier.putProperty;
-
 import org.jboss.fuse.qa.fafram8.downloader.Downloader;
 import org.jboss.fuse.qa.fafram8.exceptions.SSHClientException;
 import org.jboss.fuse.qa.fafram8.executor.Executor;
@@ -41,9 +38,6 @@ public class RemoteNodeManager implements NodeManager {
 	// Full path to unzipped product
 	private String productPath;
 
-	// Modifier executor
-	private ModifierExecutor modifierExecutor = new ModifierExecutor();
-
 	/**
 	 * Constructor.
 	 *
@@ -73,17 +67,12 @@ public class RemoteNodeManager implements NodeManager {
 		productPath = executor.executeCommand("ls -d $PWD" + SEP + getFolder() + SEP + "*" + SEP);
 
 		log.debug("Product path is " + productPath);
-		System.setProperty(FaframConstant.FUSE_PATH, productPath);
+		SystemProperty.set(FaframConstant.FUSE_PATH, productPath);
 	}
 
 	@Override
 	public void prepareFuse() {
-		// Add default user
-		modifierExecutor.addModifiers(putProperty("etc/users.properties", SystemProperty.getFuseUser(),
-				SystemProperty.getFusePassword() + ",admin,manager,viewer,Monitor, Operator, Maintainer, Deployer, "
-						+ "Auditor, Administrator, SuperUser", executor));
-
-		modifierExecutor.executeModifiers();
+		ModifierExecutor.executeModifiers(executor);
 	}
 
 	@Override
@@ -100,24 +89,9 @@ public class RemoteNodeManager implements NodeManager {
 
 	@Override
 	public void stopAndClean(boolean ignoreExceptions) {
+		SystemProperty.clearAllProperties();
+		ModifierExecutor.clearAllModifiers();
 		stop();
-		cleanProperties();
-	}
-
-	@Override
-	public void addProperty(String path, String key, String value) {
-		this.modifierExecutor.addModifiers(putProperty(path, key, value, executor));
-	}
-
-	@Override
-	public void addUser(String user, String pass, String roles) {
-		this.modifierExecutor
-				.addModifiers(putProperty("etc/users.properties", user, pass + "," + roles, executor));
-	}
-
-	@Override
-	public void replaceFile(String fileToReplace, String fileToUse) {
-		this.modifierExecutor.addModifiers(moveFile(fileToReplace, fileToUse, executor));
 	}
 
 	/**
@@ -127,14 +101,6 @@ public class RemoteNodeManager implements NodeManager {
 		log.info("Cleaning " + SystemProperty.getHost());
 		executor.executeCommand("pkill -9 -f karaf");
 		executor.executeCommand("rm -rf " + SystemProperty.getFaframFolder());
-	}
-
-	/**
-	 * Cleans the system properties.
-	 */
-	public void cleanProperties() {
-		System.clearProperty(FaframConstant.FABRIC);
-		System.clearProperty(FaframConstant.FUSE_PATH);
 	}
 
 	/**

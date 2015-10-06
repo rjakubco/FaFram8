@@ -1,10 +1,16 @@
 package org.jboss.fuse.qa.fafram8.resource;
 
+import static org.jboss.fuse.qa.fafram8.modifier.impl.FileModifier.moveFile;
+import static org.jboss.fuse.qa.fafram8.modifier.impl.PropertyModifier.extendProperty;
+import static org.jboss.fuse.qa.fafram8.modifier.impl.PropertyModifier.putProperty;
+import static org.jboss.fuse.qa.fafram8.modifier.impl.RandomModifier.changeRandomSource;
+
 import org.jboss.fuse.qa.fafram8.deployer.Deployer;
 import org.jboss.fuse.qa.fafram8.deployer.LocalDeployer;
 import org.jboss.fuse.qa.fafram8.deployer.RemoteDeployer;
 import org.jboss.fuse.qa.fafram8.exceptions.SSHClientException;
 import org.jboss.fuse.qa.fafram8.manager.LocalNodeManager;
+import org.jboss.fuse.qa.fafram8.modifier.ModifierExecutor;
 import org.jboss.fuse.qa.fafram8.property.FaframConstant;
 import org.jboss.fuse.qa.fafram8.property.SystemProperty;
 import org.jboss.fuse.qa.fafram8.ssh.FuseSSHClient;
@@ -29,19 +35,6 @@ public class Fafram extends ExternalResource {
 	 * Constructor.
 	 */
 	public Fafram() {
-		Validator.validate();
-		if (SystemProperty.getHost() == null) {
-			log.info("Setting up local deployment");
-			setupLocalDeployment();
-		} else {
-			log.info("Setting up remote deployment on host " + SystemProperty.getHost() + ":" + SystemProperty
-					.getHostPort());
-			try {
-				setupRemoteDeployment();
-			} catch (SSHClientException e) {
-				e.printStackTrace();
-			}
-		}
 	}
 
 	@Override
@@ -58,6 +51,22 @@ public class Fafram extends ExternalResource {
 	 * Start method.
 	 */
 	public void setup() {
+		Validator.validate();
+		if (SystemProperty.getHost() == null) {
+			log.info("Setting up local deployment");
+			setupLocalDeployment();
+		} else {
+			log.info("Setting up remote deployment on host " + SystemProperty.getHost() + ":" + SystemProperty
+					.getHostPort());
+			try {
+				setupRemoteDeployment();
+			} catch (SSHClientException e) {
+				e.printStackTrace();
+			}
+		}
+
+		setDefaultModifiers();
+
 		// Start deployer
 		deployer.setup();
 	}
@@ -66,16 +75,30 @@ public class Fafram extends ExternalResource {
 	 * Stop method.
 	 */
 	public void tearDown() {
-		deployer.tearDown();
+		// Do nothing if deployer is null - when the validation fails.
+		if (deployer != null) {
+			deployer.tearDown();
+		}
+	}
+
+	/**
+	 * Sets the default modifiers common for both local and remote deploy.
+	 */
+	private void setDefaultModifiers() {
+		if (!SystemProperty.skipDefaultUser()) {
+			// Add default user
+			ModifierExecutor.addModifiers(putProperty("etc/users.properties", SystemProperty.getFuseUser(),
+					SystemProperty.getFusePassword() + ",admin,manager,viewer,Monitor, Operator, Maintainer, Deployer, "
+							+ "Auditor, Administrator, SuperUser"));
+		}
+
+		ModifierExecutor.addModifiers(changeRandomSource());
 	}
 
 	/**
 	 * Sets up the local deployment.
 	 */
 	private void setupLocalDeployment() {
-		// Don't use fabric by default on localhost
-		System.clearProperty(FaframConstant.FABRIC);
-
 		final int defaultPort = 8101;
 
 		// Create a local deployer with local SSH Client and assign to deployer variable
@@ -88,31 +111,34 @@ public class Fafram extends ExternalResource {
 	 */
 	private void setupRemoteDeployment() throws SSHClientException {
 		// Use fabric by default on remote
-		System.setProperty(FaframConstant.FABRIC, "");
+		SystemProperty.set(FaframConstant.FABRIC, "");
+
 		final SSHClient node = new NodeSSHClient().hostname(SystemProperty.getHost()).port(SystemProperty.getHostPort())
 				.username(SystemProperty.getHostUser()).password(SystemProperty.getHostPassword());
+
 		final SSHClient fuse = new FuseSSHClient().hostname(SystemProperty.getHost()).fuseSSHPort().username(
 				SystemProperty.getFuseUser()).password(SystemProperty.getFusePassword());
+
 		deployer = new RemoteDeployer(node, fuse);
 	}
 
 	/**
-	 * Executes a command.
+	 * Executes a command in node shell.
 	 *
 	 * @param command command
 	 * @return command response
 	 */
-	public String executeCommand(String command) {
+	public String executeNodeCommand(String command) {
 		return deployer.getNodeManager().getExecutor().executeCommand(command);
 	}
 
 	/**
 	 * Executes a command in root container shell.
 	 *
-	 * @param command fabric command to execute on root container
-	 * @return command stdo
+	 * @param command command to execute on root container
+	 * @return command response
 	 */
-	public String executeFuseCommand(String command) {
+	public String executeCommand(String command) {
 		return deployer.getContainerManager().getExecutor().executeCommand(command);
 	}
 
@@ -125,7 +151,26 @@ public class Fafram extends ExternalResource {
 	 * @return this
 	 */
 	public Fafram addUser(String user, String password, String roles) {
-		deployer.getNodeManager().addUser(user, password, roles);
+		ModifierExecutor.addModifiers(putProperty("etc/users.properties", user, password + "," + roles));
+		return this;
+	}
+
+	/**
+	 * Modifies (add/extend) a property.
+	 *
+	 * @param file file path relative to karaf home
+	 * @param key key
+	 * @param value value
+	 * @param extend extend flag
+	 * @return this
+	 */
+	public Fafram modifyProperty(String file, String key, String value, boolean extend) {
+		if (extend) {
+			ModifierExecutor.addModifiers(putProperty(file, key, value));
+		} else {
+			ModifierExecutor.addModifiers(extendProperty(file, key, value));
+		}
+
 		return this;
 	}
 
@@ -137,7 +182,7 @@ public class Fafram extends ExternalResource {
 	 * @return this
 	 */
 	public Fafram replaceFile(String fileToReplace, String fileToUse) {
-		deployer.getNodeManager().replaceFile(fileToReplace, fileToUse);
+		ModifierExecutor.addModifiers(moveFile(fileToReplace, fileToUse));
 		return this;
 	}
 
@@ -157,7 +202,17 @@ public class Fafram extends ExternalResource {
 	 * @return this
 	 */
 	public Fafram withFabric(String opts) {
-		System.setProperty(FaframConstant.FABRIC, opts);
+		SystemProperty.set(FaframConstant.FABRIC, opts);
+		return this;
+	}
+
+	/**
+	 * Suppress the default user add.
+	 *
+	 * @return this
+	 */
+	public Fafram withoutDefaultUser() {
+		SystemProperty.set(FaframConstant.SKIP_DEFAULT_USER, "");
 		return this;
 	}
 

@@ -2,6 +2,7 @@ package org.jboss.fuse.qa.fafram8.modifier.impl;
 
 import org.apache.commons.io.IOUtils;
 
+import org.jboss.fuse.qa.fafram8.executor.Executor;
 import org.jboss.fuse.qa.fafram8.modifier.Modifier;
 import org.jboss.fuse.qa.fafram8.property.SystemProperty;
 
@@ -9,15 +10,19 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 
+import lombok.Setter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
 /**
+ * Random modifier class.
  * Created by avano on 16.9.15.
  */
 @Slf4j
 @ToString
 public final class RandomModifier implements Modifier {
+	@Setter
+	private Executor executor;
 
 	/**
 	 * Private constructor.
@@ -47,7 +52,7 @@ public final class RandomModifier implements Modifier {
 	 * Factory method.
 	 * @return random modifier instance
 	 */
-	public static RandomModifier applyOpenstackFix() {
+	public static RandomModifier changeRandomSource() {
 		return new RandomModifier();
 	}
 }
