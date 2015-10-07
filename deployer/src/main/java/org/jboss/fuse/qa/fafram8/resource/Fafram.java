@@ -1,5 +1,6 @@
 package org.jboss.fuse.qa.fafram8.resource;
 
+import org.jboss.fuse.qa.fafram8.ConfigParser.ConfigurationParser;
 import static org.jboss.fuse.qa.fafram8.modifier.impl.FileModifier.moveFile;
 import static org.jboss.fuse.qa.fafram8.modifier.impl.PropertyModifier.extendProperty;
 import static org.jboss.fuse.qa.fafram8.modifier.impl.PropertyModifier.putProperty;
