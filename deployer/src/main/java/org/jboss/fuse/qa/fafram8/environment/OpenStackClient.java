@@ -8,7 +8,7 @@ import org.openstack4j.openstack.OSFactory;
  * <p/>
  * Created by ecervena on 28.9.15.
  */
-public class OpenStackClient {
+public final class OpenStackClient {
 
 	//static property holding created OpenStackClient singleton
 	private static OpenStackClient openStackClient = null;
@@ -17,7 +17,7 @@ public class OpenStackClient {
 	private static OSClient os = null;
 
 	/**
-	 * Constructor with OpenStack client factory authentication
+	 * Constructor with OpenStack client factory authentication.
 	 */
 	private OpenStackClient() {
 		os = OSFactory.builder()

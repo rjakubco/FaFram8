@@ -21,19 +21,22 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * OpenStackManager class used for calling all OpenStack node operations. Using authenticated OpenStackClient singleton.
+ * OpenStackProvisionManager class used for calling all OpenStack node operations. Using authenticated OpenStackClient singleton.
  * <p/>
  * Created by ecervena on 24.9.15.
  * TODO(ecervena): this should be probably singleton
  */
 @Slf4j
-public class OpenStackManager {
+public class OpenStackProvisionManager implements ProvisionManager {
 
-	//List of floating addresses allocated by OpenStackManager
+	//List of floating addresses allocated by OpenStackProvisionManager
 	private static final List<FloatingIP> floatingIPs = new LinkedList<>();
 
 	//List of all created OpenStack nodes a.k.a. servers
-	private static final List<Server> servers = new LinkedList<>();
+	private static final List<Server> serverRegister = new LinkedList<>();
+
+	//List of available OpenStack nodes which are not assigned to container yet
+	private static List<Server> serverPool = new LinkedList<>();
 
 	//Authenticated OpenStackClient instance
 	@Getter
@@ -54,11 +57,11 @@ public class OpenStackManager {
 				.flavor("3")
 				.keypairName("ecervena")
 				.build();
-		servers.add(os.compute().servers().bootAndWaitActive(server, 120004));
+		serverRegister.add(os.compute().servers().bootAndWaitActive(server, 120004));
 	}
 
 	/**
-	 * Method for deleting OpenStack node by server name. All nodes created  by OpenStackManager have "fafram8-" prefix.
+	 * Method for deleting OpenStack node by server name. All nodes created  by OpenStackProvisionManager have "fafram8-" prefix.
 	 *
 	 * @param nodeName name of the node
 	 */
@@ -67,7 +70,7 @@ public class OpenStackManager {
 	}
 
 	/**
-	 * Method for getting Server a.k.a OpenStack node object model. All nodes created  by OpenStackManager
+	 * Method for getting Server a.k.a OpenStack node object model. All nodes created  by OpenStackProvisionManager
 	 * have "fafram8-" prefix.
 	 *
 	 * @param nodeName name of the node
@@ -90,18 +93,21 @@ public class OpenStackManager {
 	/**
 	 * This method will use ConfigurationParser singleton to parse XML representation of OpenStack infrastructure
 	 * and spawn thread for each container to create its OpenStack node. Each thread will create one OpenStack node,
-	 * assign its serverId to container object model and register new server to OpenStackManager's ServerList.
+	 * assign its serverId to container object model and register new server to OpenStackProvisionManager's ServerList.
 	 * IP addresses are assigned to containers later. Root container will get floating public IP and register it.
 	 * Others will get only local IP.
 	 * <p/>
 	 * TODO(ecervena): configuration parser uses only fake config path. Change it when parser will be fully implemented
 	 */
-	public void spawnInfrastructure() {
+	public void createNodePool(List<Container> containerList) {
 		log.info("Spawning OpenStack infrastructure.");
 		final ConfigurationParser cp = ConfigurationParser.getInstance();
-		cp.parseConfigurationFile("some/fake/file/path");
-		final List<Container> containerList = cp.getContainerList();
+		//cp.parseConfigurationFile("some/fake/file/path");
+		//final List<Container> containerList = cp.getContainerList();
 		ServerInvokerPool.spawnServers(containerList);
+	}
+
+	public void assignAddresses(List<Container> containerList) {
 		for (Container container : containerList) {
 			final Server server = getServerByName("fafram8-" + container.getName());
 			container.setOpenStackServerId(server.getId());
@@ -111,10 +117,12 @@ public class OpenStackManager {
 				log.debug("Assigning public IP: " + ip + " for container: " + container.getName());
 				container.setHostIP(ip);
 				System.setProperty(FaframConstant.HOST, ip);
+				removeServerFromPool(server);
 			} else {
 				//fuseqe-lab has only 1 address type "fuseqe-lab-1" with only one address called NovaAddress
 				container.setHostIP(server.getAddresses().getAddresses("fuseqe-lab-1").get(0).getAddr());
 				log.debug("Assigning local IP: " + server.getAddresses().getAddresses("fuseqe-lab-1").get(0).getAddr() + " for container: " + container.getName());
+				removeServerFromPool(server);
 			}
 		}
 	}
@@ -132,7 +140,7 @@ public class OpenStackManager {
 			log.info("Deallocating floating IP: " + ip.getFloatingIpAddress());
 			os.compute().floatingIps().deallocateIP(ip.getId());
 		}
-		for (Server server : servers) {
+		for (Server server : serverRegister) {
 			log.info("Terminating node: " + server.getName());
 			os.compute().servers().delete(server.getId());
 		}
@@ -181,11 +189,29 @@ public class OpenStackManager {
 	}
 
 	/**
-	 * Register server to OpenStackManager's "register".
+	 * Register server to OpenStackProvisionManager's "register".
 	 *
 	 * @param server server
 	 */
 	public static void registerServer(Server server) {
-		servers.add(server);
+		serverRegister.add(server);
+	}
+
+	/**
+	 * Add server to pool.
+	 *
+	 * @param server
+	 */
+	public static void addServerToPool(Server server) {
+		serverPool.add(server);
+	}
+
+	/**
+	 * Remove server to pool.
+	 *
+	 * @param server
+	 */
+	public static void removeServerFromPool(Server server) {
+		serverPool.remove(server);
 	}
 }

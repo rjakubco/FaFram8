@@ -286,4 +286,11 @@ public class SystemProperty {
 	public static boolean isLocalDeployment() {
 		return System.getProperty(FaframConstant.LOCAL_DEPLOYMENT) != null;
 	}
+
+	/**
+	 * Getter
+	 *
+	 * @return provisioning provider name
+	 */
+	public static String getProvider() { return System.getProperty(FaframConstant.PROVIDER, "none"); }
 }

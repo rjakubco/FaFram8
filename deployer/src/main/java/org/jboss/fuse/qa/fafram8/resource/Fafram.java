@@ -3,6 +3,7 @@ package org.jboss.fuse.qa.fafram8.resource;
 import org.jboss.fuse.qa.fafram8.deployer.Deployer;
 import org.jboss.fuse.qa.fafram8.deployer.LocalDeployer;
 import org.jboss.fuse.qa.fafram8.deployer.RemoteDeployer;
+import org.jboss.fuse.qa.fafram8.environment.OpenStackManager;
 import org.jboss.fuse.qa.fafram8.exceptions.SSHClientException;
 import org.jboss.fuse.qa.fafram8.manager.LocalNodeManager;
 import org.jboss.fuse.qa.fafram8.modifier.ModifierExecutor;
@@ -217,5 +218,37 @@ public class Fafram extends ExternalResource {
 	public void restart() {
 		// TODO(avano): probably won't be needed on remote
 		((LocalNodeManager) deployer.getNodeManager()).restart();
+	}
+
+	public static void addContainer(Container container) {
+		containerList.add(container);
+	}
+
+	public void prepareNodes(String provider) {
+		switch (provider) {
+			case "none": {
+				log.info("Provisioning provider not specified. Container addresses need to be specified in configuration file.");
+				return;
+			}
+			case "openstack": {
+				OpenStackProvisionManager osm = new OpenStackProvisionManager();
+				osm.createNodePool(Fafram.containerList);
+				osm.assignAddresses(Fafram.containerList);
+			}
+			default: {
+				log.info("Provision provider class: " + provider);
+			}
+/*			try {
+				Class<?> provisionManagerClass = Class.forName(provider);
+				Constructor<?> ctor = provisionManagerClass.getConstructor();
+				ProvisionManager provisionManager = (ProvisionManager) ctor.newInstance(new Object());
+				provisionManager.createNodePool(Fafram.containerList);
+				provisionManager.assignAddresses(Fafram.containerList);
+			} catch (Exception ex) {
+				log.info(ex.toString());
+			}*/
+
+		}
+
 	}
 }

@@ -9,7 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * Thread worker class. OpenStack client is created with shared session from OpenStackClient singleton. Worker purpose
- * is spawn one single server per thread, wait for "active" status and register created server to OpenStackManager.
+ * is spawn one single server per thread, wait for "active" status and register created server to OpenStackProvisionManager.
  * <p/>
  * Created by ecervena on 28.9.15.
  */
@@ -49,6 +49,7 @@ public class ServerInvoker implements Runnable {
 				.build();
 		//TODO(ecervena): do something smarter with server boot timeout
 		final Server server = os.compute().servers().bootAndWaitActive(serverCreate, 120004);
-		OpenStackManager.registerServer(server);
+		OpenStackProvisionManager.registerServer(server);
+		OpenStackProvisionManager.addServerToPool(server);
 	}
 }
