@@ -21,7 +21,7 @@ public class LocalWithoutDefaultUserTest {
 
 	@Rule
 	public Fafram fafram = new Fafram().withoutDefaultUser().addUser("testUser", "testPassword", "admin,manager,viewer,Monitor, Operator, " +
-			"Maintainer, Deployer, Auditor, Administrator, SuperUser");
+			"Maintainer, Deployer, Auditor, Administrator, SuperUser").suppressStart();
 
 	@AfterClass
 	public static void afterClass() {

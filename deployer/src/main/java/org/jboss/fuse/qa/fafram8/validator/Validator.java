@@ -51,9 +51,9 @@ public final class Validator {
 
 		// If we are on remote but not specifying zip
 		// TODO(avano): rework this once provisioning is in
-//		if (SystemProperty.getHost() != null && zipFile == null) {
-//			throw new ValidatorException(FaframConstant.FUSE_ZIP + " property is not set on remote!");
-//		}
+		//		if (SystemProperty.getHost() != null && zipFile == null) {
+		//			throw new ValidatorException(FaframConstant.FUSE_ZIP + " property is not set on remote!");
+		//		}
 
 		// If the maven properties are not set and not using custom zip
 		if (zipFile == null && (SystemProperty.getFuseId() == null || SystemProperty.getFuseGroup() == null || SystemProperty.getFuseVersion()
@@ -92,7 +92,7 @@ public final class Validator {
 
 		if (host != null) {
 			try {
-				final InetAddress inet = InetAddress.getByAddress(convertHost());
+				final InetAddress inet = InetAddress.getByName(host);
 				if (!inet.isReachable(timeout)) {
 					throw new ValidatorException(String.format("Specified host (%s) is not reachable!", host));
 				}
@@ -125,19 +125,5 @@ public final class Validator {
 				throw new ValidatorException(String.format("Specified file (%s) does not exist!", patch));
 			}
 		}
-	}
-
-	/**
-	 * Converts the host string into byte array.
-	 *
-	 * @return byte array
-	 */
-	private static byte[] convertHost() {
-		final String[] host = SystemProperty.getHost().split("\\.");
-		final byte[] hostByte = new byte[host.length];
-		for (int i = 0; i < host.length; i++) {
-			hostByte[i] = Byte.parseByte(host[i]);
-		}
-		return hostByte;
 	}
 }

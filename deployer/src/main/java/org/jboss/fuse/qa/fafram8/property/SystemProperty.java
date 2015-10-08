@@ -290,6 +290,24 @@ public class SystemProperty {
 	/**
 	 * Getter.
 	 *
+	 * @return skip default jvm opts flag
+	 */
+	public static boolean skipDefaultJvmOpts() {
+		return System.getProperty(FaframConstant.SKIP_DEFAULT_JVM_OPTS) != null;
+	}
+
+	/**
+	 * Getter.
+	 *
+	 * @return skip default jvm opts flag
+	 */
+	public static boolean suppressStart() {
+		return System.getProperty(FaframConstant.SUPPRESS_START) != null;
+	}
+
+	/**
+	 * Getter.
+	 *
 	 * @return whether to keep OS nodes after test or release them
 	 */
 	public static boolean isKeepOsResources() {

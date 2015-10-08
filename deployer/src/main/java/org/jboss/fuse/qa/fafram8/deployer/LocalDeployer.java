@@ -35,12 +35,14 @@ public class LocalDeployer implements Deployer {
 			nm.prepareZip();
 			nm.unzipArtifact();
 			nm.prepareFuse();
-			nm.startFuse();
-			cm.patchStandaloneBeforeFabric();
-			if (SystemProperty.isFabric()) {
-				cm.setupFabric();
+			if (!SystemProperty.suppressStart()) {
+				nm.startFuse();
+				cm.patchStandaloneBeforeFabric();
+				if (SystemProperty.isFabric()) {
+					cm.setupFabric();
+				}
+				cm.patchFuse();
 			}
-			cm.patchFuse();
 		} catch (RuntimeException ex) {
 			nm.stopAndClean(true);
 			throw new FaframException(ex);

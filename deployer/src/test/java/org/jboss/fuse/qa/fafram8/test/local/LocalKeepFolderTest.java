@@ -25,8 +25,7 @@ public class LocalKeepFolderTest {
 
 	@Test
 	public void keepFolderTest() {
-		fafram = new Fafram();
-		fafram.setup();
+		fafram = new Fafram().suppressStart().setup();
 
 		// It sets the system property to the product path
 		String path = System.getProperty(FaframConstant.FUSE_PATH);

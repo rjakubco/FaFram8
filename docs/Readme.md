@@ -96,6 +96,8 @@ The workflow or properties can be modified using system properties. Full list of
 	fafram.patch.dir - Patch directory location
 	fafram.skip.default.user - Skip default user add
 	fafram.patch.standalone - Patch standalone - useful only together with .withFabric() method
+	fafram.skip.default.jvm.opts - Skip adding default JVM opts (xms=768M, xmx=1536M, permMem=768M, maxPermMem=1536M) 
+	fafram.suppress.start - Testing purposes only - do not start fuse for the tests that do not need it
 
 ### Patches
 

@@ -1,6 +1,8 @@
 package org.jboss.fuse.qa.fafram8.resource;
 
 import static org.jboss.fuse.qa.fafram8.modifier.impl.FileModifier.moveFile;
+import static org.jboss.fuse.qa.fafram8.modifier.impl.JvmOptsModifier.setDefaultJvmOpts;
+import static org.jboss.fuse.qa.fafram8.modifier.impl.JvmOptsModifier.setJvmOpts;
 import static org.jboss.fuse.qa.fafram8.modifier.impl.PropertyModifier.extendProperty;
 import static org.jboss.fuse.qa.fafram8.modifier.impl.PropertyModifier.putProperty;
 import static org.jboss.fuse.qa.fafram8.modifier.impl.RandomModifier.changeRandomSource;
@@ -81,8 +83,10 @@ public class Fafram extends ExternalResource {
 
 	/**
 	 * Start method.
+	 *
+	 * @return this
 	 */
-	public void setup() {
+	public Fafram setup() {
 		//TODO(all): consider entry point of configuration parser
 		ConfigurationParser.parseConfigurationFile("just/fake/path");
 		//uncoment for remote deployment
@@ -94,10 +98,9 @@ public class Fafram extends ExternalResource {
 			setupLocalDeployment();
 		} else {
 			prepareNodes(provisionProvider);
-
+			Validator.validate();
 			log.info("Setting up remote deployment on host " + SystemProperty.getHost() + ":" + SystemProperty
 					.getHostPort());
-			//Validator.validate();
 			try {
 				setupRemoteDeployment();
 			} catch (SSHClientException e) {
@@ -109,6 +112,7 @@ public class Fafram extends ExternalResource {
 
 		// Start deployer
 		deployer.setup();
+		return this;
 	}
 
 	/**
@@ -133,6 +137,10 @@ public class Fafram extends ExternalResource {
 		}
 
 		ModifierExecutor.addModifiers(changeRandomSource());
+
+		if (!SystemProperty.skipDefaultJvmOpts()) {
+			ModifierExecutor.addModifiers(setDefaultJvmOpts());
+		}
 	}
 
 	/**
@@ -263,6 +271,31 @@ public class Fafram extends ExternalResource {
 	 */
 	public Fafram patchStandalone() {
 		SystemProperty.set(FaframConstant.PATCH_STANDALONE, "");
+		return this;
+	}
+
+	/**
+	 * Sets the JVM options.
+	 *
+	 * @param xms xms
+	 * @param xmx xmx
+	 * @param permMem perm mem
+	 * @param maxPermMem max perm mem
+	 * @return this
+	 */
+	public Fafram setJvmOptions(String xms, String xmx, String permMem, String maxPermMem) {
+		ModifierExecutor.addModifiers(setJvmOpts(xms, xmx, permMem, maxPermMem));
+		SystemProperty.set(FaframConstant.SKIP_DEFAULT_JVM_OPTS, "");
+		return this;
+	}
+
+	/**
+	 * Suppresses the start of the fuse - probably testing purposes only.
+	 *
+	 * @return this
+	 */
+	public Fafram suppressStart() {
+		SystemProperty.set(FaframConstant.SUPPRESS_START, "");
 		return this;
 	}
 
