@@ -43,6 +43,7 @@ public class RemoteDeployer implements Deployer {
 			nm.unzipArtifact();
 			nm.prepareFuse();
 			nm.startFuse();
+			cm.patchStandaloneBeforeFabric();
 			if (SystemProperty.isFabric()) {
 				cm.setupFabric();
 				// TODO(ecervena): rework this when we will have the container parser

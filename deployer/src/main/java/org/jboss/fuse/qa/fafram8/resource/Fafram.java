@@ -257,6 +257,16 @@ public class Fafram extends ExternalResource {
 	}
 
 	/**
+	 * Patches standalone container. Only useful together with withFabric().
+	 *
+	 * @return this
+	 */
+	public Fafram patchStandalone() {
+		SystemProperty.set(FaframConstant.PATCH_STANDALONE, "");
+		return this;
+	}
+
+	/**
 	 * Restarts the container.
 	 */
 	public void restart() {

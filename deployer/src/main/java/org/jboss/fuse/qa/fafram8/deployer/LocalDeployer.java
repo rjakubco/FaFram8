@@ -36,6 +36,7 @@ public class LocalDeployer implements Deployer {
 			nm.unzipArtifact();
 			nm.prepareFuse();
 			nm.startFuse();
+			cm.patchStandaloneBeforeFabric();
 			if (SystemProperty.isFabric()) {
 				cm.setupFabric();
 			}

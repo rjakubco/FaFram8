@@ -58,6 +58,15 @@ public class ContainerManager {
 	}
 
 	/**
+	 * Patches the standalone before fabric creation.
+	 */
+	public void patchStandaloneBeforeFabric() {
+		if (SystemProperty.patchStandalone()) {
+			patchStandalone();
+		}
+	}
+
+	/**
 	 * Patch standalone container.
 	 */
 	private void patchStandalone() {

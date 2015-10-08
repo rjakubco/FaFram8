@@ -82,6 +82,9 @@ public final class FaframConstant {
 	// Skip default user flag
 	public static final String SKIP_DEFAULT_USER = "fafram.skip.default.user";
 
+	// Patch standalone before fabric flag
+	public static final String PATCH_STANDALONE = "fafram.patch.standalone";
+
 	//Specify infrastructure provider class name a.k.a. provisioning provider
 	public static final String PROVIDER = "provider.class.name";
 }

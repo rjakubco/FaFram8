@@ -95,6 +95,7 @@ The workflow or properties can be modified using system properties. Full list of
 	fafram.working.directory - Special working directory on remote machine
 	fafram.patch.dir - Patch directory location
 	fafram.skip.default.user - Skip default user add
+	fafram.patch.standalone - Patch standalone - useful only together with .withFabric() method
 
 ### Patches
 
