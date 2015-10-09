@@ -22,7 +22,7 @@ public class SpawnNodeFromSnapshotTest {
 	}
 
 	@AfterClass
-	public void clean() {
+	public static void clean() {
 		OpenStackProvisionProvider osm = new OpenStackProvisionProvider();
 		Server server = osm.getServerByName("fafram8-hello-kitty");
 		osm.getOs().compute().servers().delete(server.getId());
