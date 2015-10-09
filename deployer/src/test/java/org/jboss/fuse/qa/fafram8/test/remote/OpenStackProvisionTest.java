@@ -9,6 +9,7 @@ import org.jboss.fuse.qa.fafram8.resource.Fafram;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -34,6 +35,8 @@ public class OpenStackProvisionTest {
 		Fafram.getProvisionProvider().releaseResources();
 	}
 
+	//Uncomment ConfigurationParser.setDeployer(); in Fafaram to run remote deployment
+	@Ignore
 	@Test
 	public void fabricTest() {
 		assertTrue(fafram.executeCommand("container-list | grep root").contains("success"));
