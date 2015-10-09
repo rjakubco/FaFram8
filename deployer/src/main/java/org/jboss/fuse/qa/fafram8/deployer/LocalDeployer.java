@@ -32,6 +32,7 @@ public class LocalDeployer implements Deployer {
 	public void setup() {
 		try {
 			nm.checkRunningContainer();
+			nm.detectPlatformAndProduct();
 			nm.prepareZip();
 			nm.unzipArtifact();
 			nm.prepareFuse();

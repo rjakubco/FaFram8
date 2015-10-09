@@ -308,6 +308,33 @@ public class SystemProperty {
 	/**
 	 * Getter.
 	 *
+	 * @return archive target path
+	 */
+	public static String getArchiveTarget() {
+		return System.getProperty(FaframConstant.ARCHIVE_TARGET, "target/archived");
+	}
+
+	/**
+	 * Getter.
+	 *
+	 * @return archive pattern
+	 */
+	public static String getArchivePattern() {
+		return System.getProperty(FaframConstant.ARCHIVE_PATTERN, ",");
+	}
+
+	/**
+	 * Getter.
+	 *
+	 * @return base directory path
+	 */
+	public static String getBaseDir() {
+		return System.getProperty(FaframConstant.BASE_DIR);
+	}
+
+	/**
+	 * Getter.
+	 *
 	 * @return whether to keep OS nodes after test or release them
 	 */
 	public static boolean isKeepOsResources() {

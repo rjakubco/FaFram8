@@ -3,6 +3,7 @@ package org.jboss.fuse.qa.fafram8.modifier;
 import org.jboss.fuse.qa.fafram8.executor.Executor;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -16,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 public class ModifierExecutor {
 	private static ModifierExecutor instance = null;
 	private static List<Modifier> modifiers = null;
+	private static List<Modifier> postModifiers = null;
 
 	/**
 	 * Constructor.
@@ -32,6 +34,7 @@ public class ModifierExecutor {
 		if (instance == null) {
 			instance = new ModifierExecutor();
 			modifiers = new ArrayList<>();
+			postModifiers = new ArrayList<>();
 		}
 
 		return instance;
@@ -46,7 +49,29 @@ public class ModifierExecutor {
 		// Force the initialization
 		ModifierExecutor.getInstance();
 
-		Collections.addAll(modifiers, modifier);
+		addModifiersToCollection(modifiers, modifier);
+	}
+
+	/**
+	 * Add modifiers to post modifiers.
+	 *
+	 * @param modifier modifiers
+	 */
+	public static void addPostModifiers(Modifier... modifier) {
+		// Force the initialization
+		ModifierExecutor.getInstance();
+
+		addModifiersToCollection(postModifiers, modifier);
+	}
+
+	/**
+	 * Add modifiers to the collection.
+	 *
+	 * @param col collection
+	 * @param modifier modifiers
+	 */
+	private static void addModifiersToCollection(Collection col, Modifier... modifier) {
+		Collections.addAll(col, modifier);
 	}
 
 	/**
@@ -62,7 +87,33 @@ public class ModifierExecutor {
 	 * @param executor executor
 	 */
 	public static void executeModifiers(Executor executor) {
-		for (Modifier c : modifiers) {
+		executeModifiersFromCollection(executor, modifiers);
+	}
+
+	/**
+	 * Executes the post modifiers.
+	 */
+	public static void executePostModifiers() {
+		executePostModifiers(null);
+	}
+
+	/**
+	 * Executes the post modifiers on remote.
+	 *
+	 * @param executor executor
+	 */
+	public static void executePostModifiers(Executor executor) {
+		executeModifiersFromCollection(executor, postModifiers);
+	}
+
+	/**
+	 * Executes the modifiers from the given collection.
+	 *
+	 * @param executor executor
+	 * @param col collection
+	 */
+	private static void executeModifiersFromCollection(Executor executor, Collection<Modifier> col) {
+		for (Modifier c : col) {
 			log.debug("Executing modifier {}.", c);
 			try {
 				if (executor != null) {
@@ -82,5 +133,6 @@ public class ModifierExecutor {
 	public static void clearAllModifiers() {
 		// Clear all the modifiers at the end so that they will not stay here when executing multiple tests
 		modifiers.clear();
+		postModifiers.clear();
 	}
 }

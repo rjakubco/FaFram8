@@ -102,6 +102,7 @@ public class LocalNodeManager implements NodeManager {
 		// Use the subdir name to construct the product path
 		productPath = targetPath + SEP + folderName;
 		log.debug("Product path is " + productPath);
+		SystemProperty.set(FaframConstant.BASE_DIR, new File(jenkins ? System.getenv("WORKSPACE") : "").getAbsolutePath());
 		SystemProperty.set(FaframConstant.FUSE_PATH, productPath);
 	}
 
@@ -166,10 +167,15 @@ public class LocalNodeManager implements NodeManager {
 
 	@Override
 	public void stopAndClean(boolean ignoreExceptions) {
+		// Create a new variable here because it will be unset
+		final boolean suppressStart = SystemProperty.suppressStart();
 		if (!stopped) {
+			ModifierExecutor.executePostModifiers();
 			SystemProperty.clearAllProperties();
 			ModifierExecutor.clearAllModifiers();
-			stop(ignoreExceptions);
+			if (!suppressStart) {
+				stop(ignoreExceptions);
+			}
 			deleteTargetDir(ignoreExceptions);
 		}
 	}

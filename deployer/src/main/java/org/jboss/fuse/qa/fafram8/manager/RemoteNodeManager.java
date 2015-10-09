@@ -87,9 +87,13 @@ public class RemoteNodeManager implements NodeManager {
 
 	@Override
 	public void stopAndClean(boolean ignoreExceptions) {
+		// Create a new variable here because it will be unset
+		final boolean suppressStart = SystemProperty.suppressStart();
 		SystemProperty.clearAllProperties();
 		ModifierExecutor.clearAllModifiers();
-		stop();
+		if (!suppressStart) {
+			stop();
+		}
 	}
 
 	/**

@@ -93,4 +93,13 @@ public final class FaframConstant {
 
 	// Suppress start flag
 	public static final String SUPPRESS_START = "fafram.suppress.start";
+
+	// Archive files target path
+	public static final String ARCHIVE_TARGET = "fafram.archive.target";
+
+	// Archive files pattern
+	public static final String ARCHIVE_PATTERN = "fafram.archive.pattern";
+
+	// Base directory path
+	public static final String BASE_DIR = "fafram.base.dir";
 }

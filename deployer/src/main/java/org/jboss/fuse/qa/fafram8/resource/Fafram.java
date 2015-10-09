@@ -1,5 +1,6 @@
 package org.jboss.fuse.qa.fafram8.resource;
 
+import static org.jboss.fuse.qa.fafram8.modifier.impl.ArchiveModifier.registerArchiver;
 import static org.jboss.fuse.qa.fafram8.modifier.impl.FileModifier.moveFile;
 import static org.jboss.fuse.qa.fafram8.modifier.impl.JvmOptsModifier.setDefaultJvmOpts;
 import static org.jboss.fuse.qa.fafram8.modifier.impl.JvmOptsModifier.setJvmOpts;
@@ -141,6 +142,8 @@ public class Fafram extends ExternalResource {
 		if (!SystemProperty.skipDefaultJvmOpts()) {
 			ModifierExecutor.addModifiers(setDefaultJvmOpts());
 		}
+
+		ModifierExecutor.addPostModifiers(registerArchiver());
 	}
 
 	/**
@@ -296,6 +299,27 @@ public class Fafram extends ExternalResource {
 	 */
 	public Fafram suppressStart() {
 		SystemProperty.set(FaframConstant.SUPPRESS_START, "");
+		return this;
+	}
+
+	/**
+	 * Archive files pattern setter.
+	 *
+	 * @param pattern pattern
+	 * @return this
+	 */
+	public Fafram archive(String pattern) {
+		SystemProperty.set(FaframConstant.ARCHIVE_PATTERN, pattern);
+		return this;
+	}
+
+	/**
+	 * Keep folder flag setter.
+	 *
+	 * @return this
+	 */
+	public Fafram keepFolder() {
+		SystemProperty.set(FaframConstant.KEEP_FOLDER, "");
 		return this;
 	}
 
