@@ -15,6 +15,7 @@ public class CopyFileException extends Exception {
 
 	/**
 	 * Constructor.
+	 *
 	 * @param cause cause
 	 */
 	public CopyFileException(Throwable cause) {
@@ -23,6 +24,7 @@ public class CopyFileException extends Exception {
 
 	/**
 	 * Constructor.
+	 *
 	 * @param message message
 	 */
 	public CopyFileException(String message) {
@@ -31,6 +33,7 @@ public class CopyFileException extends Exception {
 
 	/**
 	 * Constructor.
+	 *
 	 * @param message message
 	 * @param cause cause
 	 */

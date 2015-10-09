@@ -291,20 +291,4 @@ public class SystemProperty {
 	public static boolean isKeepOsResources() {
 		return "true".equals(System.getProperty(FaframConstant.KEEP_OS_RESOURCES, "false"));
 	}
-
-	/**
-	 * Getter.
-	 *
-	 * @return whether to run local deployer
-	 */
-	public static boolean isLocalDeployment() {
-		return System.getProperty(FaframConstant.LOCAL_DEPLOYMENT) != null;
-	}
-
-	/**
-	 * Getter
-	 *
-	 * @return provisioning provider name
-	 */
-	public static String getProvider() { return System.getProperty(FaframConstant.PROVIDER, "none"); }
 }

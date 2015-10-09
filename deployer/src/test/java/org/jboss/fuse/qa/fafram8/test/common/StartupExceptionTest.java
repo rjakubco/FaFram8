@@ -8,7 +8,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-
 /**
  * Test if the corrent exception is thrown.
  * Created by avano on 18.9.15.

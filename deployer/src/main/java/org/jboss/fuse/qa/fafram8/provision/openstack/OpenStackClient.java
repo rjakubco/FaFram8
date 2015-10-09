@@ -1,4 +1,4 @@
-package org.jboss.fuse.qa.fafram8.environment;
+package org.jboss.fuse.qa.fafram8.provision.openstack;
 
 import org.openstack4j.api.OSClient;
 import org.openstack4j.openstack.OSFactory;

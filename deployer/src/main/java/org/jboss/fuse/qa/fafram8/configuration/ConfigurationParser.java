@@ -1,6 +1,7 @@
-package org.jboss.fuse.qa.fafram8.ConfigParser;
+package org.jboss.fuse.qa.fafram8.configuration;
 
 import org.jboss.fuse.qa.fafram8.manager.Container;
+import org.jboss.fuse.qa.fafram8.property.FaframConstant;
 import org.jboss.fuse.qa.fafram8.resource.Fafram;
 
 import java.util.LinkedList;
@@ -15,10 +16,10 @@ import lombok.Getter;
  */
 public final class ConfigurationParser {
 
-	public static ConfigurationParser configurationParser = null;
+	private static ConfigurationParser configurationParser = null;
 
 	@Getter
-	private static List<Container> containerList = new LinkedList<Container>();
+	private static List<Container> containerList = new LinkedList<>();
 
 	/**
 	 * Constructor.
@@ -27,24 +28,29 @@ public final class ConfigurationParser {
 	}
 
 	/**
-	 * TODO(ecervena): parseConfigurationFile should be call once in some starting point
+	 * TODO(ecervena): parseConfigurationFile should be call once in some starting point. Adding containers can be decomposed
+	 * <p/>
 	 * Parses the configuration file.
 	 *
-	 * @param path path
+	 * @param path path to xml configuration file
 	 */
 	public static void parseConfigurationFile(String path) {
 		//TODO(ecervena): implement
 		final Container container1 = new Container("root");
 		container1.setRoot(true);
 		final Container container2 = new Container("node1");
-		containerList.add(container1);
-		containerList.add(container2);
+		Fafram.addContainer(container1);
+		Fafram.addContainer(container2);
 	}
 
-	public static void populateFaframContainerList() {
-		for(Container container: containerList) {
-			Fafram.addContainer(container);
-		}
+	/**
+	 * Depending on configuration file sets HOST to trigger remote deployment.
+	 */
+	public static void setDeployer() {
+		//If local deployment do nothing
+
+		//If remote deployment
+		System.setProperty(FaframConstant.HOST, "");
 	}
 
 	/**

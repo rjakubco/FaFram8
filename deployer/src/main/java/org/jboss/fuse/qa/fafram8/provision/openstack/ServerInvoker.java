@@ -1,4 +1,4 @@
-package org.jboss.fuse.qa.fafram8.environment;
+package org.jboss.fuse.qa.fafram8.provision.openstack;
 
 import org.openstack4j.api.OSClient;
 import org.openstack4j.model.compute.Server;
@@ -9,12 +9,14 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * Thread worker class. OpenStack client is created with shared session from OpenStackClient singleton. Worker purpose
- * is spawn one single server per thread, wait for "active" status and register created server to OpenStackProvisionManager.
+ * is spawn one single server per thread, wait for "active" status and register created server to OpenStackProvisionProvider.
  * <p/>
  * Created by ecervena on 28.9.15.
  */
 @Slf4j
 public class ServerInvoker implements Runnable {
+
+	private final int bootTimeout = 120000;
 
 	//OpenStack client
 	private OSClient os;
@@ -34,7 +36,7 @@ public class ServerInvoker implements Runnable {
 	/**
 	 * Method executed in thread.
 	 */
-	@Override
+	//@Override
 	public void run() {
 		log.info("Creating server inside thread for container: " + nodeName);
 		os = OSFactory.clientFromAccess(OpenStackClient.getInstance().getAccess());
@@ -48,8 +50,8 @@ public class ServerInvoker implements Runnable {
 				.keypairName("ecervena")
 				.build();
 		//TODO(ecervena): do something smarter with server boot timeout
-		final Server server = os.compute().servers().bootAndWaitActive(serverCreate, 120004);
-		OpenStackProvisionManager.registerServer(server);
-		OpenStackProvisionManager.addServerToPool(server);
+		final Server server = os.compute().servers().bootAndWaitActive(serverCreate, bootTimeout);
+		OpenStackProvisionProvider.registerServer(server);
+		OpenStackProvisionProvider.addServerToPool(server);
 	}
 }

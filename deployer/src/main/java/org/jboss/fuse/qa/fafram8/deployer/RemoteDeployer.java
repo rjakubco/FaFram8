@@ -1,12 +1,12 @@
 package org.jboss.fuse.qa.fafram8.deployer;
 
-import org.jboss.fuse.qa.fafram8.ConfigParser.ConfigurationParser;
 import org.jboss.fuse.qa.fafram8.exception.FaframException;
 import org.jboss.fuse.qa.fafram8.exceptions.SSHClientException;
 import org.jboss.fuse.qa.fafram8.manager.ContainerManager;
 import org.jboss.fuse.qa.fafram8.manager.NodeManager;
 import org.jboss.fuse.qa.fafram8.manager.RemoteNodeManager;
 import org.jboss.fuse.qa.fafram8.property.SystemProperty;
+import org.jboss.fuse.qa.fafram8.resource.Fafram;
 import org.jboss.fuse.qa.fafram8.ssh.SSHClient;
 
 /**
@@ -46,7 +46,7 @@ public class RemoteDeployer implements Deployer {
 			if (SystemProperty.isFabric()) {
 				cm.setupFabric();
 				// TODO(ecervena): rework this when we will have the container parser
-				cm.createSSHContainer(ConfigurationParser.getContainerList());
+				cm.createSSHContainer(Fafram.getContainerList());
 			}
 		} catch (RuntimeException ex) {
 			nm.stopAndClean(true);

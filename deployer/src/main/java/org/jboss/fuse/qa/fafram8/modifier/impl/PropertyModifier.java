@@ -35,6 +35,7 @@ public final class PropertyModifier implements Modifier {
 
 	/**
 	 * Private constructor.
+	 *
 	 * @param filePath file path
 	 * @param key key
 	 * @param value value
@@ -45,6 +46,30 @@ public final class PropertyModifier implements Modifier {
 		this.key = key;
 		this.value = value;
 		this.extend = extend;
+	}
+
+	/**
+	 * Factory method - command for put/replace entry in property file.
+	 *
+	 * @param filePath path to property file - absolute, or relative to $FUSE_HOME
+	 * @param key key in property file
+	 * @param value value for key
+	 * @return command instance
+	 */
+	public static PropertyModifier putProperty(final String filePath, final String key, final String value) {
+		return new PropertyModifier(filePath, key, value, false);
+	}
+
+	/**
+	 * Factory method - command to append to existing entry.
+	 *
+	 * @param filePath path to property file - absolute, or relative to $FUSE_HOME
+	 * @param key key in property file
+	 * @param value value to be appended to existing key=value
+	 * @return command instance
+	 */
+	public static PropertyModifier extendProperty(final String filePath, final String key, final String value) {
+		return new PropertyModifier(filePath, key, value, true);
 	}
 
 	@Override
@@ -105,29 +130,5 @@ public final class PropertyModifier implements Modifier {
 			log.error("Setting property on remote host failed. Response should be empty but was: {}.", response);
 			throw new RuntimeException("Setting property on remote host failed (response should be empty): " + response);
 		}
-	}
-
-	/**
-	 * Factory method - command for put/replace entry in property file.
-	 *
-	 * @param filePath path to property file - absolute, or relative to $FUSE_HOME
-	 * @param key key in property file
-	 * @param value value for key
-	 * @return command instance
-	 */
-	public static PropertyModifier putProperty(final String filePath, final String key, final String value) {
-		return new PropertyModifier(filePath, key, value, false);
-	}
-
-	/**
-	 * Factory method - command to append to existing entry.
-	 *
-	 * @param filePath path to property file - absolute, or relative to $FUSE_HOME
-	 * @param key key in property file
-	 * @param value value to be appended to existing key=value
-	 * @return command instance
-	 */
-	public static PropertyModifier extendProperty(final String filePath, final String key, final String value) {
-		return new PropertyModifier(filePath, key, value, true);
 	}
 }

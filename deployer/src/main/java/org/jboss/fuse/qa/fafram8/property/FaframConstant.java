@@ -75,19 +75,6 @@ public final class FaframConstant {
 
 	// If "true" OpenStackProvisionManager will not release OS nodes after test
 	public static final String KEEP_OS_RESOURCES = "keep.os.resources";
-	// Patches folder
-	public static final String PATCH_DIR = "fafram.patch.dir";
-
-	// If "true" fafram will use local deployer
-	public static final String LOCAL_DEPLOYMENT = "local.deployment";
-
-	//Specify infrastructure provider class name a.k.a. provisioning provider
-	public static final String PROVIDER = "provider.class.name";
-	// Skip default user flag
-	public static final String SKIP_DEFAULT_USER = "fafram.skip.default.user";
-
-	// If "true" OpenStackProvisionManager will not release OS nodes after test
-	public static final String KEEP_OS_RESOURCES = "keep.os.resources";
 
 	// If "true" fafram will use local deployer
 	public static final String LOCAL_DEPLOYMENT = "local.deployment";

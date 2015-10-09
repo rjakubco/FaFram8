@@ -30,6 +30,15 @@ public final class RandomModifier implements Modifier {
 	private RandomModifier() {
 	}
 
+	/**
+	 * Factory method.
+	 *
+	 * @return random modifier instance
+	 */
+	public static RandomModifier changeRandomSource() {
+		return new RandomModifier();
+	}
+
 	@Override
 	public void execute() {
 		try {
@@ -46,14 +55,5 @@ public final class RandomModifier implements Modifier {
 		} catch (Exception ex) {
 			log.error("Error while manipulating the files " + ex);
 		}
-	}
-
-	/**
-	 * Factory method.
-	 *
-	 * @return random modifier instance
-	 */
-	public static RandomModifier changeRandomSource() {
-		return new RandomModifier();
 	}
 }

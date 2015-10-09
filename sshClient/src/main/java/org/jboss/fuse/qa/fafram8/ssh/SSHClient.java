@@ -70,7 +70,7 @@ public abstract class SSHClient {
 	 * @return String containing response from command
 	 * @throws KarafSessionDownException throws this exception if Karaf is down(specific for FuseSSHClient)
 	 * @throws SSHClientException common exception for sshclient when there is some problem in connecting
-	 * 							 (auth fail, timeout, wrong host/port)
+	 * (auth fail, timeout, wrong host/port)
 	 */
 	public abstract String executeCommand(String command, boolean supressLog) throws KarafSessionDownException,
 			SSHClientException;
@@ -158,6 +158,7 @@ public abstract class SSHClient {
 
 	/**
 	 * Sets the hostname.
+	 *
 	 * @param host hostname
 	 * @return this
 	 */
@@ -168,6 +169,7 @@ public abstract class SSHClient {
 
 	/**
 	 * Sets the port.
+	 *
 	 * @param port port
 	 * @return this
 	 */
@@ -178,6 +180,7 @@ public abstract class SSHClient {
 
 	/**
 	 * Sets the username.
+	 *
 	 * @param username username
 	 * @return this
 	 */
@@ -188,6 +191,7 @@ public abstract class SSHClient {
 
 	/**
 	 * Sets the password.
+	 *
 	 * @param password password
 	 * @return this
 	 */
@@ -198,6 +202,7 @@ public abstract class SSHClient {
 
 	/**
 	 * Sets the private key.
+	 *
 	 * @param privateKey private key
 	 * @return this
 	 */
@@ -208,6 +213,7 @@ public abstract class SSHClient {
 
 	/**
 	 * Sets the passphrase.
+	 *
 	 * @param passphrase passphrase
 	 * @return this
 	 */
@@ -218,6 +224,7 @@ public abstract class SSHClient {
 
 	/**
 	 * Sets the default ssh port.
+	 *
 	 * @return this
 	 */
 	public SSHClient defaultSSHPort() {
@@ -227,6 +234,7 @@ public abstract class SSHClient {
 
 	/**
 	 * Sets the default fuse port.
+	 *
 	 * @return this
 	 */
 	public SSHClient fuseSSHPort() {

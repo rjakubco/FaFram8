@@ -15,6 +15,7 @@ public class KarafSessionDownException extends Exception {
 
 	/**
 	 * Constructor.
+	 *
 	 * @param cause cause
 	 */
 	public KarafSessionDownException(Throwable cause) {
@@ -23,6 +24,7 @@ public class KarafSessionDownException extends Exception {
 
 	/**
 	 * Constructor.
+	 *
 	 * @param message message
 	 */
 	public KarafSessionDownException(String message) {
@@ -31,6 +33,7 @@ public class KarafSessionDownException extends Exception {
 
 	/**
 	 * Constructor.
+	 *
 	 * @param message message
 	 * @param cause cause
 	 */

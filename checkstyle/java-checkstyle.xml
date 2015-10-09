@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE module PUBLIC
-	"-//Puppy Crawl//DTD Check Configuration 1.3//EN"
-	"http://www.puppycrawl.com/dtds/configuration_1_3.dtd">
+		"-//Puppy Crawl//DTD Check Configuration 1.3//EN"
+		"http://www.puppycrawl.com/dtds/configuration_1_3.dtd">
 
 <!-- CheckStyle configuration for Red Hat JBoss Middleware QA -->
 <module name="Checker">
@@ -18,7 +18,8 @@
 	</module>
 
 	<module name="TreeWalker">
-		<property name="tabWidth" value="4"/> <!-- Default tab size for java files -->
+		<property name="tabWidth" value="4"/>
+		<!-- Default tab size for java files -->
 
 		<!-- Internal check extensions -->
 		<module name="org.jboss.soa.qa.checkstyle.checks.ArrayInitialisationSpacesCheck"/>
@@ -116,7 +117,8 @@
 		<!-- Checks that there are no import statements that use the * notation -->
 		<module name="AvoidStarImport"/>
 		<!-- Checks for imports from a set of illegal packages -->
-		<module name="IllegalImport"/> <!-- defaults to sun.* packages -->
+		<module name="IllegalImport"/>
+		<!-- defaults to sun.* packages -->
 		<!-- Checks for redundant import statements -->
 		<module name="RedundantImport"/>
 		<!-- Checks for unused import statements -->
@@ -204,7 +206,8 @@
 		<!-- Checks correct indentation of Java Code -->
 		<module name="Indentation">
 			<property name="throwsIndent" value="8"/>
-			<property name="arrayInitIndent" value="8"/><!-- HEm3R's github.com fork -->
+			<property name="arrayInitIndent" value="8"/>
+			<!-- HEm3R's github.com fork -->
 		</module>
 
 		<!-- Annotations -->

@@ -9,6 +9,19 @@ import lombok.Setter;
  */
 public class Container {
 
+	@Getter
+	@Setter
+	private String name;
+	@Getter
+	@Setter
+	private String hostIP;
+	@Getter
+	@Setter
+	private boolean root = false;
+	@Getter
+	@Setter
+	private String openStackServerId;
+
 	/**
 	 * Constructor.
 	 *
@@ -28,20 +41,4 @@ public class Container {
 		this.name = name;
 		this.hostIP = hostIP;
 	}
-
-	@Getter
-	@Setter
-	private String name;
-
-	@Getter
-	@Setter
-	private String hostIP;
-
-	@Getter
-	@Setter
-	private boolean root = false;
-
-	@Getter
-	@Setter
-	private String openStackServerId;
 }

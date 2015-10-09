@@ -31,6 +31,30 @@ public final class FileModifier implements Modifier {
 		this.executor = executor;
 	}
 
+	/**
+	 * Factory method - command for replacing files.
+	 *
+	 * @param fileToReplace old file to replace
+	 * @param fileToUse new file to replace the old file with
+	 * @return replace file command
+	 */
+	public static FileModifier moveFile(final String fileToReplace, final String fileToUse) {
+		return new FileModifier(fileToReplace, fileToUse, null);
+	}
+
+	/**
+	 * Static method for creating modifier that copies file to remote location.
+	 *
+	 * @param fileToReplace path to file inside Fuse folder that should be replaced or where the new file should
+	 * be copied to
+	 * @param fileToUse absolute path to local file that will be copied
+	 * @param executor executor with ssh client to remote location
+	 * @return RemoteFileModifier
+	 */
+	public static FileModifier moveFile(final String fileToReplace, final String fileToUse, final Executor executor) {
+		return new FileModifier(fileToReplace, fileToUse, executor);
+	}
+
 	@Override
 	public void execute() {
 		if (executor == null) {
@@ -78,29 +102,5 @@ public final class FileModifier implements Modifier {
 			log.error("Could not copy file to remote location: ", ex);
 			throw new RuntimeException("Could not copy file to remote location: ", ex);
 		}
-	}
-
-	/**
-	 * Factory method - command for replacing files.
-	 *
-	 * @param fileToReplace old file to replace
-	 * @param fileToUse new file to replace the old file with
-	 * @return replace file command
-	 */
-	public static FileModifier moveFile(final String fileToReplace, final String fileToUse) {
-		return new FileModifier(fileToReplace, fileToUse, null);
-	}
-
-	/**
-	 * Static method for creating modifier that copies file to remote location.
-	 *
-	 * @param fileToReplace path to file inside Fuse folder that should be replaced or where the new file should
-	 * be copied to
-	 * @param fileToUse absolute path to local file that will be copied
-	 * @param executor executor with ssh client to remote location
-	 * @return RemoteFileModifier
-	 */
-	public static FileModifier moveFile(final String fileToReplace, final String fileToUse, final Executor executor) {
-		return new FileModifier(fileToReplace, fileToUse, executor);
 	}
 }

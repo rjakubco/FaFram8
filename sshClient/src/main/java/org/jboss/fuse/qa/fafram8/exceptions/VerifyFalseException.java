@@ -15,6 +15,7 @@ public class VerifyFalseException extends Exception {
 
 	/**
 	 * Constructor.
+	 *
 	 * @param cause cause
 	 */
 	public VerifyFalseException(Throwable cause) {
@@ -23,6 +24,7 @@ public class VerifyFalseException extends Exception {
 
 	/**
 	 * Constructor.
+	 *
 	 * @param message message
 	 */
 	public VerifyFalseException(String message) {
@@ -31,6 +33,7 @@ public class VerifyFalseException extends Exception {
 
 	/**
 	 * Constructor.
+	 *
 	 * @param message message
 	 * @param cause cause
 	 */
