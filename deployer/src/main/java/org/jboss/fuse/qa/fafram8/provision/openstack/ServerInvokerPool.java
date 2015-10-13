@@ -1,6 +1,6 @@
 package org.jboss.fuse.qa.fafram8.provision.openstack;
 
-import org.jboss.fuse.qa.fafram8.exception.InvokerPoolInteruptedException;
+import org.jboss.fuse.qa.fafram8.exception.InvokerPoolInterruptedException;
 import org.jboss.fuse.qa.fafram8.manager.Container;
 
 import java.util.List;
@@ -36,12 +36,13 @@ public class ServerInvokerPool {
 			executor.execute(serverInvoker);
 		}
 		executor.shutdown();
+		log.info("Waiting for ServerInvoker threads to finish a job.");
 		try {
 			while (!executor.awaitTermination(1, TimeUnit.SECONDS)) {
-				log.info("Waiting for ServerInvoker threads to finnish a job.");
+				log.debug("Waiting for ServerInvoker threads to finish a job.");
 			}
 		} catch (InterruptedException ie) {
-			throw new InvokerPoolInteruptedException(ie.getMessage());
+			throw new InvokerPoolInterruptedException(ie.getMessage());
 		}
 		log.info("ServerInvokerPool done.");
 	}

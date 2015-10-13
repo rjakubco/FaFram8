@@ -3,11 +3,11 @@ package org.jboss.fuse.qa.fafram8.exception;
 /**
  * Created by ecervena on 9.10.15.
  */
-public class InvokerPoolInteruptedException extends RuntimeException {
+public class InvokerPoolInterruptedException extends RuntimeException {
 	/**
 	 * Constructor.
 	 */
-	public InvokerPoolInteruptedException() {
+	public InvokerPoolInterruptedException() {
 	}
 
 	/**
@@ -15,7 +15,7 @@ public class InvokerPoolInteruptedException extends RuntimeException {
 	 *
 	 * @param message message
 	 */
-	public InvokerPoolInteruptedException(String message) {
+	public InvokerPoolInterruptedException(String message) {
 		super(message);
 	}
 }
