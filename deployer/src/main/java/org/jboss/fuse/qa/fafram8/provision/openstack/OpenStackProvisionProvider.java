@@ -97,10 +97,10 @@ public class OpenStackProvisionProvider implements ProvisionProvider {
 	/**
 	 * Method for deleting OpenStack node by server name. All nodes created  by OpenStackProvisionProvider have "fafram8-" prefix.
 	 *
-	 * @param ServerName name of the node
+	 * @param serverName name of the node
 	 */
-	public void deleteServer(String ServerName) {
-		os.compute().servers().delete(getServerByName(ServerName).getId());
+	public void deleteServer(String serverName) {
+		os.compute().servers().delete(getServerByName(serverName).getId());
 	}
 
 	/**

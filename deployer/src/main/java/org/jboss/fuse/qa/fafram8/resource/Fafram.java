@@ -16,6 +16,7 @@ import org.jboss.fuse.qa.fafram8.modifier.ModifierExecutor;
 import org.jboss.fuse.qa.fafram8.property.FaframConstant;
 import org.jboss.fuse.qa.fafram8.property.SystemProperty;
 import org.jboss.fuse.qa.fafram8.provision.provider.ProvisionProvider;
+import org.jboss.fuse.qa.fafram8.provision.provider.StaticProvider;
 import org.jboss.fuse.qa.fafram8.ssh.FuseSSHClient;
 import org.jboss.fuse.qa.fafram8.ssh.NodeSSHClient;
 import org.jboss.fuse.qa.fafram8.ssh.SSHClient;
@@ -40,7 +41,7 @@ public class Fafram extends ExternalResource {
 	private static final List<Container> containerList = new LinkedList<>();
 	//Provision provider instance in case of remote deployment
 	@Getter
-	private static ProvisionProvider provisionProvider = null;
+	private static ProvisionProvider provisionProvider = new StaticProvider();
 	// Deployer instance
 	private Deployer deployer;
 
@@ -92,7 +93,6 @@ public class Fafram extends ExternalResource {
 			Validator.validate();
 			setupLocalDeployment();
 		} else {
-			//prepareNodes(System.getProperty(FaframConstant.PROVIDER));
 			prepareNodes(provisionProvider);
 
 			log.info("Setting up remote deployment on host " + SystemProperty.getHost() + ":" + SystemProperty
