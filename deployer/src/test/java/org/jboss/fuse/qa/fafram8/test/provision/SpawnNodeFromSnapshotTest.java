@@ -17,7 +17,7 @@ public class SpawnNodeFromSnapshotTest {
 	@Test
 	public void spawnNewNodeTest() {
 		OpenStackProvisionProvider osm = new OpenStackProvisionProvider();
-		osm.spawnNewNode("hello-kitty");
+		osm.spawnNewServer("hello-kitty");
 		assertEquals("Wrong name returned.", "fafram8-hello-kitty", osm.getServerByName("fafram8-hello-kitty").getName());
 	}
 

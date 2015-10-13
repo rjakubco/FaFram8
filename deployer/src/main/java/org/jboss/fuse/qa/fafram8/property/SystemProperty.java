@@ -280,6 +280,6 @@ public class SystemProperty {
 	 * @return whether to keep OS nodes after test or release them
 	 */
 	public static boolean isKeepOsResources() {
-		return "true".equals(System.getProperty(FaframConstant.KEEP_OS_RESOURCES, "false"));
+		return Boolean.parseBoolean(System.getProperty(FaframConstant.KEEP_OS_RESOURCES, "false"));
 	}
 }

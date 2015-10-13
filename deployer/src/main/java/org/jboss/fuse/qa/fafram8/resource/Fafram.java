@@ -85,7 +85,7 @@ public class Fafram extends ExternalResource {
 		//TODO(all): consider entry point of configuration parser
 		ConfigurationParser.parseConfigurationFile("just/fake/path");
 		//uncoment for remote deployment
-		//ConfigurationParser.setDeployer();
+		ConfigurationParser.setDeployer();
 
 		if (SystemProperty.getHost() == null) {
 			log.info("Setting up local deployment");
@@ -273,7 +273,7 @@ public class Fafram extends ExternalResource {
 	 * @param provider provider type name
 	 */
 	public void prepareNodes(ProvisionProvider provider) {
-		provider.createNodePool(Fafram.containerList);
+		provider.createServerPool(Fafram.containerList);
 		provider.assignAddresses(Fafram.containerList);
 	}
 

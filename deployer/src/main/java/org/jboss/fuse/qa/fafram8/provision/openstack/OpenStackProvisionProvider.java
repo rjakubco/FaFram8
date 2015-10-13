@@ -2,7 +2,7 @@ package org.jboss.fuse.qa.fafram8.provision.openstack;
 
 import org.jboss.fuse.qa.fafram8.exception.EmptyContainerListException;
 import org.jboss.fuse.qa.fafram8.exception.NoIPAddressException;
-import org.jboss.fuse.qa.fafram8.exception.UniqueNodeNameException;
+import org.jboss.fuse.qa.fafram8.exception.UniqueServerNameException;
 import org.jboss.fuse.qa.fafram8.manager.Container;
 import org.jboss.fuse.qa.fafram8.property.FaframConstant;
 import org.jboss.fuse.qa.fafram8.property.SystemProperty;
@@ -68,7 +68,7 @@ public class OpenStackProvisionProvider implements ProvisionProvider {
 	}
 
 	/**
-	 * Remove server to pool.
+	 * Remove server from pool.
 	 *
 	 * @param server representation of openstack node object
 	 */
@@ -79,15 +79,15 @@ public class OpenStackProvisionProvider implements ProvisionProvider {
 	/**
 	 * Create new OpenStack node. Method will create Server object model, boot it and wait for active status.
 	 *
-	 * @param nodeName name of the new node
+	 * @param serverName name of the new node
 	 */
-	public void spawnNewNode(String nodeName) {
+	public void spawnNewServer(String serverName) {
 		final ServerCreate server = os
 				.compute()
 				.servers()
 				.serverBuilder()
 				.image("a61880d9-3cc3-40df-b172-d3282104adb4")
-				.name("fafram8-" + nodeName)
+				.name("fafram8-" + serverName)
 				.flavor("3")
 				.keypairName("ecervena")
 				.build();
@@ -97,28 +97,28 @@ public class OpenStackProvisionProvider implements ProvisionProvider {
 	/**
 	 * Method for deleting OpenStack node by server name. All nodes created  by OpenStackProvisionProvider have "fafram8-" prefix.
 	 *
-	 * @param nodeName name of the node
+	 * @param ServerName name of the node
 	 */
-	public void deleteNode(String nodeName) {
-		os.compute().servers().delete(getServerByName(nodeName).getId());
+	public void deleteServer(String ServerName) {
+		os.compute().servers().delete(getServerByName(ServerName).getId());
 	}
 
 	/**
 	 * Method for getting Server a.k.a OpenStack node object model. All nodes created  by OpenStackProvisionProvider
 	 * have "fafram8-" prefix.
 	 *
-	 * @param nodeName name of the node
+	 * @param serverName name of the node
 	 * @return Server representation of openstack node object
 	 */
-	public Server getServerByName(String nodeName) {
+	public Server getServerByName(String serverName) {
 		final Map<String, String> filter = new HashMap<String, String>();
-		filter.put("name", nodeName);
+		filter.put("name", serverName);
 		final List<Server> serverList = (List<Server>) os
 				.compute()
 				.servers()
 				.list(filter);
 		if (serverList.size() != 1) {
-			throw new UniqueNodeNameException("Node name is not unique. More then 1 (" + serverList.size() + ") node with specified name: " + nodeName + " detected");
+			throw new UniqueServerNameException("Server name is not unique. More than 1 (" + serverList.size() + ") server with specified name: " + serverName + " detected");
 		} else {
 			return serverList.get(0);
 		}
@@ -133,7 +133,7 @@ public class OpenStackProvisionProvider implements ProvisionProvider {
 	 *
 	 * @param containerList list of containers
 	 */
-	public void createNodePool(List<Container> containerList) {
+	public void createServerPool(List<Container> containerList) {
 		log.info("Spawning OpenStack infrastructure.");
 		invokerPool.spawnServers(containerList);
 	}
@@ -180,7 +180,7 @@ public class OpenStackProvisionProvider implements ProvisionProvider {
 			os.compute().floatingIps().deallocateIP(ip.getId());
 		}
 		for (Server server : serverRegister) {
-			log.info("Terminating node: " + server.getName());
+			log.info("Terminating server: " + server.getName());
 			os.compute().servers().delete(server.getId());
 		}
 		log.info("All OpenStack resources has been released successfully");
@@ -210,7 +210,7 @@ public class OpenStackProvisionProvider implements ProvisionProvider {
 		try {
 			container.setHostIP(server.getAddresses().getAddresses("fuseqe-lab-1").get(0).getAddr());
 		} catch (NullPointerException npe) {
-			throw new NoIPAddressException("OpenStack node local IP address not found. Maybe node is not active yet.");
+			throw new NoIPAddressException("OpenStack server local IP address not found. Maybe server is not active yet.");
 		}
 	}
 }

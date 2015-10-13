@@ -36,7 +36,7 @@ public class OpenStackProvisionTest {
 	}
 
 	//Uncomment ConfigurationParser.setDeployer(); in Fafaram to run remote deployment
-	@Ignore
+	//@Ignore
 	@Test
 	public void fabricTest() {
 		assertTrue(fafram.executeCommand("container-list | grep root").contains("success"));

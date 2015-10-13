@@ -3,11 +3,11 @@ package org.jboss.fuse.qa.fafram8.exception;
 /**
  * Created by ecervena on 24.9.15.
  */
-public class UniqueNodeNameException extends RuntimeException {
+public class UniqueServerNameException extends RuntimeException {
 	/**
 	 * Constructor.
 	 */
-	public UniqueNodeNameException() {
+	public UniqueServerNameException() {
 	}
 
 	/**
@@ -15,7 +15,7 @@ public class UniqueNodeNameException extends RuntimeException {
 	 *
 	 * @param message message
 	 */
-	public UniqueNodeNameException(String message) {
+	public UniqueServerNameException(String message) {
 		super(message);
 	}
 }

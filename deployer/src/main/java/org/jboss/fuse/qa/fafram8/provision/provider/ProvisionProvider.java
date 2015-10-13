@@ -16,7 +16,7 @@ public interface ProvisionProvider {
 	 *
 	 * @param containerList list of containers
 	 */
-	void createNodePool(List<Container> containerList);
+	void createServerPool(List<Container> containerList);
 
 	/**
 	 * Assign IP addresses of created nodes to containers. If container is marked as root public IP should be assigned.
