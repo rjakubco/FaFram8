@@ -100,6 +100,7 @@ public class RemoteNodeManager implements NodeManager {
 	 * Stops all karaf instances and removes them.
 	 */
 	public void stop() {
+		// todo(rjakubco): urobit lepsi cleaning pre windows -> najprv zabit fuse na vsetkych IP a potom delete
 		log.info("Cleaning " + SystemProperty.getHost());
 		executor.executeCommand("pkill -9 -f karaf");
 		executor.executeCommand("rm -rf " + SystemProperty.getFaframFolder());

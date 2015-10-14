@@ -238,7 +238,7 @@ public class Fafram extends ExternalResource {
 	}
 
 	/**
-	 * Provide deployment with Fabric environment.
+	 * Provides deployment with Fabric environment.
 	 *
 	 * @return this
 	 */
@@ -352,6 +352,33 @@ public class Fafram extends ExternalResource {
 	 */
 	public Fafram provideNodes(ProvisionProvider provider) {
 		provisionProvider = provider;
+		return this;
+	}
+
+	/**
+	 * Defines hostname/IP address for remote running
+	 *
+	 * @param host hostname or ip to remote host for running Fuse
+	 * @return this
+	 */
+	public Fafram host(String host) {
+		if (SystemProperty.getHost() == null) {
+			System.setProperty(FaframConstant.HOST, host);
+		}
+
+		return this;
+	}
+
+	/**
+	 * Defines that remote Fuse and its cluster shouldn't be deleted and Fafram should only connect to existing Fuse.
+	 *
+	 * @return this
+	 */
+	public Fafram onlyConnect(){
+		if (SystemProperty.getClean() == null) {
+			System.setProperty(FaframConstant.CLEAN, "false");
+		}
+
 		return this;
 	}
 }

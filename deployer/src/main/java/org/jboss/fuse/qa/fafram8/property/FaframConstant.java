@@ -88,6 +88,9 @@ public final class FaframConstant {
 	//Specify infrastructure provider class name a.k.a. provisioning provider
 	public static final String PROVIDER = "provider.class.name";
 
+	// If remote cluster should be cleaned
+	public static final String CLEAN = "fafram.clean";
+
 	// Skip default jvm opts modifier flag
 	public static final String SKIP_DEFAULT_JVM_OPTS = "fafram.skip.default.jvm.opts";
 
