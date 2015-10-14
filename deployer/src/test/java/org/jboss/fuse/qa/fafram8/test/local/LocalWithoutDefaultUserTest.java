@@ -19,14 +19,15 @@ import java.io.File;
  */
 public class LocalWithoutDefaultUserTest {
 
-	static {
-		System.setProperty(FaframConstant.FUSE_USER, "testUser");
-		System.setProperty(FaframConstant.FUSE_PASSWORD, "testPassword");
-	}
-
 	@Rule
 	public Fafram fafram = new Fafram().withoutDefaultUser().addUser("testUser", "testPassword", "admin,manager,viewer,Monitor, Operator, " +
 			"Maintainer, Deployer, Auditor, Administrator, SuperUser");
+
+	@AfterClass
+	public static void afterClass() {
+		System.clearProperty(FaframConstant.FUSE_USER);
+		System.clearProperty(FaframConstant.FUSE_PASSWORD);
+	}
 
 	@Test
 	public void customUserTest() throws Exception {
@@ -38,9 +39,8 @@ public class LocalWithoutDefaultUserTest {
 		assertFalse(fileContent.contains("admin=admin"));
 	}
 
-	@AfterClass
-	public static void afterClass() {
-		System.clearProperty(FaframConstant.FUSE_USER);
-		System.clearProperty(FaframConstant.FUSE_PASSWORD);
+	static {
+		System.setProperty(FaframConstant.FUSE_USER, "testUser");
+		System.setProperty(FaframConstant.FUSE_PASSWORD, "testPassword");
 	}
 }

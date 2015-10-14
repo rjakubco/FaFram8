@@ -30,14 +30,6 @@ public final class AccessRightsModifier implements Modifier {
 		this.paths = paths;
 	}
 
-	@SuppressWarnings("ResultOfMethodCallIgnored")
-	@Override
-	public void execute() {
-		for (String path : paths) {
-			new File(SystemProperty.getFusePath() + File.separator + path).setExecutable(true);
-		}
-	}
-
 	/**
 	 * Factory method - command for changing access rights.
 	 *
@@ -46,5 +38,13 @@ public final class AccessRightsModifier implements Modifier {
 	 */
 	public static AccessRightsModifier setExecutable(String... paths) {
 		return new AccessRightsModifier(paths);
+	}
+
+	@SuppressWarnings("ResultOfMethodCallIgnored")
+	@Override
+	public void execute() {
+		for (String path : paths) {
+			new File(SystemProperty.getFusePath() + File.separator + path).setExecutable(true);
+		}
 	}
 }

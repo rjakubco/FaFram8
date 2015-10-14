@@ -25,12 +25,10 @@ import net.lingala.zip4j.core.ZipFile;
  */
 @Slf4j
 public class LocalNodeManager implements NodeManager {
-	@Getter
-	private Executor executor;
-
 	// File separator
 	private static final String SEP = File.separator;
-
+	@Getter
+	private Executor executor;
 	// Is windows?
 	private boolean windows = false;
 

@@ -83,7 +83,7 @@ public final class Validator {
 	 * Validates host property.
 	 */
 	private static void validateHost() {
-		final int timeout = 5000;
+		final int timeout = 30000;
 		final String host = SystemProperty.getHost();
 
 		if ("".equals(host)) {
@@ -129,6 +129,7 @@ public final class Validator {
 
 	/**
 	 * Converts the host string into byte array.
+	 *
 	 * @return byte array
 	 */
 	private static byte[] convertHost() {

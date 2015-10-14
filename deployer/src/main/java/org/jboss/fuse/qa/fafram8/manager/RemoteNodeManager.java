@@ -21,6 +21,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class RemoteNodeManager implements NodeManager {
 
+	// File separator
+	private static final String SEP = File.separator;
 	// executor to node(remote host)
 	@Getter
 	private Executor executor;
@@ -28,10 +30,6 @@ public class RemoteNodeManager implements NodeManager {
 	// executor for Fuse on remote host
 	@Getter
 	private Executor fuseExecutor;
-
-	// File separator
-	private static final String SEP = File.separator;
-
 	// Product zip path
 	private String productZipPath;
 

@@ -16,6 +16,7 @@ public class SSHClientException extends Exception {
 
 	/**
 	 * Constructor.
+	 *
 	 * @param cause cause
 	 */
 	public SSHClientException(Throwable cause) {
@@ -24,6 +25,7 @@ public class SSHClientException extends Exception {
 
 	/**
 	 * Constructor.
+	 *
 	 * @param message message
 	 */
 	public SSHClientException(String message) {
@@ -32,6 +34,7 @@ public class SSHClientException extends Exception {
 
 	/**
 	 * Constructor.
+	 *
 	 * @param message message
 	 * @param cause cause
 	 */

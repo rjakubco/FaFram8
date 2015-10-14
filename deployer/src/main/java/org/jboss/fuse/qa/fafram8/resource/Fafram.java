@@ -5,14 +5,18 @@ import static org.jboss.fuse.qa.fafram8.modifier.impl.PropertyModifier.extendPro
 import static org.jboss.fuse.qa.fafram8.modifier.impl.PropertyModifier.putProperty;
 import static org.jboss.fuse.qa.fafram8.modifier.impl.RandomModifier.changeRandomSource;
 
+import org.jboss.fuse.qa.fafram8.configuration.ConfigurationParser;
 import org.jboss.fuse.qa.fafram8.deployer.Deployer;
 import org.jboss.fuse.qa.fafram8.deployer.LocalDeployer;
 import org.jboss.fuse.qa.fafram8.deployer.RemoteDeployer;
 import org.jboss.fuse.qa.fafram8.exceptions.SSHClientException;
+import org.jboss.fuse.qa.fafram8.manager.Container;
 import org.jboss.fuse.qa.fafram8.manager.LocalNodeManager;
 import org.jboss.fuse.qa.fafram8.modifier.ModifierExecutor;
 import org.jboss.fuse.qa.fafram8.property.FaframConstant;
 import org.jboss.fuse.qa.fafram8.property.SystemProperty;
+import org.jboss.fuse.qa.fafram8.provision.provider.ProvisionProvider;
+import org.jboss.fuse.qa.fafram8.provision.provider.StaticProvider;
 import org.jboss.fuse.qa.fafram8.ssh.FuseSSHClient;
 import org.jboss.fuse.qa.fafram8.ssh.NodeSSHClient;
 import org.jboss.fuse.qa.fafram8.ssh.SSHClient;
@@ -20,6 +24,10 @@ import org.jboss.fuse.qa.fafram8.validator.Validator;
 
 import org.junit.rules.ExternalResource;
 
+import java.util.LinkedList;
+import java.util.List;
+
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -28,6 +36,12 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class Fafram extends ExternalResource {
+	//List of containers used in test
+	@Getter
+	private static final List<Container> containerList = new LinkedList<>();
+	//Provision provider instance in case of remote deployment
+	@Getter
+	private static ProvisionProvider provisionProvider = new StaticProvider();
 	// Deployer instance
 	private Deployer deployer;
 
@@ -35,6 +49,24 @@ public class Fafram extends ExternalResource {
 	 * Constructor.
 	 */
 	public Fafram() {
+	}
+
+	/**
+	 * Create Fafram and set ProvisionProvider implementation for remote deployment on-demmand provisioning.
+	 *
+	 * @param provisionProvider implementation of ProvisionProvider interface.
+	 */
+	public Fafram(ProvisionProvider provisionProvider) {
+		this.provisionProvider = provisionProvider;
+	}
+
+	/**
+	 * Adds container object model to container list.
+	 *
+	 * @param container container specification picked up from configuration file
+	 */
+	public static void addContainer(Container container) {
+		containerList.add(container);
 	}
 
 	@Override
@@ -51,13 +83,21 @@ public class Fafram extends ExternalResource {
 	 * Start method.
 	 */
 	public void setup() {
-		Validator.validate();
+		//TODO(all): consider entry point of configuration parser
+		ConfigurationParser.parseConfigurationFile("just/fake/path");
+		//uncoment for remote deployment
+		//ConfigurationParser.setDeployer();
+
 		if (SystemProperty.getHost() == null) {
 			log.info("Setting up local deployment");
+			Validator.validate();
 			setupLocalDeployment();
 		} else {
+			prepareNodes(provisionProvider);
+
 			log.info("Setting up remote deployment on host " + SystemProperty.getHost() + ":" + SystemProperty
 					.getHostPort());
+			//Validator.validate();
 			try {
 				setupRemoteDeployment();
 			} catch (SSHClientException e) {
@@ -196,7 +236,7 @@ public class Fafram extends ExternalResource {
 	}
 
 	/**
-	 * Provide deployment with Fabric environment.
+	 * Provide deployment with Fabric provision.
 	 *
 	 * @param opts fabric create options
 	 * @return this
@@ -222,5 +262,29 @@ public class Fafram extends ExternalResource {
 	public void restart() {
 		// TODO(avano): probably won't be needed on remote
 		((LocalNodeManager) deployer.getNodeManager()).restart();
+	}
+
+	/**
+	 * Triggers specified provision provider. It will call providers functionality to provision pool of nodes required
+	 * to satisfy needs of test deployment. Provider will create node for every container listed in Fafram.containerList.
+	 * When the container is marked as root provider will assign public IP to it. Otherwise local IP will be provided.
+	 * Provider have to implement ProvisionProvider interface.
+	 *
+	 * @param provider provider type name
+	 */
+	public void prepareNodes(ProvisionProvider provider) {
+		provider.createServerPool(Fafram.containerList);
+		provider.assignAddresses(Fafram.containerList);
+	}
+
+	/**
+	 * Set ProvisionProvider implementation to Fafram.
+	 *
+	 * @param provider Implementation of ProvisionProvider interface
+	 * @return this
+	 */
+	public Fafram provideNodes(ProvisionProvider provider) {
+		provisionProvider = provider;
+		return this;
 	}
 }

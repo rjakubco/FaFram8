@@ -15,6 +15,6 @@ public class LocalDeployRuleDummyTest {
 
 	@Test
 	public void dummyTest() {
-		
+
 	}
 }

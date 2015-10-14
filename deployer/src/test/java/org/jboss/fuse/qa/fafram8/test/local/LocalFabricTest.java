@@ -12,6 +12,7 @@ import org.junit.Test;
  * Created by avano on 21.8.15.
  */
 public class LocalFabricTest {
+
 	@Rule
 	public Fafram fafram = new Fafram().withFabric();
 

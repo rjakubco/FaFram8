@@ -273,4 +273,13 @@ public class SystemProperty {
 	public static boolean skipDefaultUser() {
 		return System.getProperty(FaframConstant.SKIP_DEFAULT_USER) != null;
 	}
+
+	/**
+	 * Getter.
+	 *
+	 * @return whether to keep OS nodes after test or release them
+	 */
+	public static boolean isKeepOsResources() {
+		return Boolean.parseBoolean(System.getProperty(FaframConstant.KEEP_OS_RESOURCES, "false"));
+	}
 }

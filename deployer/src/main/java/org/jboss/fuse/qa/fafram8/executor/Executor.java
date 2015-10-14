@@ -19,6 +19,9 @@ import lombok.extern.slf4j.Slf4j;
 @AllArgsConstructor
 @Slf4j
 public class Executor {
+
+	private static final int SLEEP_PERIOD = 1000;
+
 	private SSHClient client;
 
 	/**
@@ -56,6 +59,9 @@ public class Executor {
 		}
 	}
 
+	//TODO(rjakubco): wrong javadoc
+	//TODO(ecervena): provide smarter canConnect loop + log something
+
 	/**
 	 * Checks if the client can connect.
 	 *
@@ -63,10 +69,16 @@ public class Executor {
 	 */
 	public void connect() throws SSHClientException {
 		try {
+			while (!canConnect()) {
+				System.out.println("Waiting for SSH connection ...");
+				Thread.sleep(SLEEP_PERIOD);
+			}
 			client.connect(false);
 		} catch (VerifyFalseException ex) {
 			// TODO(rjakubco): recursion -> bad idea?
 			connect();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
 		}
 	}
 

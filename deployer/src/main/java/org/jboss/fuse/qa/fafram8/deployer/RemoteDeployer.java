@@ -1,12 +1,12 @@
 package org.jboss.fuse.qa.fafram8.deployer;
 
-import org.jboss.fuse.qa.fafram8.ConfigParser.ConfigurationParser;
 import org.jboss.fuse.qa.fafram8.exception.FaframException;
 import org.jboss.fuse.qa.fafram8.exceptions.SSHClientException;
 import org.jboss.fuse.qa.fafram8.manager.ContainerManager;
 import org.jboss.fuse.qa.fafram8.manager.NodeManager;
 import org.jboss.fuse.qa.fafram8.manager.RemoteNodeManager;
 import org.jboss.fuse.qa.fafram8.property.SystemProperty;
+import org.jboss.fuse.qa.fafram8.resource.Fafram;
 import org.jboss.fuse.qa.fafram8.ssh.SSHClient;
 
 /**
@@ -17,7 +17,7 @@ import org.jboss.fuse.qa.fafram8.ssh.SSHClient;
 public class RemoteDeployer implements Deployer {
 	private RemoteNodeManager nm;
 	private ContainerManager cm;
-	private ConfigurationParser configurationParser;
+	//private ConfigurationParser configurationParser;
 
 	/**
 	 * Constructor.
@@ -29,8 +29,9 @@ public class RemoteDeployer implements Deployer {
 	public RemoteDeployer(SSHClient nodeClient, SSHClient fuseClient) throws SSHClientException {
 		this.nm = new RemoteNodeManager(nodeClient, fuseClient);
 		this.cm = new ContainerManager(fuseClient);
-		this.configurationParser = new ConfigurationParser();
-		this.configurationParser.parseConfigurationFile("path/to/configuration/file");
+		//this.configurationParser = ConfigurationParser.getInstance();
+		//TODO(ecervena): consider where parsing of config file should be called
+		//this.configurationParser.parseConfigurationFile("path/to/configuration/file");
 	}
 
 	@Override
@@ -45,7 +46,7 @@ public class RemoteDeployer implements Deployer {
 			if (SystemProperty.isFabric()) {
 				cm.setupFabric();
 				// TODO(ecervena): rework this when we will have the container parser
-				cm.createSSHContainer(configurationParser.getContainerList());
+				cm.createSSHContainer(Fafram.getContainerList());
 			}
 		} catch (RuntimeException ex) {
 			nm.stopAndClean(true);

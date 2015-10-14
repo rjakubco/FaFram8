@@ -1,7 +1,7 @@
 package org.jboss.fuse.qa.fafram8.ssh.client.tests;
 
-import org.jboss.fuse.qa.fafram8.ssh.SSHClient;
 import org.jboss.fuse.qa.fafram8.ssh.FuseSSHClient;
+import org.jboss.fuse.qa.fafram8.ssh.SSHClient;
 
 import org.junit.Assert;
 import org.junit.Ignore;

@@ -73,9 +73,15 @@ public final class FaframConstant {
 	// Use when working on perf machines.
 	public static final String WORKING_DIRECTORY = "fafram.working.directory";
 
+	// If "true" OpenStackProvisionManager will not release OS nodes after test
+	public static final String KEEP_OS_RESOURCES = "keep.os.resources";
+
 	// Patches folder
 	public static final String PATCH_DIR = "fafram.patch.dir";
 
 	// Skip default user flag
 	public static final String SKIP_DEFAULT_USER = "fafram.skip.default.user";
+
+	//Specify infrastructure provider class name a.k.a. provisioning provider
+	public static final String PROVIDER = "provider.class.name";
 }
