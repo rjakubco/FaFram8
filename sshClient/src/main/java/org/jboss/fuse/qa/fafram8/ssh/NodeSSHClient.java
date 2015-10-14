@@ -1,5 +1,7 @@
 package org.jboss.fuse.qa.fafram8.ssh;
 
+import org.apache.commons.io.IOUtils;
+
 import org.jboss.fuse.qa.fafram8.exceptions.CopyFileException;
 import org.jboss.fuse.qa.fafram8.exceptions.KarafSessionDownException;
 import org.jboss.fuse.qa.fafram8.exceptions.SSHClientException;
@@ -12,6 +14,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -75,5 +78,38 @@ public class NodeSSHClient extends SSHClient {
 			log.error("Exception thrown during uploading file to remote machine");
 			throw new CopyFileException(ex);
 		}
+	}
+
+	/**
+	 * TODO(rjakubco): experimental method not used at the moment
+	 * Convert remote file to String.
+	 *
+	 * @param remotePath absolute path to remote file
+	 * @return content of rmeote file as String
+	 * @throws IOException if there is problem in sftp
+	 */
+	public String readFileFromRemote(String remotePath) throws IOException, CopyFileException {
+		log.info("Reading file from remote machine path " + remotePath);
+
+		ChannelSftp sftpChannel;
+		InputStream stream = null;
+		String file = null;
+		try {
+			sftpChannel = (ChannelSftp) session.openChannel("sftp");
+			stream = sftpChannel.get(remotePath);
+			sftpChannel.connect();
+			file = IOUtils.toString(new InputStreamReader(stream));
+
+			sftpChannel.disconnect();
+
+		} catch (Exception ex) {
+			log.error("Exception thrown during uploading file to remote machine");
+			throw new CopyFileException(ex);
+		} finally {
+			if(stream != null){
+				stream.close();
+			}
+		}
+		return file;
 	}
 }
