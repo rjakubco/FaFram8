@@ -41,7 +41,6 @@ public class LocalPatchTest {
 
 	@Test
 	public void karafFilePatchTest() {
-		// TODO(avano): change this
 		System.setProperty(FaframConstant.PATCH, "file:///home/fuse/patches/latest/jboss-fuse-6.2.0.redhat-153-p2.zip");
 		log.info("System property is \'" + System.getProperty(FaframConstant.PATCH) + "\'");
 		fafram = new Fafram();
@@ -51,7 +50,6 @@ public class LocalPatchTest {
 
 	@Test
 	public void fabricFilePatchTest() {
-		// TODO(avano): change this
 		System.setProperty(FaframConstant.PATCH, "file:///home/fuse/patches/latest/jboss-fuse-6.2.0.redhat-153-p2.zip");
 		log.info("System property is \'" + System.getProperty(FaframConstant.PATCH) + "\'");
 		fafram = new Fafram().withFabric();

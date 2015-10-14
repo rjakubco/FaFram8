@@ -82,6 +82,24 @@ public final class FaframConstant {
 	// Skip default user flag
 	public static final String SKIP_DEFAULT_USER = "fafram.skip.default.user";
 
+	// Patch standalone before fabric flag
+	public static final String PATCH_STANDALONE = "fafram.patch.standalone";
+
 	//Specify infrastructure provider class name a.k.a. provisioning provider
 	public static final String PROVIDER = "provider.class.name";
+
+	// Skip default jvm opts modifier flag
+	public static final String SKIP_DEFAULT_JVM_OPTS = "fafram.skip.default.jvm.opts";
+
+	// Suppress start flag
+	public static final String SUPPRESS_START = "fafram.suppress.start";
+
+	// Archive files target path
+	public static final String ARCHIVE_TARGET = "fafram.archive.target";
+
+	// Archive files pattern
+	public static final String ARCHIVE_PATTERN = "fafram.archive.pattern";
+
+	// Base directory path
+	public static final String BASE_DIR = "fafram.base.dir";
 }

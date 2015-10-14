@@ -24,8 +24,7 @@ public class LocalCustomZipTest {
 
 	@Test
 	public void customZipTest() {
-		fafram = new Fafram();
-		fafram.setup();
+		fafram = new Fafram().suppressStart().setup();
 
 		String artifactName = SystemProperty.getFuseZip().substring(SystemProperty.getFuseZip().lastIndexOf("/") + 1);
 

@@ -20,7 +20,7 @@ import java.io.IOException;
  */
 public class LocalReplaceFileTest {
 	@Rule
-	public Fafram fafram = new Fafram().replaceFile("etc/activemq.xml", "target/test-classes/replace.xml");
+	public Fafram fafram = new Fafram().replaceFile("etc/activemq.xml", "target/test-classes/replace.xml").suppressStart();
 
 	@Test
 	public void replaceFileTest() {

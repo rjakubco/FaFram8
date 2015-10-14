@@ -5,6 +5,7 @@ import org.jboss.fuse.qa.fafram8.exceptions.SSHClientException;
 import org.jboss.fuse.qa.fafram8.manager.ContainerManager;
 import org.jboss.fuse.qa.fafram8.manager.NodeManager;
 import org.jboss.fuse.qa.fafram8.manager.RemoteNodeManager;
+import org.jboss.fuse.qa.fafram8.modifier.ModifierExecutor;
 import org.jboss.fuse.qa.fafram8.property.SystemProperty;
 import org.jboss.fuse.qa.fafram8.resource.Fafram;
 import org.jboss.fuse.qa.fafram8.ssh.SSHClient;
@@ -42,11 +43,14 @@ public class RemoteDeployer implements Deployer {
 			nm.prepareZip();
 			nm.unzipArtifact();
 			nm.prepareFuse();
-			nm.startFuse();
-			if (SystemProperty.isFabric()) {
-				cm.setupFabric();
-				// TODO(ecervena): rework this when we will have the container parser
-				cm.createSSHContainer(Fafram.getContainerList());
+			if (!SystemProperty.suppressStart()) {
+				nm.startFuse();
+				cm.patchStandaloneBeforeFabric();
+				if (SystemProperty.isFabric()) {
+					cm.setupFabric();
+					// TODO(ecervena): rework this when we will have the container parser
+					cm.createSSHContainer(Fafram.getContainerList());
+				}
 			}
 		} catch (RuntimeException ex) {
 			nm.stopAndClean(true);
@@ -56,7 +60,8 @@ public class RemoteDeployer implements Deployer {
 
 	@Override
 	public void tearDown() {
-		// TODO(rjakubco): what to do here
+		SystemProperty.clearAllProperties();
+		ModifierExecutor.clearAllModifiers();
 	}
 
 	@Override

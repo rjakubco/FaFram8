@@ -19,7 +19,7 @@ import java.io.IOException;
  */
 public class LocalAddUserTest {
 	@Rule
-	public Fafram fafram = new Fafram().addUser("testu", "testp", "testr1,testr2");
+	public Fafram fafram = new Fafram().addUser("testu", "testp", "testr1,testr2").suppressStart();
 
 	@Test
 	public void userTest() throws IOException {

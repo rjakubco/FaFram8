@@ -4,11 +4,13 @@ import java.util.HashSet;
 import java.util.Set;
 
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * System property class.
  * Created by avano on 20.8.15.
  */
+@Slf4j
 public class SystemProperty {
 	private static SystemProperty instance = null;
 
@@ -47,6 +49,7 @@ public class SystemProperty {
 
 		// Check if such property exists - if yes do nothing
 		if (System.getProperty(property) == null) {
+			log.debug(String.format("Setting system property %s to value '%s'", property, value));
 			System.setProperty(property, value);
 			getProperties().add(property);
 		}
@@ -61,6 +64,7 @@ public class SystemProperty {
 
 		for (String prop : getProperties()) {
 			System.clearProperty(prop);
+			log.debug("System property " + prop + " cleared.");
 		}
 
 		// Clear all the properties at the end so that they will not stay here when executing multiple tests
@@ -272,6 +276,60 @@ public class SystemProperty {
 	 */
 	public static boolean skipDefaultUser() {
 		return System.getProperty(FaframConstant.SKIP_DEFAULT_USER) != null;
+	}
+
+	/**
+	 * Getter.
+	 *
+	 * @return patch standalone flag
+	 */
+	public static boolean patchStandalone() {
+		return System.getProperty(FaframConstant.PATCH_STANDALONE) != null;
+	}
+
+	/**
+	 * Getter.
+	 *
+	 * @return skip default jvm opts flag
+	 */
+	public static boolean skipDefaultJvmOpts() {
+		return System.getProperty(FaframConstant.SKIP_DEFAULT_JVM_OPTS) != null;
+	}
+
+	/**
+	 * Getter.
+	 *
+	 * @return skip default jvm opts flag
+	 */
+	public static boolean suppressStart() {
+		return System.getProperty(FaframConstant.SUPPRESS_START) != null;
+	}
+
+	/**
+	 * Getter.
+	 *
+	 * @return archive target path
+	 */
+	public static String getArchiveTarget() {
+		return System.getProperty(FaframConstant.ARCHIVE_TARGET, "target/archived");
+	}
+
+	/**
+	 * Getter.
+	 *
+	 * @return archive pattern
+	 */
+	public static String getArchivePattern() {
+		return System.getProperty(FaframConstant.ARCHIVE_PATTERN, ",");
+	}
+
+	/**
+	 * Getter.
+	 *
+	 * @return base directory path
+	 */
+	public static String getBaseDir() {
+		return System.getProperty(FaframConstant.BASE_DIR);
 	}
 
 	/**
