@@ -49,11 +49,11 @@ public final class Validator {
 	private static void validateNullZip() {
 		final String zipFile = SystemProperty.getFuseZip();
 
+		// Validator is called after the machine is provisioned, so the host property should be set
 		// If we are on remote but not specifying zip
-		// TODO(avano): rework this once provisioning is in
-		//		if (SystemProperty.getHost() != null && zipFile == null) {
-		//			throw new ValidatorException(FaframConstant.FUSE_ZIP + " property is not set on remote!");
-		//		}
+		if (SystemProperty.getHost() != null && zipFile == null) {
+			throw new ValidatorException(FaframConstant.FUSE_ZIP + " property is not set on remote!");
+		}
 
 		// If the maven properties are not set and not using custom zip
 		if (zipFile == null && (SystemProperty.getFuseId() == null || SystemProperty.getFuseGroup() == null || SystemProperty.getFuseVersion()

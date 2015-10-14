@@ -48,7 +48,7 @@ public class LocalArchiveTest {
 		fafram.tearDown();
 		String path;
 		if (System.getenv("WORKSPACE") != null) {
-			path = Paths.get(baseDir, "util/fuse-fafram/fabric-cluster-deployer/target/archived", dirStructure, "etc",
+			path = Paths.get(baseDir, "deployer/target/archived", dirStructure, "etc",
 					"users.properties").toAbsolutePath().toString();
 		} else {
 			path = Paths.get(baseDir, "target", "archived", dirStructure, "etc", "users.properties").toAbsolutePath().toString();
