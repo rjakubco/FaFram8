@@ -1,36 +1,60 @@
 package org.jboss.fuse.qa.fafram8.test.remote;
 
 import org.jboss.fuse.qa.fafram8.property.FaframConstant;
-import org.jboss.fuse.qa.fafram8.resource.Fafram;
+import org.jboss.fuse.qa.fafram8.provision.openstack.OpenStackProvisionProvider;
 
 import org.junit.AfterClass;
-import org.junit.Ignore;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.BeforeClass;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
+ * Test suite for executing remote tests on only one provisioned machine in Openstack.
+ *
  * @author : Roman Jakubco (rjakubco@redhat.com)
  */
+@RunWith(Suite.class)
+@Suite.SuiteClasses({
+//		RemoteAddUser.class,
+//		RemoteFabric.class,
+//		RemoteJvmOpts.class,
+//		RemoteOnlyConnect.class,
+//		RemoteProperties.class,
+		RemoteReplaceFile.class,
+//		Remote.class,
+//		RemoteWget.class,
+//		RemoteWorkingDirectory.class
+})
+@Slf4j
 public class RemoteTest {
-	@Rule
-	public Fafram fafram = new Fafram();
+	public static final String SERVER_NAME = "FaframRemoteTestNode";
+
+	// associated floating IP address in Openstack
+	public static String ipAddress;
+
+	private static OpenStackProvisionProvider osm = new OpenStackProvisionProvider();
+
+	@BeforeClass
+	public static void before() throws InterruptedException {
+		log.info("Spawning testing node...");
+		osm.spawnNewServer(SERVER_NAME);
+
+		ipAddress = osm.assignFloatingAddress(osm.getServerByName(SERVER_NAME).getId());
+
+		log.info("Testing node on Openstack spawned on IP address " + ipAddress);
+
+		System.setProperty(FaframConstant.FUSE_ZIP, "http://download.eng.bos.redhat.com/brewroot/repos/jb-fuse-6.2-build/latest/maven/org/jboss/fuse/jboss-fuse-full/6.2.0.redhat-133/jboss-fuse-full-6.2.0.redhat-133.zip");
+		System.setProperty(FaframConstant.HOST, RemoteTest.ipAddress);
+
+		Thread.sleep(30000);
+	}
 
 	@AfterClass
-	public static void clean() {
+	public static void after() {
+		osm.releaseResources();
 		System.clearProperty(FaframConstant.HOST);
 		System.clearProperty(FaframConstant.FUSE_ZIP);
-	}
-
-	@Test
-	@Ignore
-	public void testName() throws Exception {
-		System.out.println("test");
-	}
-
-	static {
-		// TODO(rjakubco): machine is dead
-		System.setProperty(FaframConstant.HOST, "10.8.49.84");
-//		System.setProperty(FaframConstant.FUSE_ZIP, "http://repository.jboss.org/nexus/content/groups/ea/org/jboss/fuse/jboss-fuse-full/6.2.1.redhat-020/jboss-fuse-full-6.2.1.redhat-020.zip");
-		System.setProperty(FaframConstant.FUSE_ZIP, "file:///home/fuse/jboss-fuse-full-6.2.1.redhat-020.zip");
 	}
 }
