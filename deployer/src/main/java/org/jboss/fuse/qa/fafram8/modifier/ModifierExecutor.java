@@ -114,11 +114,11 @@ public class ModifierExecutor {
 	 */
 	private static void executeModifiersFromCollection(Executor executor, Collection<Modifier> col) {
 		for (Modifier c : col) {
-			log.debug("Executing modifier {}.", c);
 			try {
 				if (executor != null) {
 					c.setExecutor(executor);
 				}
+				log.debug("Executing modifier {}.", c);
 				c.execute();
 			} catch (Exception e) {
 				log.error("Failed to execute modifiers.", e);
