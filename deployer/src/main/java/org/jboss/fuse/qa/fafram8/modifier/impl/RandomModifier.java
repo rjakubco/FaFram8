@@ -75,9 +75,9 @@ public final class RandomModifier implements Modifier {
 	public void remoteExecute() {
 		final String filePath = SystemProperty.getFusePath() + File.separator + "bin" + File.separator + "karaf";
 
-		final String response = executor.executeCommand("sed -i \"s/\\(exec \"\\$JAVA\"\\)/  exec \"\\$JAVA\" -Djava.security.egd=file:/dev/./urandom/g\" " + filePath);
+		final String response = executor.executeCommand("sed -i \"s/\\(exec \\\"\\$JAVA\\\"\\)/  exec \\\"\\$JAVA\\\" -Djava\\.security\\.egd=file:\\/dev\\/\\.\\/urandom/g\" " + filePath);
 		if (!response.isEmpty()) {
 			log.error("Setting property on remote host failed. Response should be empty but was: {}.", response);
 		}
-	}	
+	}
 }
