@@ -1,6 +1,7 @@
 package org.jboss.fuse.qa.fafram8.ssh;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import org.jboss.fuse.qa.fafram8.exceptions.CopyFileException;
 import org.jboss.fuse.qa.fafram8.exceptions.KarafSessionDownException;
@@ -71,8 +72,8 @@ public class NodeSSHClient extends SSHClient {
 			final ChannelSftp sftpChannel = (ChannelSftp) session.openChannel("sftp");
 			sftpChannel.connect();
 			final File file = new File(localPath);
-			sftpChannel.cd(remotePath);
-			sftpChannel.put(new FileInputStream(file), file.getName());
+			sftpChannel.cd(StringUtils.substringBeforeLast(remotePath, "/"));
+			sftpChannel.put(new FileInputStream(file), StringUtils.substringAfterLast(remotePath, "/"));
 			sftpChannel.disconnect();
 		} catch (Exception ex) {
 			log.error("Exception thrown during uploading file to remote machine");
