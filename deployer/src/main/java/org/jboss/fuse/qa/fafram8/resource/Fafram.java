@@ -8,7 +8,6 @@ import static org.jboss.fuse.qa.fafram8.modifier.impl.PropertyModifier.extendPro
 import static org.jboss.fuse.qa.fafram8.modifier.impl.PropertyModifier.putProperty;
 import static org.jboss.fuse.qa.fafram8.modifier.impl.RandomModifier.changeRandomSource;
 
-import org.jboss.fuse.qa.fafram8.configuration.ConfigurationParser;
 import org.jboss.fuse.qa.fafram8.deployer.Deployer;
 import org.jboss.fuse.qa.fafram8.deployer.LocalDeployer;
 import org.jboss.fuse.qa.fafram8.deployer.RemoteDeployer;
@@ -89,7 +88,7 @@ public class Fafram extends ExternalResource {
 	 */
 	public Fafram setup() {
 		//TODO(all): consider entry point of configuration parser
-		ConfigurationParser.parseConfigurationFile("just/fake/path");
+//		ConfigurationParser.parseConfigurationFile("just/fake/path");
 		//uncoment for remote deployment
 		//ConfigurationParser.setDeployer();
 
@@ -161,9 +160,6 @@ public class Fafram extends ExternalResource {
 	 * Sets up the remote deployment.
 	 */
 	private void setupRemoteDeployment() throws SSHClientException {
-		// Use fabric by default on remote
-		SystemProperty.set(FaframConstant.FABRIC, "");
-
 		final SSHClient node = new NodeSSHClient().hostname(SystemProperty.getHost()).port(SystemProperty.getHostPort())
 				.username(SystemProperty.getHostUser()).password(SystemProperty.getHostPassword());
 
@@ -356,7 +352,7 @@ public class Fafram extends ExternalResource {
 	}
 
 	/**
-	 * Defines hostname/IP address for remote running
+	 * Defines hostname/IP address for remote running.
 	 *
 	 * @param host hostname or ip to remote host for running Fuse
 	 * @return this
@@ -374,7 +370,7 @@ public class Fafram extends ExternalResource {
 	 *
 	 * @return this
 	 */
-	public Fafram onlyConnect(){
+	public Fafram onlyConnect() {
 		if (SystemProperty.getClean() == null) {
 			System.setProperty(FaframConstant.CLEAN, "false");
 		}

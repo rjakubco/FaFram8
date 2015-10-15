@@ -8,7 +8,6 @@ import org.jboss.fuse.qa.fafram8.manager.RemoteNodeManager;
 import org.jboss.fuse.qa.fafram8.modifier.ModifierExecutor;
 import org.jboss.fuse.qa.fafram8.property.FaframConstant;
 import org.jboss.fuse.qa.fafram8.property.SystemProperty;
-import org.jboss.fuse.qa.fafram8.resource.Fafram;
 import org.jboss.fuse.qa.fafram8.ssh.SSHClient;
 
 /**
@@ -30,11 +29,11 @@ public class RemoteDeployer implements Deployer {
 	 */
 	public RemoteDeployer(SSHClient nodeClient, SSHClient fuseClient) throws SSHClientException {
 		this.nm = new RemoteNodeManager(nodeClient, fuseClient);
-		this.cm = new ContainerManager(fuseClient);		
+		this.cm = new ContainerManager(fuseClient);
 
 		// because CLEAN property is by default null if not set in test/jenkins or change with onlyProperty() method on Fafram
 		// then if is not set then set CLEAN property by default to true
-		if(SystemProperty.getClean() == null){
+		if (SystemProperty.getClean() == null) {
 			System.setProperty(FaframConstant.CLEAN, "true");
 		}
 		//this.configurationParser = ConfigurationParser.getInstance();
@@ -44,27 +43,33 @@ public class RemoteDeployer implements Deployer {
 
 	@Override
 	public void setup() {
-		// TODO(rjakubco): add clean and only connect options for manipulating the test
 		try {
-			if(SystemProperty.getClean()) {
-				nm.stop();
-				nm.prepareZip();
-				nm.unzipArtifact();
-				nm.prepareFuse();
-				if (!SystemProperty.suppressStart()) {
-					nm.startFuse();
-					cm.patchStandaloneBeforeFabric();
-					if (SystemProperty.isFabric()) {
-						cm.setupFabric();
-						// TODO(ecervena): rework this when we will have the container parser
-						cm.createSSHContainer(Fafram.getContainerList());
-					}
+			// if clean do everything
+			if (!SystemProperty.getClean()) {
+				cm.getExecutor().connect();
+				return;
+			}
+
+			nm.stop();
+			nm.prepareZip();
+			nm.unzipArtifact();
+			nm.prepareFuse();
+			if (!SystemProperty.suppressStart()) {
+				nm.startFuse();
+				cm.patchStandaloneBeforeFabric();
+				if (SystemProperty.isFabric()) {
+					cm.setupFabric();
+					// TODO(ecervena): rework this when we will have the container parser
+					// TODO(rjakubco): commented because it is not working at the moment and breaks other unrelated tests
+//						cm.createSSHContainer(Fafram.getContainerList());
 				}
 			}
 		} catch (RuntimeException ex) {
-			if(SystemProperty.getClean()) {
+			if (SystemProperty.getClean()) {
 				nm.stopAndClean(true);
 			}
+			throw new FaframException(ex);
+		} catch (SSHClientException ex) {
 			throw new FaframException(ex);
 		}
 	}

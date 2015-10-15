@@ -127,7 +127,7 @@ public final class Downloader {
 			case "http":
 				log.info(executor.executeCommand("wget --no-check-certificate -q -P " + RemoteNodeManager.getFolder() + " "
 						+ SystemProperty.getFuseZip()));
-				location = executor.executeCommand("ls -d -1 $PWD" + SEP + SystemProperty.getFaframFolder() + SEP + "*");
+				location = executor.executeCommand("ls -d -1 " + RemoteNodeManager.getFolder() + SEP + "*");
 				break;
 			case "scp":
 				// impossible to provide password to scp command without third party library ssh-pass

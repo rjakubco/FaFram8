@@ -17,15 +17,15 @@ import lombok.extern.slf4j.Slf4j;
  */
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-//		RemoteAddUser.class,
-//		RemoteFabric.class,
-//		RemoteJvmOpts.class,
-//		RemoteOnlyConnect.class,
-//		RemoteProperties.class,
+		RemoteAddUser.class,
+		RemoteFabric.class,
+		RemoteJvmOpts.class,
+		RemoteOnlyConnect.class,
+		RemoteProperties.class,
 		RemoteReplaceFile.class,
-//		Remote.class,
-//		RemoteWget.class,
-//		RemoteWorkingDirectory.class
+		Remote.class,
+		RemoteWget.class,
+		RemoteWorkingDirectory.class
 })
 @Slf4j
 public class RemoteTest {

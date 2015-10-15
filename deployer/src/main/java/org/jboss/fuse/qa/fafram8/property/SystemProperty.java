@@ -342,7 +342,7 @@ public class SystemProperty {
 	}
 
 	/**
-	 * Getter
+	 * Getter.
 	 *
 	 * @return clean property
 	 */

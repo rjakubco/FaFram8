@@ -102,12 +102,11 @@ public class NodeSSHClient extends SSHClient {
 			file = IOUtils.toString(new InputStreamReader(stream));
 
 			sftpChannel.disconnect();
-
 		} catch (Exception ex) {
 			log.error("Exception thrown during uploading file to remote machine");
 			throw new CopyFileException(ex);
 		} finally {
-			if(stream != null){
+			if (stream != null) {
 				stream.close();
 			}
 		}

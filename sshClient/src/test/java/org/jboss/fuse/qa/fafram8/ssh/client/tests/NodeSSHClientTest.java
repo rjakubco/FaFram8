@@ -76,11 +76,11 @@ public class NodeSSHClientTest {
 		System.out.println(client.executeCommand("ping -c 1 google.com", false));
 	}
 
-	public void testCopyFile(){
+	public void testCopyFile() {
 
 	}
 
-	public void testReadRemoteFile(){
+	public void testReadRemoteFile() {
 
 	}
 }

@@ -20,8 +20,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class Executor {
 
-	private static final int SLEEP_PERIOD = 1000;
-
 	private SSHClient client;
 
 	/**
@@ -50,7 +48,7 @@ public class Executor {
 	 */
 	public boolean canConnect() {
 		try {
-			// We just check if its possible to connect - supress exception
+			// We just check if its possible to connect - suppress exception
 			client.connect(true);
 			client.disconnect();
 			return true;
@@ -59,26 +57,36 @@ public class Executor {
 		}
 	}
 
-	//TODO(rjakubco): wrong javadoc
-	//TODO(ecervena): provide smarter canConnect loop + log something
-
 	/**
-	 * Checks if the client can connect.
+	 * Connects client to specified remote server.
 	 *
 	 * @throws SSHClientException if something went wrong
 	 */
 	public void connect() throws SSHClientException {
-		try {
-			while (!canConnect()) {
-				System.out.println("Waiting for SSH connection ...");
-				Thread.sleep(SLEEP_PERIOD);
+		Boolean connected = false;
+		final int step = 1;
+		int elapsed = 0;
+		final long timeout = step * 1000L;
+
+		while (!connected) {
+			// Check if the time is up
+			if (elapsed > SystemProperty.getStartWaitTime()) {
+				log.error("Connection couldn't be established after " + SystemProperty.getStartWaitTime()
+						+ " seconds");
+				throw new RuntimeException("Connection couldn't be established after "
+						+ SystemProperty.getStartWaitTime() + " seconds");
 			}
-			client.connect(false);
-		} catch (VerifyFalseException ex) {
-			// TODO(rjakubco): recursion -> bad idea?
-			connect();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
+			try {
+				log.info("Waiting for SSH connection ...");
+
+				client.connect(false);
+				connected = true;
+				log.info("Connected to remote SSH server (node/fuse)");
+			} catch (VerifyFalseException ex) {
+				log.debug("Remaining time: " + (SystemProperty.getStartWaitTime() - elapsed) + " seconds. ");
+				elapsed += step;
+			}
+			sleep(timeout);
 		}
 	}
 
@@ -103,7 +111,7 @@ public class Executor {
 
 			try {
 				// Try to execute the command - if it throws an exception, it is not ready yet
-				// Supress the exception here to reduce spam
+				// Suppress the exception here to reduce spam
 				client.connect(true);
 				online = true;
 				log.info("Container online");
@@ -241,8 +249,6 @@ public class Executor {
 					throw new RuntimeException(
 							"Container failed to rollback patch after " + SystemProperty.getPatchWaitTime() + " seconds.");
 				}
-
-
 			}
 
 			String reason = "";

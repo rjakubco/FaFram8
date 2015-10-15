@@ -62,7 +62,12 @@ public class RemoteNodeManager implements NodeManager {
 		log.info("Unzipping fuse from " + productZipPath);
 
 		log.debug(executor.executeCommand("unzip -q -d " + getFolder() + " " + productZipPath));
-		productPath = executor.executeCommand("ls -d $PWD" + SEP + getFolder() + SEP + "*" + SEP);
+		// Problem if WORKING_DIRECTORY is set because then the first command doesn't work
+		if ("".equals(SystemProperty.getWorkingDirectory())) {
+			productPath = executor.executeCommand("ls -d $PWD" + SEP + getFolder() + SEP + "*" + SEP).trim();
+		} else {
+			productPath = executor.executeCommand("ls -d " + getFolder() + SEP + "*" + SEP).trim();
+		}
 
 		log.debug("Product path is " + productPath);
 		SystemProperty.set(FaframConstant.FUSE_PATH, productPath);
