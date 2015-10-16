@@ -371,9 +371,7 @@ public class Fafram extends ExternalResource {
 	 * @return this
 	 */
 	public Fafram onlyConnect() {
-		if (SystemProperty.getClean() == null) {
-			System.setProperty(FaframConstant.CLEAN, "false");
-		}
+		SystemProperty.set(FaframConstant.CLEAN, "false");
 
 		return this;
 	}

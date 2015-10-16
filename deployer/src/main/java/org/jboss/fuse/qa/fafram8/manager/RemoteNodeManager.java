@@ -63,11 +63,10 @@ public class RemoteNodeManager implements NodeManager {
 
 		log.debug(executor.executeCommand("unzip -q -d " + getFolder() + " " + productZipPath));
 		// Problem if WORKING_DIRECTORY is set because then the first command doesn't work
-		if ("".equals(SystemProperty.getWorkingDirectory())) {
-			productPath = executor.executeCommand("ls -d $PWD" + SEP + getFolder() + SEP + "*" + SEP).trim();
-		} else {
-			productPath = executor.executeCommand("ls -d " + getFolder() + SEP + "*" + SEP).trim();
-		}
+
+		productPath = "".equals(SystemProperty.getWorkingDirectory())
+				? executor.executeCommand("ls -d $PWD" + SEP + getFolder() + SEP + "*" + SEP).trim()
+				: executor.executeCommand("ls -d " + getFolder() + SEP + "*" + SEP).trim();
 
 		log.debug("Product path is " + productPath);
 		SystemProperty.set(FaframConstant.FUSE_PATH, productPath);
@@ -92,22 +91,20 @@ public class RemoteNodeManager implements NodeManager {
 
 	@Override
 	public void stopAndClean(boolean ignoreExceptions) {
-		// Create a new variable here because it will be unset
-		final boolean suppressStart = SystemProperty.suppressStart();
+		// For remote deployment just clean modifiers and System properties
 		SystemProperty.clearAllProperties();
 		ModifierExecutor.clearAllModifiers();
-		if (!suppressStart) {
-			stop();
-		}
 	}
 
 	/**
 	 * Stops all karaf instances and removes them.
 	 */
-	public void stop() {
-		// todo(rjakubco): urobit lepsi cleaning pre windows -> najprv zabit fuse na vsetkych IP a potom delete
-		log.info("Cleaning " + SystemProperty.getHost());
+	public void clean() {
+		// todo(rjakubco): create better cleaning mechanism for Fabric on Windows machines
+		log.info("Killing Fuse on  " + SystemProperty.getHost());
 		executor.executeCommand("pkill -9 -f karaf");
+
+		log.info("Deleting Fafram folder on  " + SystemProperty.getHost());
 		executor.executeCommand("rm -rf " + SystemProperty.getFaframFolder());
 	}
 

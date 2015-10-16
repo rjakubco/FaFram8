@@ -347,6 +347,6 @@ public class SystemProperty {
 	 * @return clean property
 	 */
 	public static Boolean getClean() {
-		return System.getProperty(FaframConstant.CLEAN) == null ? null : Boolean.valueOf(System.getProperty(FaframConstant.CLEAN));
+		return Boolean.parseBoolean(System.getProperty(FaframConstant.CLEAN, "false"));
 	}
 }

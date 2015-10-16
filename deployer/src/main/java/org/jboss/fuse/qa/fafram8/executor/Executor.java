@@ -240,15 +240,11 @@ public class Executor {
 		while (!isSuccessful) {
 			if (retries > SystemProperty.getPatchWaitTime()) {
 				log.error("Container failed to install patch after " + SystemProperty.getPatchWaitTime() + " seconds.");
-				if ("true".equals(String.valueOf(status))) {
-					log.error("Standalone container failed to install patch after " + SystemProperty.getPatchWaitTime() + " seconds.");
-					throw new RuntimeException(
-							"Container failed to install patch after " + SystemProperty.getPatchWaitTime() + " seconds.");
-				} else {
-					log.error("Standalone container failed to rollback patch after " + SystemProperty.getPatchWaitTime() + " seconds.");
-					throw new RuntimeException(
-							"Container failed to rollback patch after " + SystemProperty.getPatchWaitTime() + " seconds.");
-				}
+
+				final String action = "true".equals(String.valueOf(status)) ? "install" : "rollback";
+				log.error("Standalone container failed to " + action + " patch after " + SystemProperty.getPatchWaitTime() + " seconds.");
+				throw new RuntimeException(
+						"Container failed to " + action + " patch after " + SystemProperty.getPatchWaitTime() + " seconds.");
 			}
 
 			String reason = "";

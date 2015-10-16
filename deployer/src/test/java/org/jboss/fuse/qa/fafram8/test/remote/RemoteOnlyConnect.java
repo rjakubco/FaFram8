@@ -13,7 +13,7 @@ import org.junit.Test;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Remote onlyConnect property test
+ * Remote onlyConnect property test.
  *
  * @author : Roman Jakubco (rjakubco@redhat.com)
  */

@@ -31,11 +31,9 @@ public class RemoteDeployer implements Deployer {
 		this.nm = new RemoteNodeManager(nodeClient, fuseClient);
 		this.cm = new ContainerManager(fuseClient);
 
-		// because CLEAN property is by default null if not set in test/jenkins or change with onlyProperty() method on Fafram
-		// then if is not set then set CLEAN property by default to true
-		if (SystemProperty.getClean() == null) {
-			System.setProperty(FaframConstant.CLEAN, "true");
-		}
+		// If Clean property is not set then default value is true
+		SystemProperty.set(FaframConstant.CLEAN, "true");
+
 		//this.configurationParser = ConfigurationParser.getInstance();
 		//TODO(ecervena): consider where parsing of config file should be called
 		//this.configurationParser.parseConfigurationFile("path/to/configuration/file");
@@ -44,13 +42,14 @@ public class RemoteDeployer implements Deployer {
 	@Override
 	public void setup() {
 		try {
-			// if clean do everything
 			if (!SystemProperty.getClean()) {
+				// If clean is set to false then fafram is only connecting to running Fuse. In this scenario we need to
+				// connect ContainerManager to running Fuse to be able to execute commands.
 				cm.getExecutor().connect();
 				return;
 			}
 
-			nm.stop();
+			nm.clean();
 			nm.prepareZip();
 			nm.unzipArtifact();
 			nm.prepareFuse();
@@ -65,9 +64,7 @@ public class RemoteDeployer implements Deployer {
 				}
 			}
 		} catch (RuntimeException ex) {
-			if (SystemProperty.getClean()) {
-				nm.stopAndClean(true);
-			}
+			nm.stopAndClean(true);
 			throw new FaframException(ex);
 		} catch (SSHClientException ex) {
 			throw new FaframException(ex);
