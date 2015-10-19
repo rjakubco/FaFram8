@@ -6,8 +6,8 @@ import org.jboss.fuse.qa.fafram8.manager.ContainerManager;
 import org.jboss.fuse.qa.fafram8.manager.NodeManager;
 import org.jboss.fuse.qa.fafram8.manager.RemoteNodeManager;
 import org.jboss.fuse.qa.fafram8.modifier.ModifierExecutor;
+import org.jboss.fuse.qa.fafram8.property.FaframConstant;
 import org.jboss.fuse.qa.fafram8.property.SystemProperty;
-import org.jboss.fuse.qa.fafram8.resource.Fafram;
 import org.jboss.fuse.qa.fafram8.ssh.SSHClient;
 
 /**
@@ -30,6 +30,10 @@ public class RemoteDeployer implements Deployer {
 	public RemoteDeployer(SSHClient nodeClient, SSHClient fuseClient) throws SSHClientException {
 		this.nm = new RemoteNodeManager(nodeClient, fuseClient);
 		this.cm = new ContainerManager(fuseClient);
+
+		// If Clean property is not set then default value is true
+		SystemProperty.set(FaframConstant.CLEAN, "true");
+
 		//this.configurationParser = ConfigurationParser.getInstance();
 		//TODO(ecervena): consider where parsing of config file should be called
 		//this.configurationParser.parseConfigurationFile("path/to/configuration/file");
@@ -37,9 +41,15 @@ public class RemoteDeployer implements Deployer {
 
 	@Override
 	public void setup() {
-		// TODO(rjakubco): add clean and only connect options for manipulating the test
 		try {
-			nm.stop();
+			if (!SystemProperty.getClean()) {
+				// If clean is set to false then fafram is only connecting to running Fuse. In this scenario we need to
+				// connect ContainerManager to running Fuse to be able to execute commands.
+				cm.getExecutor().connect();
+				return;
+			}
+
+			nm.clean();
 			nm.prepareZip();
 			nm.unzipArtifact();
 			nm.prepareFuse();
@@ -49,11 +59,14 @@ public class RemoteDeployer implements Deployer {
 				if (SystemProperty.isFabric()) {
 					cm.setupFabric();
 					// TODO(ecervena): rework this when we will have the container parser
-					cm.createSSHContainer(Fafram.getContainerList());
+					// TODO(rjakubco): commented because it is not working at the moment and breaks other unrelated tests
+//						cm.createSSHContainer(Fafram.getContainerList());
 				}
 			}
 		} catch (RuntimeException ex) {
 			nm.stopAndClean(true);
+			throw new FaframException(ex);
+		} catch (SSHClientException ex) {
 			throw new FaframException(ex);
 		}
 	}

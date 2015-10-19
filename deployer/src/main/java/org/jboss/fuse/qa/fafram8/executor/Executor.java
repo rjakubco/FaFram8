@@ -20,8 +20,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class Executor {
 
-	private static final int SLEEP_PERIOD = 1000;
-
 	private SSHClient client;
 
 	/**
@@ -50,7 +48,7 @@ public class Executor {
 	 */
 	public boolean canConnect() {
 		try {
-			// We just check if its possible to connect - supress exception
+			// We just check if its possible to connect - suppress exception
 			client.connect(true);
 			client.disconnect();
 			return true;
@@ -59,26 +57,36 @@ public class Executor {
 		}
 	}
 
-	//TODO(rjakubco): wrong javadoc
-	//TODO(ecervena): provide smarter canConnect loop + log something
-
 	/**
-	 * Checks if the client can connect.
+	 * Connects client to specified remote server.
 	 *
 	 * @throws SSHClientException if something went wrong
 	 */
 	public void connect() throws SSHClientException {
-		try {
-			while (!canConnect()) {
-				System.out.println("Waiting for SSH connection ...");
-				Thread.sleep(SLEEP_PERIOD);
+		Boolean connected = false;
+		final int step = 1;
+		int elapsed = 0;
+		final long timeout = step * 1000L;
+
+		while (!connected) {
+			// Check if the time is up
+			if (elapsed > SystemProperty.getStartWaitTime()) {
+				log.error("Connection couldn't be established after " + SystemProperty.getStartWaitTime()
+						+ " seconds");
+				throw new RuntimeException("Connection couldn't be established after "
+						+ SystemProperty.getStartWaitTime() + " seconds");
 			}
-			client.connect(false);
-		} catch (VerifyFalseException ex) {
-			// TODO(rjakubco): recursion -> bad idea?
-			connect();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
+			try {
+				log.info("Waiting for SSH connection ...");
+
+				client.connect(false);
+				connected = true;
+				log.info("Connected to remote SSH server (node/fuse)");
+			} catch (VerifyFalseException ex) {
+				log.debug("Remaining time: " + (SystemProperty.getStartWaitTime() - elapsed) + " seconds. ");
+				elapsed += step;
+			}
+			sleep(timeout);
 		}
 	}
 
@@ -103,7 +111,7 @@ public class Executor {
 
 			try {
 				// Try to execute the command - if it throws an exception, it is not ready yet
-				// Supress the exception here to reduce spam
+				// Suppress the exception here to reduce spam
 				client.connect(true);
 				online = true;
 				log.info("Container online");
@@ -216,11 +224,12 @@ public class Executor {
 	}
 
 	/**
-	 * Waits for the patch to be applied.
+	 * Waits for the patch defined status.
 	 *
 	 * @param patchName patch name
+	 * @param status status of patch to wait for
 	 */
-	public void waitForPatch(String patchName) {
+	public void waitForPatchStatus(String patchName, boolean status) {
 		final int step = 3;
 		final long timeout = step * 1000L;
 		int retries = 0;
@@ -231,15 +240,18 @@ public class Executor {
 		while (!isSuccessful) {
 			if (retries > SystemProperty.getPatchWaitTime()) {
 				log.error("Container failed to install patch after " + SystemProperty.getPatchWaitTime() + " seconds.");
+
+				final String action = "true".equals(String.valueOf(status)) ? "install" : "rollback";
+				log.error("Standalone container failed to " + action + " patch after " + SystemProperty.getPatchWaitTime() + " seconds.");
 				throw new RuntimeException(
-						"Container failed to install patch after " + SystemProperty.getPatchWaitTime() + " seconds.");
+						"Container failed to " + action + " patch after " + SystemProperty.getPatchWaitTime() + " seconds.");
 			}
 
 			String reason = "";
 
 			// TODO(avano): command, connection established, remaining time
 			try {
-				isSuccessful = client.executeCommand("patch:list | grep " + patchName, true).contains("true");
+				isSuccessful = client.executeCommand("patch:list | grep " + patchName, true).contains(String.valueOf(status));
 			} catch (Exception e) {
 				reason = e.getMessage();
 

@@ -340,4 +340,13 @@ public class SystemProperty {
 	public static boolean isKeepOsResources() {
 		return Boolean.parseBoolean(System.getProperty(FaframConstant.KEEP_OS_RESOURCES, "false"));
 	}
+
+	/**
+	 * Getter.
+	 *
+	 * @return clean property
+	 */
+	public static Boolean getClean() {
+		return Boolean.parseBoolean(System.getProperty(FaframConstant.CLEAN, "false"));
+	}
 }

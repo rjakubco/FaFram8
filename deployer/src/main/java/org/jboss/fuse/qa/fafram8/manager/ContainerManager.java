@@ -73,7 +73,7 @@ public class ContainerManager {
 		for (String s : Patcher.getPatches()) {
 			final String patchName = getPatchName(executor.executeCommand("patch:add " + s));
 			executor.executeCommand("patch:install " + patchName);
-			executor.waitForPatch(patchName);
+			executor.waitForPatchStatus(patchName, true);
 		}
 	}
 

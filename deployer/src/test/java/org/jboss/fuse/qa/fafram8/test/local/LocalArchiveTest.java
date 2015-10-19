@@ -8,14 +8,11 @@ import org.jboss.fuse.qa.fafram8.property.SystemProperty;
 import org.jboss.fuse.qa.fafram8.resource.Fafram;
 
 import org.junit.FixMethodOrder;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
 import java.io.File;
 import java.nio.file.Paths;
-
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * Local archive files test.
