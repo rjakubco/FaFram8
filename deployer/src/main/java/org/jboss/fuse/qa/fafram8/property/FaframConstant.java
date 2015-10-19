@@ -105,4 +105,7 @@ public final class FaframConstant {
 
 	// Base directory path
 	public static final String BASE_DIR = "fafram.base.dir";
+
+	// Broker start wait time
+	public static final String BROKER_START_WAIT_TIME = "broker.start.wait.time";
 }

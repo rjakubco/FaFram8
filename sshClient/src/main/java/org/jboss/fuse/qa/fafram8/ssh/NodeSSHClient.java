@@ -27,7 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class NodeSSHClient extends SSHClient {
 	@Override
-	public String executeCommand(String command, boolean supressLog) throws KarafSessionDownException,
+	public String executeCommand(String command, boolean suppressLog) throws KarafSessionDownException,
 			SSHClientException {
 		String returnString;
 

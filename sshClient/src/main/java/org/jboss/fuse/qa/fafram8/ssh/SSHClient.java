@@ -66,13 +66,13 @@ public abstract class SSHClient {
 	 * Method for executing command on connected SSH server. Each implementation has some specific small hacks.
 	 *
 	 * @param command command to be executed
-	 * @param supressLog supress exception logging
+	 * @param suppressLog supress exception logging
 	 * @return String containing response from command
 	 * @throws KarafSessionDownException throws this exception if Karaf is down(specific for FuseSSHClient)
 	 * @throws SSHClientException common exception for sshclient when there is some problem in connecting
 	 * (auth fail, timeout, wrong host/port)
 	 */
-	public abstract String executeCommand(String command, boolean supressLog) throws KarafSessionDownException,
+	public abstract String executeCommand(String command, boolean suppressLog) throws KarafSessionDownException,
 			SSHClientException;
 
 	/**

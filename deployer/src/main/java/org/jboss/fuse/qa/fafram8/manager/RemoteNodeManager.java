@@ -84,6 +84,10 @@ public class RemoteNodeManager implements NodeManager {
 			log.info("Starting fuse");
 			executor.executeCommand(productPath + SEP + "bin" + SEP + "start");
 			fuseExecutor.waitForBoot();
+			// TODO(avano): special usecase for remote standalone starting? maybe not necessary
+			if (!SystemProperty.isFabric()) {
+				executor.waitForBroker();
+			}
 		} catch (Exception e) {
 			throw new RuntimeException("Could not start container: " + e);
 		}

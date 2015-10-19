@@ -20,7 +20,7 @@ import java.io.IOException;
  */
 public class LocalReplaceFileTest {
 	@Rule
-	public Fafram fafram = new Fafram().replaceFile("etc/activemq.xml", "target/test-classes/replace.xml").suppressStart();
+	public Fafram fafram = new Fafram().replaceFile("fabric/readme.txt", "target/test-classes/replace.xml").suppressStart();
 
 	@Test
 	public void replaceFileTest() {
@@ -33,8 +33,8 @@ public class LocalReplaceFileTest {
 
 		assertNotNull(replaceContent);
 
-		String fileLocation = System.getProperty(FaframConstant.FUSE_PATH) + File.separator + "etc" + File.separator +
-				"activemq.xml";
+		String fileLocation = System.getProperty(FaframConstant.FUSE_PATH) + File.separator + "fabric" + File.separator +
+				"readme.txt";
 		String file = null;
 		try {
 			file = FileUtils.readFileToString(new File(fileLocation));

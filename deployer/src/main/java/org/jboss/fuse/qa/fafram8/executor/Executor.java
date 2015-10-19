@@ -124,6 +124,44 @@ public class Executor {
 	}
 
 	/**
+	 * Waits for the broker start.
+	 */
+	public void waitForBroker() {
+		final int step = 3;
+		final long timeout = step * 1000L;
+		boolean online = false;
+
+		int elapsed = 0;
+
+		log.info("Waiting for the broker to be online");
+
+		while (!online) {
+			// Check if the time is up
+			if (elapsed > SystemProperty.getBrokerStartWaitTime()) {
+				log.error("Broker wasn't started after " + SystemProperty.getBrokerStartWaitTime() + " seconds");
+				throw new RuntimeException("Broker wasn't started after " + SystemProperty.getBrokerStartWaitTime() + " seconds");
+			}
+
+			String response = null;
+			try {
+				response = client.executeCommand("activemq:bstat", true);
+			} catch (Exception ignored) {
+				// Do nothing
+			}
+
+			if (!response.contains("BrokerName")) {
+				log.debug("Remaining time: " + (SystemProperty.getBrokerStartWaitTime() - elapsed) + " seconds. ");
+				elapsed += step;
+			} else {
+				online = true;
+				log.info("Broker online");
+			}
+
+			sleep(timeout);
+		}
+	}
+
+	/**
 	 * Waits for the container to shut down.
 	 */
 	public void waitForShutdown() {

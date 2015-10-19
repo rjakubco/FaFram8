@@ -19,7 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class FuseSSHClient extends SSHClient {
 	@Override
-	public String executeCommand(String command, boolean supressLog) throws KarafSessionDownException,
+	public String executeCommand(String command, boolean suppressLog) throws KarafSessionDownException,
 			SSHClientException {
 		log.info("Executing command: " + command);
 
@@ -64,11 +64,13 @@ public class FuseSSHClient extends SSHClient {
 			} while (retry);
 
 			returnString = returnString.replaceAll("\u001B\\[[;\\d]*m", "").trim();
-			log.debug("Command response: " + returnString);
+			if (!suppressLog) {
+				log.debug("Command response: " + returnString);
+			}
 			return returnString;
 		} catch (JSchException ex) {
 			if (ex.getMessage().contains("session is down")) {
-				if (!supressLog) {
+				if (!suppressLog) {
 					log.error("JschException caught - Session is down");
 				}
 				throw new KarafSessionDownException(ex);

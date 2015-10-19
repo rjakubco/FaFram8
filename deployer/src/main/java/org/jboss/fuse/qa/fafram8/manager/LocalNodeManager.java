@@ -53,6 +53,9 @@ public class LocalNodeManager implements NodeManager {
 	// Is jenkins?
 	private boolean jenkins = System.getenv("WORKSPACE") != null;
 
+	// Restart flag - used to successfully shutdown the container in case of restart fail
+	private boolean restart = false;
+
 	/**
 	 * Constructor.
 	 *
@@ -140,6 +143,9 @@ public class LocalNodeManager implements NodeManager {
 			productProcess = Runtime.getRuntime().exec(executablePath);
 			log.info("Waiting for the container to be online");
 			executor.waitForBoot();
+			if (!SystemProperty.isFabric()) {
+				executor.waitForBroker();
+			}
 			stopped = false;
 		} catch (Exception e) {
 			throw new RuntimeException("Could not start container: " + e);
@@ -169,7 +175,7 @@ public class LocalNodeManager implements NodeManager {
 	public void stopAndClean(boolean ignoreExceptions) {
 		// Create a new variable here because it will be unset
 		final boolean suppressStart = SystemProperty.suppressStart();
-		if (!stopped) {
+		if (!stopped || restart) {
 			ModifierExecutor.executePostModifiers();
 			SystemProperty.clearAllProperties();
 			ModifierExecutor.clearAllModifiers();
@@ -245,7 +251,10 @@ public class LocalNodeManager implements NodeManager {
 	 * Restarts the container.
 	 */
 	public void restart() {
+		restart = true;
 		stop(false);
+		// If start fails, the flag will remain set so the shutdown will be called (see stop())
 		startFuse();
+		restart = false;
 	}
 }
