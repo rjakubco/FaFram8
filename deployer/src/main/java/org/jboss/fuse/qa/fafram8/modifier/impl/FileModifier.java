@@ -2,6 +2,7 @@ package org.jboss.fuse.qa.fafram8.modifier.impl;
 
 import org.apache.commons.io.FileUtils;
 
+import org.jboss.fuse.qa.fafram8.exception.FaframException;
 import org.jboss.fuse.qa.fafram8.exceptions.CopyFileException;
 import org.jboss.fuse.qa.fafram8.executor.Executor;
 import org.jboss.fuse.qa.fafram8.modifier.Modifier;
@@ -83,7 +84,7 @@ public final class FileModifier implements Modifier {
 		} catch (Exception ex) {
 			log.error("Copy from " + newFile.getAbsolutePath() + " to " + oldFile.getAbsolutePath()
 					+ " failed! " + ex);
-			throw new RuntimeException(
+			throw new FaframException(
 					"Copy from " + newFile.getAbsolutePath() + " to " + oldFile.getAbsolutePath()
 							+ " failed! " + ex);
 		}
@@ -100,7 +101,7 @@ public final class FileModifier implements Modifier {
 			executor.copyFileToRemote(fileToUse, path);
 		} catch (CopyFileException ex) {
 			log.error("Could not copy file to remote location: ", ex);
-			throw new RuntimeException("Could not copy file to remote location: ", ex);
+			throw new FaframException("Could not copy file to remote location: ", ex);
 		}
 	}
 }

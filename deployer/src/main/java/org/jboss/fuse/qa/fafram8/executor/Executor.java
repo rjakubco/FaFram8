@@ -1,5 +1,8 @@
 package org.jboss.fuse.qa.fafram8.executor;
 
+import org.apache.commons.lang3.StringUtils;
+
+import org.jboss.fuse.qa.fafram8.exception.FaframException;
 import org.jboss.fuse.qa.fafram8.exceptions.CopyFileException;
 import org.jboss.fuse.qa.fafram8.exceptions.KarafSessionDownException;
 import org.jboss.fuse.qa.fafram8.exceptions.SSHClientException;
@@ -9,21 +12,21 @@ import org.jboss.fuse.qa.fafram8.ssh.NodeSSHClient;
 import org.jboss.fuse.qa.fafram8.ssh.SSHClient;
 
 import lombok.AllArgsConstructor;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
 /**
  * Executor class.
  * Created by avano on 19.8.15.
  */
-@SuppressWarnings("UnnecessarySemicolon")
 @AllArgsConstructor
 @Slf4j
+@ToString
 public class Executor {
-
 	private SSHClient client;
 
 	/**
-	 * Executes command.
+	 * Executes a command.
 	 *
 	 * @param cmd command
 	 * @return command response
@@ -68,17 +71,16 @@ public class Executor {
 		int elapsed = 0;
 		final long timeout = step * 1000L;
 
+		log.info("Waiting for SSH connection ...");
 		while (!connected) {
 			// Check if the time is up
 			if (elapsed > SystemProperty.getStartWaitTime()) {
 				log.error("Connection couldn't be established after " + SystemProperty.getStartWaitTime()
 						+ " seconds");
-				throw new RuntimeException("Connection couldn't be established after "
+				throw new FaframException("Connection couldn't be established after "
 						+ SystemProperty.getStartWaitTime() + " seconds");
 			}
 			try {
-				log.info("Waiting for SSH connection ...");
-
 				client.connect(false);
 				connected = true;
 				log.info("Connected to remote SSH server (node/fuse)");
@@ -105,7 +107,7 @@ public class Executor {
 			if (elapsed > SystemProperty.getStartWaitTime()) {
 				log.error("Connection couldn't be established after " + SystemProperty.getStartWaitTime()
 						+ " seconds");
-				throw new RuntimeException("Connection couldn't be established after "
+				throw new FaframException("Connection couldn't be established after "
 						+ SystemProperty.getStartWaitTime() + " seconds");
 			}
 
@@ -139,7 +141,7 @@ public class Executor {
 			// Check if the time is up
 			if (elapsed > SystemProperty.getBrokerStartWaitTime()) {
 				log.error("Broker wasn't started after " + SystemProperty.getBrokerStartWaitTime() + " seconds");
-				throw new RuntimeException("Broker wasn't started after " + SystemProperty.getBrokerStartWaitTime() + " seconds");
+				throw new FaframException("Broker wasn't started after " + SystemProperty.getBrokerStartWaitTime() + " seconds");
 			}
 
 			String response = null;
@@ -149,7 +151,7 @@ public class Executor {
 				// Do nothing
 			}
 
-			if (!response.contains("BrokerName")) {
+			if (StringUtils.contains("BrokerName", response)) {
 				log.debug("Remaining time: " + (SystemProperty.getBrokerStartWaitTime() - elapsed) + " seconds. ");
 				elapsed += step;
 			} else {
@@ -175,7 +177,7 @@ public class Executor {
 			// Check if the time is up
 			if (elapsed > SystemProperty.getStopWaitTime()) {
 				log.error("Connection could be established after " + SystemProperty.getStopWaitTime() + " seconds");
-				throw new RuntimeException(
+				throw new FaframException(
 						"Connection could be established after " + SystemProperty.getStopWaitTime() + " seconds");
 			}
 
@@ -211,7 +213,7 @@ public class Executor {
 		while (!isSuccessful) {
 			if (retries > SystemProperty.getProvisionWaitTime()) {
 				log.error("Container root failed to provision in time");
-				throw new RuntimeException("Container root failed to provision in time");
+				throw new FaframException("Container root failed to provision in time");
 			}
 
 			String reason = "";
@@ -226,9 +228,7 @@ public class Executor {
 				// Re-init the ssh connection if it's not successful
 				try {
 					client.connect(true);
-				} catch (Exception e1) {
-					// Do nothing
-					;
+				} catch (Exception ignored) {
 				}
 			}
 
@@ -238,9 +238,7 @@ public class Executor {
 				retries += step;
 				try {
 					Thread.sleep(timeout);
-				} catch (final Exception ex) {
-					// Do nothing
-					;
+				} catch (Exception ignored) {
 				}
 			}
 		}
@@ -276,29 +274,23 @@ public class Executor {
 		log.info("Waiting for patch to be installed");
 
 		while (!isSuccessful) {
+			boolean shouldReconnect = false;
 			if (retries > SystemProperty.getPatchWaitTime()) {
 				log.error("Container failed to install patch after " + SystemProperty.getPatchWaitTime() + " seconds.");
 
 				final String action = "true".equals(String.valueOf(status)) ? "install" : "rollback";
 				log.error("Standalone container failed to " + action + " patch after " + SystemProperty.getPatchWaitTime() + " seconds.");
-				throw new RuntimeException(
+				throw new FaframException(
 						"Container failed to " + action + " patch after " + SystemProperty.getPatchWaitTime() + " seconds.");
 			}
 
 			String reason = "";
 
-			// TODO(avano): command, connection established, remaining time
 			try {
 				isSuccessful = client.executeCommand("patch:list | grep " + patchName, true).contains(String.valueOf(status));
 			} catch (Exception e) {
 				reason = e.getMessage();
-
-				try {
-					client.connect(true);
-				} catch (Exception e1) {
-					// Do nothing, ; for checkstyle
-					;
-				}
+				shouldReconnect = true;
 			}
 
 			if (!isSuccessful) {
@@ -306,6 +298,14 @@ public class Executor {
 						.equals(reason) ? "" : "(" + reason + ")"));
 				retries += step;
 			}
+
+			if (shouldReconnect) {
+				try {
+					client.connect(true);
+				} catch (Exception ignored) {
+				}
+			}
+
 			sleep(timeout);
 		}
 	}

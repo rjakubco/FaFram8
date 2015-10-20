@@ -19,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
  * JVM Opts modifier.
  * Created by avano on 8.10.15.
  */
+@SuppressWarnings("ResultOfMethodCallIgnored")
 @Slf4j
 @ToString
 public final class JvmOptsModifier implements Modifier {
@@ -119,7 +120,7 @@ public final class JvmOptsModifier implements Modifier {
 		executor.executeCommand("rm -rf " + path + ".bat");
 
 		// Print content into the files
-		String content = String.format("export JAVA_MIN_MEM=%s\nexport JAVA_MAX_MEM=%s\nexport JAVA_PERM_MEM=%s\nexport JAVA_MAX_PERM_MEM=%s",
+		String content = String.format("export JAVA_MIN_MEM=%s%nexport JAVA_MAX_MEM=%s%nexport JAVA_PERM_MEM=%s%nexport JAVA_MAX_PERM_MEM=%s",
 				xms, xmx, permMem, maxPermMem);
 		executor.executeCommand("printf \"" + content + "\" >> " + path);
 

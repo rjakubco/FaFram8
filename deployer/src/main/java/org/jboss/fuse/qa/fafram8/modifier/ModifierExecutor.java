@@ -1,5 +1,6 @@
 package org.jboss.fuse.qa.fafram8.modifier;
 
+import org.jboss.fuse.qa.fafram8.exception.FaframException;
 import org.jboss.fuse.qa.fafram8.executor.Executor;
 
 import java.util.ArrayList;
@@ -70,7 +71,7 @@ public class ModifierExecutor {
 	 * @param col collection
 	 * @param modifier modifiers
 	 */
-	private static void addModifiersToCollection(Collection col, Modifier... modifier) {
+	private static void addModifiersToCollection(Collection<Modifier> col, Modifier... modifier) {
 		Collections.addAll(col, modifier);
 	}
 
@@ -122,7 +123,7 @@ public class ModifierExecutor {
 				c.execute();
 			} catch (Exception e) {
 				log.error("Failed to execute modifiers.", e);
-				throw new RuntimeException(e);
+				throw new FaframException(e);
 			}
 		}
 	}

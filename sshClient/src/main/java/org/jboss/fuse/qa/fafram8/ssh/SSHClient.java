@@ -15,6 +15,7 @@ import java.io.IOException;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -23,6 +24,7 @@ import lombok.extern.slf4j.Slf4j;
  * @author : Roman Jakubco (rjakubco@redhat.com)
  */
 @Slf4j
+@ToString
 public abstract class SSHClient {
 
 	@Getter
@@ -66,7 +68,7 @@ public abstract class SSHClient {
 	 * Method for executing command on connected SSH server. Each implementation has some specific small hacks.
 	 *
 	 * @param command command to be executed
-	 * @param suppressLog supress exception logging
+	 * @param suppressLog supress exception/command logging
 	 * @return String containing response from command
 	 * @throws KarafSessionDownException throws this exception if Karaf is down(specific for FuseSSHClient)
 	 * @throws SSHClientException common exception for sshclient when there is some problem in connecting

@@ -88,7 +88,7 @@ public class Fafram extends ExternalResource {
 	 */
 	public Fafram setup() {
 		//TODO(all): consider entry point of configuration parser
-//		ConfigurationParser.parseConfigurationFile("just/fake/path");
+		//		ConfigurationParser.parseConfigurationFile("just/fake/path");
 		//uncoment for remote deployment
 		//ConfigurationParser.setDeployer();
 

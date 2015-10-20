@@ -106,14 +106,13 @@ public final class Downloader {
 				location = StringUtils.substringAfter(SystemProperty.getFuseZip(), ":");
 				break;
 			default:
-				throw new RuntimeException("Unsupported protocol " + protocol);
+				throw new FaframException("Unsupported protocol " + protocol);
 		}
 
 		return location;
 	}
 
 	/**
-	 * TODO(avano): other possible protocols
 	 * Gets the product zip from url on remote.
 	 *
 	 * @param executor executor with ssh client connected to desired remote host
@@ -137,7 +136,7 @@ public final class Downloader {
 				location = StringUtils.substringAfter(SystemProperty.getFuseZip(), ":");
 				break;
 			default:
-				throw new RuntimeException("Unsupported protocol " + protocol);
+				throw new FaframException("Unsupported protocol " + protocol);
 		}
 
 		return location;
@@ -149,18 +148,19 @@ public final class Downloader {
 	private static void locateMaven() {
 		log.debug("maven.home property is " + System.getProperty("maven.home"));
 		if (System.getProperty("maven.home") != null) {
-			return;
-		}
-
-		log.debug("M2_HOME system property is " + System.getProperty("M2_HOME"));
-		if (System.getProperty("M2_HOME") != null) {
-			SystemProperty.set("maven.home", System.getProperty("M2_HOME"));
+			// Do nothing as the maven.home is what we need
 			return;
 		}
 
 		log.debug("M2_HOME env property is " + System.getenv("M2_HOME"));
 		if (System.getenv("M2_HOME") != null) {
 			SystemProperty.set("maven.home", System.getenv("M2_HOME"));
+			return;
+		}
+
+		log.debug("M2_HOME system property is " + System.getProperty("M2_HOME"));
+		if (System.getProperty("M2_HOME") != null) {
+			SystemProperty.set("maven.home", System.getProperty("M2_HOME"));
 			return;
 		}
 
@@ -173,7 +173,7 @@ public final class Downloader {
 				// Strip the /bin from mvn path if found
 				String mvnLocation;
 				if (part.contains("bin")) {
-					mvnLocation = part.substring(0, part.indexOf("bin"));
+					mvnLocation = StringUtils.substringBefore(part, "bin");
 				} else {
 					mvnLocation = part;
 				}
@@ -198,29 +198,19 @@ public final class Downloader {
 
 		final Invoker invoker = new DefaultInvoker();
 
-		// Redirect invoker output to variable
-		final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		final PrintStream ps = new PrintStream(baos);
-		invoker.setOutputHandler(new PrintStreamHandler(ps, true));
-
-		try {
+		String output = null;
+		try (ByteArrayOutputStream baos = new ByteArrayOutputStream(); PrintStream ps = new PrintStream(baos, true, "UTF-8")) {
+			// Redirect invoker output to variable
+			invoker.setOutputHandler(new PrintStreamHandler(ps, true));
 			invoker.execute(req);
-		} catch (MavenInvocationException e) {
-			e.printStackTrace();
-		}
-
-		// Close streams
-		ps.close();
-		String output = baos.toString();
-		try {
-			baos.close();
-		} catch (IOException e) {
+			output = baos.toString("UTF-8");
+		} catch (IOException | MavenInvocationException e) {
 			e.printStackTrace();
 		}
 
 		// Parse local repository
-		output = output.substring(output.indexOf("localRepository"));
-		output = output.substring(output.indexOf(">") + 1, output.indexOf("<"));
+		output = StringUtils.substringAfter(output, "localRepository");
+		output = StringUtils.substringBetween(output, ">", "<");
 
 		log.debug("Local repository path is " + output);
 		return output;
@@ -232,12 +222,11 @@ public final class Downloader {
 	 * @return artifact path
 	 */
 	private static String getArtifactPath(String localRepositoryPath) {
-		final String sep = File.separator;
-		final String groupPath = SystemProperty.getFuseGroup().replaceAll("\\.", sep + sep);
+		final String groupPath = SystemProperty.getFuseGroup().replaceAll("\\.", SEP + SEP);
 
 		// Construct the path to the artifact in local repo
-		final String artifactPath = localRepositoryPath + sep + groupPath + sep + SystemProperty.getFuseId() + sep
-				+ SystemProperty.getFuseVersion() + sep + SystemProperty.getFuseId() + "-" + SystemProperty
+		final String artifactPath = localRepositoryPath + SEP + groupPath + SEP + SystemProperty.getFuseId() + SEP
+				+ SystemProperty.getFuseVersion() + SEP + SystemProperty.getFuseId() + "-" + SystemProperty
 				.getFuseVersion() + ".zip";
 
 		log.debug("Artifact path is " + artifactPath);

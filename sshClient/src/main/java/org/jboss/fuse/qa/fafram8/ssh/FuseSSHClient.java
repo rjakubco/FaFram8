@@ -21,8 +21,9 @@ public class FuseSSHClient extends SSHClient {
 	@Override
 	public String executeCommand(String command, boolean suppressLog) throws KarafSessionDownException,
 			SSHClientException {
-		log.info("Executing command: " + command);
-
+		if (!suppressLog) {
+			log.info("Executing command: " + command);
+		}
 		final int retriesCount = 2;
 		final long commandRetryTimeout = 5000L;
 		try {
@@ -49,7 +50,9 @@ public class FuseSSHClient extends SSHClient {
 
 				returnString = convertStreamToString(in);
 				if (returnString.contains("not found")) {
-					log.debug("Retrying command in " + commandRetryTimeout + " miliseconds");
+					if (!suppressLog) {
+						log.debug("Retrying command in " + commandRetryTimeout + " miliseconds");
+					}
 					retry = true;
 					retries++;
 					// Wait for 5 sec before executing command
@@ -64,9 +67,7 @@ public class FuseSSHClient extends SSHClient {
 			} while (retry);
 
 			returnString = returnString.replaceAll("\u001B\\[[;\\d]*m", "").trim();
-			if (!suppressLog) {
-				log.debug("Command response: " + returnString);
-			}
+
 			return returnString;
 		} catch (JSchException ex) {
 			if (ex.getMessage().contains("session is down")) {

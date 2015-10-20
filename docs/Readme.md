@@ -101,6 +101,8 @@ The workflow or properties can be modified using system properties. Full list of
 	fafram.archive.target - Target dir where the archived artifacts will be stored
 	fafram.archive.pattern - Archive pattern equal to the jenkins archive pattern
 	fafram.base.dir - base dir of the project - on localhost it's "" and on jenkins it's System.getenv("WORKSPACE")
+	keep.os.resources - If "true" OpenStackProvisionManager will not release OS nodes after test
+	broker.start.wait.time - broker start wait time
 
 ### Patches
 

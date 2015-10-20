@@ -5,6 +5,7 @@ import static org.jboss.fuse.qa.fafram8.modifier.impl.AccessRightsModifier.setEx
 import org.apache.commons.io.FileUtils;
 
 import org.jboss.fuse.qa.fafram8.downloader.Downloader;
+import org.jboss.fuse.qa.fafram8.exception.FaframException;
 import org.jboss.fuse.qa.fafram8.executor.Executor;
 import org.jboss.fuse.qa.fafram8.modifier.ModifierExecutor;
 import org.jboss.fuse.qa.fafram8.property.FaframConstant;
@@ -96,7 +97,7 @@ public class LocalNodeManager implements NodeManager {
 			zipFile.extractAll(targetPath);
 		} catch (Exception ex) {
 			log.error("Exception caught during unzipping!");
-			throw new RuntimeException(ex);
+			throw new FaframException(ex);
 		}
 
 		// Construct the full path to product root - get the subdir name in targetPath
@@ -148,7 +149,7 @@ public class LocalNodeManager implements NodeManager {
 			}
 			stopped = false;
 		} catch (Exception e) {
-			throw new RuntimeException("Could not start container: " + e);
+			throw new FaframException("Could not start container: " + e);
 		}
 	}
 
@@ -222,7 +223,7 @@ public class LocalNodeManager implements NodeManager {
 			}
 			if (!ignoreExceptions) {
 				// Throw the exception because something was wrong
-				throw new RuntimeException("Could not stop container: " + e);
+				throw new FaframException("Could not stop container: " + e);
 			}
 		}
 
