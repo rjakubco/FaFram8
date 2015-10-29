@@ -132,7 +132,14 @@ This default behavior can be overriden with setting the **fuse.zip** property in
 	
 	-Dfuse.zip=http://www.example.com/file.zip - downloads the file to the machine and then unzips it
 	
-	
+
+### Fafram8 JUnit Test runner
+
+You can annotate your JUnit test class with `@RunWith(FaframTestRunner.class)` to be able to use the `@Jira("xxx")` annotation for your test. 
+This annotation will check the jira status and can be used to skip the test if the issue is not fixed. The test will be run if the jira is in 
+"Resolved" or "Closed" state, otherwise the test will be skipped.
+
+
 ## Checkstyle
 
 We are using checkstyle! If you want to control your code, use the **checkstyle** system property.
