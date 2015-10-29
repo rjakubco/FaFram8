@@ -1,5 +1,6 @@
 package org.jboss.fuse.qa.fafram8.modifier.impl;
 
+import org.jboss.fuse.qa.fafram8.exception.FaframException;
 import org.jboss.fuse.qa.fafram8.executor.Executor;
 import org.jboss.fuse.qa.fafram8.modifier.Modifier;
 import org.jboss.fuse.qa.fafram8.property.SystemProperty;
@@ -97,7 +98,7 @@ public final class PropertyModifier implements Modifier {
 				p.load(Files.newInputStream(path));
 			} catch (IOException e) {
 				log.error("Can't load property file {}.", filePath, e);
-				throw new RuntimeException("Can't load property file " + filePath + ".", e);
+				throw new FaframException("Can't load property file " + filePath + ".", e);
 			}
 		} else {
 			log.debug("Creating new property file {}", filePath);
@@ -113,7 +114,7 @@ public final class PropertyModifier implements Modifier {
 			p.store(os, "property file edited by Fuse ModifierExecutor");
 		} catch (IOException e) {
 			log.error("Failed to store modified property file {}", filePath, e);
-			throw new RuntimeException("Failed to store modified property file " + filePath + ".", e);
+			throw new FaframException("Failed to store modified property file " + filePath + ".", e);
 		}
 	}
 
@@ -128,7 +129,7 @@ public final class PropertyModifier implements Modifier {
 				+ " || echo '\n" + key + "=" + value + "' >> " + path);
 		if (!response.isEmpty()) {
 			log.error("Setting property on remote host failed. Response should be empty but was: {}.", response);
-			throw new RuntimeException("Setting property on remote host failed (response should be empty): " + response);
+			throw new FaframException("Setting property on remote host failed (response should be empty): " + response);
 		}
 	}
 }

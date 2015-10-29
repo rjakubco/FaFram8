@@ -16,10 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ServerInvoker implements Runnable {
 
-	private final int bootTimeout = 120000;
-
-	//OpenStack client
-	private OSClient os;
+	private static final int BOOT_TIMEOUT = 120000;
 
 	//Name of the node
 	private String nodeName;
@@ -39,7 +36,7 @@ public class ServerInvoker implements Runnable {
 	//@Override
 	public void run() {
 		log.info("Creating server inside thread for container: " + nodeName);
-		os = OSFactory.clientFromAccess(OpenStackClient.getInstance().getAccess());
+		final OSClient os = OSFactory.clientFromAccess(OpenStackClient.getInstance().getAccess());
 		final ServerCreate serverCreate = os
 				.compute()
 				.servers()
@@ -50,7 +47,7 @@ public class ServerInvoker implements Runnable {
 				.keypairName("ecervena")
 				.build();
 		//TODO(ecervena): do something smarter with server boot timeout
-		final Server server = os.compute().servers().bootAndWaitActive(serverCreate, bootTimeout);
+		final Server server = os.compute().servers().bootAndWaitActive(serverCreate, BOOT_TIMEOUT);
 		OpenStackProvisionProvider.registerServer(server);
 		OpenStackProvisionProvider.addServerToPool(server);
 	}

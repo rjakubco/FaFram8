@@ -1,6 +1,7 @@
 package org.jboss.fuse.qa.fafram8.exception;
 
 /**
+ * Invoker pool interrupted exception class.
  * Created by ecervena on 9.10.15.
  */
 public class InvokerPoolInterruptedException extends RuntimeException {

@@ -1,6 +1,7 @@
 package org.jboss.fuse.qa.fafram8.manager;
 
 import org.jboss.fuse.qa.fafram8.downloader.Downloader;
+import org.jboss.fuse.qa.fafram8.exception.FaframException;
 import org.jboss.fuse.qa.fafram8.exceptions.SSHClientException;
 import org.jboss.fuse.qa.fafram8.executor.Executor;
 import org.jboss.fuse.qa.fafram8.modifier.ModifierExecutor;
@@ -84,8 +85,12 @@ public class RemoteNodeManager implements NodeManager {
 			log.info("Starting fuse");
 			executor.executeCommand(productPath + SEP + "bin" + SEP + "start");
 			fuseExecutor.waitForBoot();
+			// TODO(avano): special usecase for remote standalone starting? maybe not necessary
+			if (!SystemProperty.isFabric()) {
+				fuseExecutor.waitForBroker();
+			}
 		} catch (Exception e) {
-			throw new RuntimeException("Could not start container: " + e);
+			throw new FaframException("Could not start container: " + e);
 		}
 	}
 

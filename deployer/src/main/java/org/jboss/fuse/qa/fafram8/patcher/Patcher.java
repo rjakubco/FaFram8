@@ -64,11 +64,10 @@ public final class Patcher {
 
 		switch (prefix) {
 			case "http":
+			case "file":
 				return new String[] {patch};
 			case "scp":
 				return getPatchFromScp(client);
-			case "file":
-				return new String[] {patch};
 			default:
 				return getPatchByName();
 		}

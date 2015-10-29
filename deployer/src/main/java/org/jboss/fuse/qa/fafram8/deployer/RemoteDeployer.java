@@ -60,10 +60,10 @@ public class RemoteDeployer implements Deployer {
 					cm.setupFabric();
 					// TODO(ecervena): rework this when we will have the container parser
 					// TODO(rjakubco): commented because it is not working at the moment and breaks other unrelated tests
-//						cm.createSSHContainer(Fafram.getContainerList());
+					//						cm.createSSHContainer(Fafram.getContainerList());
 				}
 			}
-		} catch (RuntimeException ex) {
+		} catch (FaframException ex) {
 			nm.stopAndClean(true);
 			throw new FaframException(ex);
 		} catch (SSHClientException ex) {

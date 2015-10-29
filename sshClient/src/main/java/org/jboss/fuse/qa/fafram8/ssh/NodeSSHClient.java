@@ -27,12 +27,13 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class NodeSSHClient extends SSHClient {
 	@Override
-	public String executeCommand(String command, boolean supressLog) throws KarafSessionDownException,
+	public String executeCommand(String command, boolean suppressLog) throws KarafSessionDownException,
 			SSHClientException {
 		String returnString;
 
-		log.debug("Command: " + command);
-
+		if (!suppressLog) {
+			log.debug("Command: " + command);
+		}
 		try {
 			channel = session.openChannel("exec");
 			((ChannelExec) channel).setCommand(command);
@@ -47,7 +48,7 @@ public class NodeSSHClient extends SSHClient {
 			returnString = convertStreamToString(in);
 
 			returnString = returnString.replaceAll("\u001B\\[[;\\d]*m", "").trim();
-			log.debug("Command response: " + returnString);
+
 			return returnString;
 		} catch (JSchException ex) {
 			log.error("Cannot execute ssh command: \"" + command + "\"", ex);
@@ -73,8 +74,12 @@ public class NodeSSHClient extends SSHClient {
 			sftpChannel.connect();
 			final File file = new File(localPath);
 			sftpChannel.cd(StringUtils.substringBeforeLast(remotePath, "/"));
-			sftpChannel.put(new FileInputStream(file), StringUtils.substringAfterLast(remotePath, "/"));
+			try (FileInputStream fis = new FileInputStream(file)) {
+				sftpChannel.put(fis, StringUtils.substringAfterLast(remotePath, "/"));
+			}
 			sftpChannel.disconnect();
+		} catch (RuntimeException ex) {
+			throw ex;
 		} catch (Exception ex) {
 			log.error("Exception thrown during uploading file to remote machine");
 			throw new CopyFileException(ex);
@@ -99,9 +104,11 @@ public class NodeSSHClient extends SSHClient {
 			sftpChannel = (ChannelSftp) session.openChannel("sftp");
 			stream = sftpChannel.get(remotePath);
 			sftpChannel.connect();
-			file = IOUtils.toString(new InputStreamReader(stream));
+			file = IOUtils.toString(new InputStreamReader(stream, "UTF-8"));
 
 			sftpChannel.disconnect();
+		} catch (RuntimeException ex) {
+			throw ex;
 		} catch (Exception ex) {
 			log.error("Exception thrown during uploading file to remote machine");
 			throw new CopyFileException(ex);

@@ -1,6 +1,7 @@
 package org.jboss.fuse.qa.fafram8.exception;
 
 /**
+ * Unique server name exception class.
  * Created by ecervena on 24.9.15.
  */
 public class UniqueServerNameException extends RuntimeException {

@@ -43,6 +43,7 @@ public class OpenStackProvisionProvider implements ProvisionProvider {
 	private static final List<Server> serverRegister = new LinkedList<>();
 
 	//List of available OpenStack nodes which are not assigned to container yet
+	@SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
 	private static List<Server> serverPool = new LinkedList<>();
 
 	//Authenticated OpenStackClient instance
@@ -111,9 +112,9 @@ public class OpenStackProvisionProvider implements ProvisionProvider {
 	 * @return Server representation of openstack node object
 	 */
 	public Server getServerByName(String serverName) {
-		final Map<String, String> filter = new HashMap<String, String>();
+		final Map<String, String> filter = new HashMap<>();
 		filter.put("name", serverName);
-		final List<Server> serverList = (List<Server>) os
+		final List<? extends Server> serverList = os
 				.compute()
 				.servers()
 				.list(filter);

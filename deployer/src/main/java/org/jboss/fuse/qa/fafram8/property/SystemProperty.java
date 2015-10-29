@@ -349,4 +349,13 @@ public class SystemProperty {
 	public static Boolean getClean() {
 		return Boolean.parseBoolean(System.getProperty(FaframConstant.CLEAN, "false"));
 	}
+
+	/**
+	 * Getter.
+	 *
+	 * @return broker start wait time
+	 */
+	public static int getBrokerStartWaitTime() {
+		return Integer.parseInt(System.getProperty(FaframConstant.BROKER_START_WAIT_TIME, "60"));
+	}
 }

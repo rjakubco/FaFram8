@@ -44,7 +44,7 @@ public class LocalDeployer implements Deployer {
 				}
 				cm.patchFuse();
 			}
-		} catch (RuntimeException ex) {
+		} catch (FaframException ex) {
 			nm.stopAndClean(true);
 			throw new FaframException(ex);
 		}
