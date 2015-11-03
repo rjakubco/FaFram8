@@ -108,4 +108,7 @@ public final class FaframConstant {
 
 	// Broker start wait time
 	public static final String BROKER_START_WAIT_TIME = "broker.start.wait.time";
+
+	// Jira URL
+	public static final String JIRA_URL = "jira.url";
 }

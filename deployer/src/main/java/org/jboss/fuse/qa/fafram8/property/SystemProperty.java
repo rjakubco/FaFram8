@@ -358,4 +358,13 @@ public class SystemProperty {
 	public static int getBrokerStartWaitTime() {
 		return Integer.parseInt(System.getProperty(FaframConstant.BROKER_START_WAIT_TIME, "60"));
 	}
+
+	/**
+	 * Getter.
+	 *
+	 * @return jira url
+	 */
+	public static String getJiraURL() {
+		return System.getProperty(FaframConstant.JIRA_URL, "https://issues.jboss.org");
+	}
 }
