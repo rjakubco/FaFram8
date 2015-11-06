@@ -12,5 +12,8 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Jira {
+	/**
+	 * Default annotation method.
+	 */
 	String value();
 }

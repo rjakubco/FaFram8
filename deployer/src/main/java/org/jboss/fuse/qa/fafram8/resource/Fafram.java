@@ -136,11 +136,11 @@ public class Fafram extends ExternalResource {
 							+ "Auditor, Administrator, SuperUser"));
 		}
 
-		ModifierExecutor.addModifiers(changeRandomSource());
-
 		if (!SystemProperty.skipDefaultJvmOpts()) {
 			ModifierExecutor.addModifiers(setDefaultJvmOpts());
 		}
+
+		ModifierExecutor.addModifiers(changeRandomSource());
 
 		ModifierExecutor.addPostModifiers(registerArchiver());
 	}
