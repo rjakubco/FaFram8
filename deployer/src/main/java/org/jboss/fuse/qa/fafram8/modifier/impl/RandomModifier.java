@@ -54,12 +54,14 @@ public final class RandomModifier implements Modifier {
 	 */
 	public void localExecute() {
 		try {
-			final String filePath = SystemProperty.getFusePath() + File.separator + "bin" + File.separator + "karaf";
+			final String filePath = SystemProperty.getFusePath() + File.separator + "bin" + File.separator + "setenv";
 			final FileInputStream fis = new FileInputStream(filePath);
 			String content = IOUtils.toString(fis);
-			content =
-					content.replaceAll("exec \"\\$JAVA\"", "exec \"\\$JAVA\" -Djava.security.egd=file:/dev/./urandom");
-			final FileOutputStream fos = new FileOutputStream(filePath);
+
+			// Default java opts from karaf + randomness location
+			content += "\nexport JAVA_OPTS=\"-Xms$JAVA_MIN_MEM -Xmx$JAVA_MAX_MEM -XX:+UnlockDiagnosticVMOptions -XX:+UnsyncloadClass -Djava"
+					+ ".security.egd=file:/dev/./urandom\"";
+			final FileOutputStream fos = new FileOutputStream(filePath, false);
 			IOUtils.write(content, fos);
 
 			fis.close();
@@ -73,11 +75,10 @@ public final class RandomModifier implements Modifier {
 	 * Adds random modifier to bin/karaf on remote host.
 	 */
 	public void remoteExecute() {
-		final String filePath = SystemProperty.getFusePath() + File.separator + "bin" + File.separator + "karaf";
+		final String filePath = SystemProperty.getFusePath() + File.separator + "bin" + File.separator + "setenv";
 
-		final String response = executor.executeCommand(
-				"sed -i \"s/\\(exec \\\"\\$JAVA\\\"\\)/  exec \\\"\\$JAVA\\\" -Djava\\.security\\.egd=file:\\/dev\\/\\.\\/urandom/g\" "
-						+ filePath);
+		final String response = executor.executeCommand("printf \" \nexport JAVA_OPTS=\\\"-Xms\\$JAVA_MIN_MEM -Xmx\\$JAVA_MAX_MEM "
+				+ "-XX:+UnlockDiagnosticVMOptions -XX:+UnsyncloadClass -Djava.security.egd=file:/dev/./urandom\\\" \" >> " + filePath);
 		if (!response.isEmpty()) {
 			log.error("Setting property on remote host failed. Response should be empty but was: {}.", response);
 		}

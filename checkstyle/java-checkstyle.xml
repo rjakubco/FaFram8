@@ -221,10 +221,6 @@
 		<!-- Metrics -->
 		<!-- http://checkstyle.sourceforge.net/config_metrics.html -->
 
-		<!-- Checks cyclomatic complexity against a specified limit of 10 -->
-		<module name="CyclomaticComplexity">
-			<property name="severity" value="warning"/>
-		</module>
 		<!-- Checks the number (200) of possible execution paths through a function -->
 		<module name="NPathComplexity">
 			<property name="severity" value="warning"/>

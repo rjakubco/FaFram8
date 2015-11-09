@@ -93,6 +93,7 @@ public class NodeSSHClient extends SSHClient {
 	 * @param remotePath absolute path to remote file
 	 * @return content of rmeote file as String
 	 * @throws IOException if there is problem in sftp
+	 * @throws CopyFileException if copy fails
 	 */
 	public String readFileFromRemote(String remotePath) throws IOException, CopyFileException {
 		log.info("Reading file from remote machine path " + remotePath);
