@@ -72,7 +72,8 @@ public class LocalNodeManager implements NodeManager {
 	 * Checks if some container is already running.
 	 */
 	public void checkRunningContainer() {
-		try (Socket s = new Socket("localhost", 8101)) {
+		final int port = 8101;
+		try (Socket s = new Socket("localhost", port)) {
 			log.error("Port 8101 is not free! Other karaf instance may be running. Shutting down...");
 			throw new FaframException("Port 8101 is not free! Other karaf instance may be running.");
 		} catch (IOException ex) {
@@ -111,7 +112,8 @@ public class LocalNodeManager implements NodeManager {
 		// Use the subdir name to construct the product path
 		productPath = targetPath + SEP + folderName;
 		log.debug("Product path is " + productPath);
-		SystemProperty.set(FaframConstant.BASE_DIR, new File(jenkins ? System.getenv("WORKSPACE") : "").getAbsolutePath());
+		SystemProperty
+				.set(FaframConstant.BASE_DIR, new File(jenkins ? System.getenv("WORKSPACE") : "").getAbsolutePath());
 		SystemProperty.set(FaframConstant.FUSE_PATH, productPath);
 	}
 
@@ -181,15 +183,25 @@ public class LocalNodeManager implements NodeManager {
 	public void stopAndClean(boolean ignoreExceptions) {
 		// Create a new variable here because it will be unset
 		final boolean suppressStart = SystemProperty.suppressStart();
+
+		// This should be called in all cases
+		SystemProperty.clearAllProperties();
+
+		// If the instance is running or we fail restarting
 		if (!stopped || restart) {
 			ModifierExecutor.executePostModifiers();
-			SystemProperty.clearAllProperties();
 			ModifierExecutor.clearAllModifiers();
-			if (!suppressStart) {
-				stop(ignoreExceptions);
-			}
+			stop(ignoreExceptions);
 			deleteTargetDir(ignoreExceptions);
+		} else {
+			// If the instance is not running - if the 8181 port is occupied or we suppress start
+			if (suppressStart) { // If there are some files
+				ModifierExecutor.executePostModifiers();
+				deleteTargetDir(ignoreExceptions);
+			}
 		}
+
+		ModifierExecutor.clearAllModifiers();
 	}
 
 	/**
