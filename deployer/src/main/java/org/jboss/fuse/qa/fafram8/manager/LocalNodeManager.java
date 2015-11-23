@@ -13,6 +13,8 @@ import org.jboss.fuse.qa.fafram8.property.SystemProperty;
 import org.jboss.fuse.qa.fafram8.ssh.SSHClient;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -37,7 +39,7 @@ public class LocalNodeManager implements NodeManager {
 	private boolean amq = false;
 
 	// Flag if this instance was already stopped
-	private boolean stopped = false;
+	private boolean stopped = true;
 
 	// Product zip path
 	private String productZipPath;
@@ -70,8 +72,11 @@ public class LocalNodeManager implements NodeManager {
 	 * Checks if some container is already running.
 	 */
 	public void checkRunningContainer() {
-		if (executor.canConnect()) {
-			log.warn("Other container instance is already running! Unpredictable results may occur!");
+		try (Socket s = new Socket("localhost", 8101)) {
+			log.error("Port 8101 is not free! Other karaf instance may be running. Shutting down...");
+			throw new FaframException("Port 8101 is not free! Other karaf instance may be running.");
+		} catch (IOException ex) {
+			// Do nothing, the port is free
 		}
 	}
 

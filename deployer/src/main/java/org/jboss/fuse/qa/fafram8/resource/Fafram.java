@@ -12,6 +12,7 @@ import org.jboss.fuse.qa.fafram8.deployer.Deployer;
 import org.jboss.fuse.qa.fafram8.deployer.LocalDeployer;
 import org.jboss.fuse.qa.fafram8.deployer.RemoteDeployer;
 import org.jboss.fuse.qa.fafram8.exceptions.SSHClientException;
+import org.jboss.fuse.qa.fafram8.executor.Executor;
 import org.jboss.fuse.qa.fafram8.manager.Container;
 import org.jboss.fuse.qa.fafram8.manager.LocalNodeManager;
 import org.jboss.fuse.qa.fafram8.modifier.ModifierExecutor;
@@ -317,6 +318,31 @@ public class Fafram extends ExternalResource {
 	public Fafram keepFolder() {
 		SystemProperty.set(FaframConstant.KEEP_FOLDER, "");
 		return this;
+	}
+
+	/**
+	 * Gets the full product path.
+	 * @return product path
+	 */
+	public String getProductPath() {
+		return SystemProperty.getFusePath();
+	}
+
+	/**
+	 * Waits for the container to provision.
+	 * @param containerName container name
+	 */
+	public void waitForProvisioning(String containerName) {
+		deployer.getContainerManager().getExecutor().waitForProvisioning(containerName);
+	}
+
+	/**
+	 * Waits until the defined standalone patch status.
+	 * @param patchName patch name
+	 * @param status patch status (true/false)
+	 */
+	public void waitForPatch(String patchName, boolean status) {
+		deployer.getContainerManager().getExecutor().waitForPatchStatus(patchName, status);
 	}
 
 	/**

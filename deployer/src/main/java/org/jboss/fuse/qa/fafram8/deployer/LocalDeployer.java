@@ -30,8 +30,8 @@ public class LocalDeployer implements Deployer {
 	 */
 	@Override
 	public void setup() {
+		nm.checkRunningContainer();
 		try {
-			nm.checkRunningContainer();
 			nm.detectPlatformAndProduct();
 			nm.prepareZip();
 			nm.unzipArtifact();
