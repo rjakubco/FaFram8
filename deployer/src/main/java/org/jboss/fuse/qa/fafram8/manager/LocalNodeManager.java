@@ -181,12 +181,6 @@ public class LocalNodeManager implements NodeManager {
 
 	@Override
 	public void stopAndClean(boolean ignoreExceptions) {
-		// Create a new variable here because it will be unset
-		final boolean suppressStart = SystemProperty.suppressStart();
-
-		// This should be called in all cases
-		SystemProperty.clearAllProperties();
-
 		// If the instance is running or we fail restarting
 		if (!stopped || restart) {
 			ModifierExecutor.executePostModifiers();
@@ -195,13 +189,15 @@ public class LocalNodeManager implements NodeManager {
 			deleteTargetDir(ignoreExceptions);
 		} else {
 			// If the instance is not running - if the 8181 port is occupied or we suppress start
-			if (suppressStart) { // If there are some files
+			if (SystemProperty.suppressStart()) { // If there are some files
 				ModifierExecutor.executePostModifiers();
+				ModifierExecutor.clearAllModifiers();
 				deleteTargetDir(ignoreExceptions);
 			}
 		}
 
-		ModifierExecutor.clearAllModifiers();
+		// This should be called in all cases
+		SystemProperty.clearAllProperties();
 	}
 
 	/**
