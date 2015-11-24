@@ -10,6 +10,7 @@ import org.jboss.fuse.qa.fafram8.exceptions.VerifyFalseException;
 import org.jboss.fuse.qa.fafram8.property.SystemProperty;
 import org.jboss.fuse.qa.fafram8.ssh.NodeSSHClient;
 import org.jboss.fuse.qa.fafram8.ssh.SSHClient;
+import org.jboss.fuse.qa.fafram8.util.CommandHistory;
 
 import lombok.AllArgsConstructor;
 import lombok.ToString;
@@ -34,7 +35,9 @@ public class Executor {
 	@SuppressWarnings("TryWithIdenticalCatches")
 	public String executeCommand(String cmd) {
 		try {
-			return client.executeCommand(cmd, false);
+			final String response = client.executeCommand(cmd, false);
+			CommandHistory.add(cmd, response);
+			return response;
 		} catch (KarafSessionDownException e) {
 			log.error("Karaf session is down!");
 		} catch (SSHClientException e) {

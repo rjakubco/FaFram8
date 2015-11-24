@@ -181,10 +181,14 @@ public class LocalNodeManager implements NodeManager {
 
 	@Override
 	public void stopAndClean(boolean ignoreExceptions) {
+		final boolean suppressStart = SystemProperty.suppressStart();
+
 		// If the instance is running or we fail restarting
 		if (!stopped || restart) {
 			ModifierExecutor.executePostModifiers();
 			ModifierExecutor.clearAllModifiers();
+			// This should be called after all modifiers but before stop/delete because they can throw exceptions
+			SystemProperty.clearAllProperties();
 			stop(ignoreExceptions);
 			deleteTargetDir(ignoreExceptions);
 		} else {
@@ -192,12 +196,11 @@ public class LocalNodeManager implements NodeManager {
 			if (SystemProperty.suppressStart()) { // If there are some files
 				ModifierExecutor.executePostModifiers();
 				ModifierExecutor.clearAllModifiers();
+				// This should be called after all modifiers but before stop/delete because they can throw exceptions
+				SystemProperty.clearAllProperties();
 				deleteTargetDir(ignoreExceptions);
 			}
 		}
-
-		// This should be called in all cases
-		SystemProperty.clearAllProperties();
 	}
 
 	/**
