@@ -10,6 +10,7 @@ import org.junit.Test;
 
 import java.io.File;
 import java.nio.file.Paths;
+import java.util.Arrays;
 
 /**
  * Command history test.
@@ -25,9 +26,10 @@ public class CommandHistoryTest {
 		fafram.executeCommand("echo hi");
 		fafram.tearDown();
 		File path = new File(Paths.get("target", "archived").toAbsolutePath().toString());
-		String fileName = path.list()[path.list().length - 1];
+		String[] files = path.list();
+		Arrays.sort(files);
+		String fileName = files[files.length - 1];
 		String content = FileUtils.readFileToString(new File(Paths.get("target", "archived", fileName).toAbsolutePath().toString()));
-		System.out.println(fileName);
 		assertTrue(content.contains("echo hello"));
 		assertTrue(content.contains("echo hi"));
 	}

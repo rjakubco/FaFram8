@@ -149,12 +149,12 @@ public class LocalNodeManager implements NodeManager {
 				log.info("Starting " + (amq ? "A-MQ" : "Fuse") + " " + SystemProperty.getFuseVersion());
 			}
 			productProcess = Runtime.getRuntime().exec(executablePath);
+			stopped = false;
 			log.info("Waiting for the container to be online");
 			executor.waitForBoot();
 			if (!SystemProperty.isFabric()) {
 				executor.waitForBroker();
 			}
-			stopped = false;
 		} catch (Exception e) {
 			throw new FaframException("Could not start container: " + e);
 		}
