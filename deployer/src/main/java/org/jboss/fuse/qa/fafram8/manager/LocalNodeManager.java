@@ -13,6 +13,8 @@ import org.jboss.fuse.qa.fafram8.property.SystemProperty;
 import org.jboss.fuse.qa.fafram8.ssh.SSHClient;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -37,7 +39,7 @@ public class LocalNodeManager implements NodeManager {
 	private boolean amq = false;
 
 	// Flag if this instance was already stopped
-	private boolean stopped = false;
+	private boolean stopped = true;
 
 	// Product zip path
 	private String productZipPath;
@@ -70,8 +72,12 @@ public class LocalNodeManager implements NodeManager {
 	 * Checks if some container is already running.
 	 */
 	public void checkRunningContainer() {
-		if (executor.canConnect()) {
-			log.warn("Other container instance is already running! Unpredictable results may occur!");
+		final int port = 8101;
+		try (Socket s = new Socket("localhost", port)) {
+			log.error("Port 8101 is not free! Other karaf instance may be running. Shutting down...");
+			throw new FaframException("Port 8101 is not free! Other karaf instance may be running.");
+		} catch (IOException ex) {
+			// Do nothing, the port is free
 		}
 	}
 
@@ -106,7 +112,8 @@ public class LocalNodeManager implements NodeManager {
 		// Use the subdir name to construct the product path
 		productPath = targetPath + SEP + folderName;
 		log.debug("Product path is " + productPath);
-		SystemProperty.set(FaframConstant.BASE_DIR, new File(jenkins ? System.getenv("WORKSPACE") : "").getAbsolutePath());
+		SystemProperty
+				.set(FaframConstant.BASE_DIR, new File(jenkins ? System.getenv("WORKSPACE") : "").getAbsolutePath());
 		SystemProperty.set(FaframConstant.FUSE_PATH, productPath);
 	}
 
@@ -142,12 +149,12 @@ public class LocalNodeManager implements NodeManager {
 				log.info("Starting " + (amq ? "A-MQ" : "Fuse") + " " + SystemProperty.getFuseVersion());
 			}
 			productProcess = Runtime.getRuntime().exec(executablePath);
+			stopped = false;
 			log.info("Waiting for the container to be online");
 			executor.waitForBoot();
 			if (!SystemProperty.isFabric()) {
 				executor.waitForBroker();
 			}
-			stopped = false;
 		} catch (Exception e) {
 			throw new FaframException("Could not start container: " + e);
 		}
@@ -174,16 +181,25 @@ public class LocalNodeManager implements NodeManager {
 
 	@Override
 	public void stopAndClean(boolean ignoreExceptions) {
-		// Create a new variable here because it will be unset
 		final boolean suppressStart = SystemProperty.suppressStart();
+
+		// If the instance is running or we fail restarting
 		if (!stopped || restart) {
 			ModifierExecutor.executePostModifiers();
-			SystemProperty.clearAllProperties();
 			ModifierExecutor.clearAllModifiers();
-			if (!suppressStart) {
-				stop(ignoreExceptions);
-			}
+			// This should be called after all modifiers but before stop/delete because they can throw exceptions
+			SystemProperty.clearAllProperties();
+			stop(ignoreExceptions);
 			deleteTargetDir(ignoreExceptions);
+		} else {
+			// If the instance is not running - if the 8181 port is occupied or we suppress start
+			if (SystemProperty.suppressStart()) { // If there are some files
+				ModifierExecutor.executePostModifiers();
+				ModifierExecutor.clearAllModifiers();
+				// This should be called after all modifiers but before stop/delete because they can throw exceptions
+				SystemProperty.clearAllProperties();
+				deleteTargetDir(ignoreExceptions);
+			}
 		}
 	}
 

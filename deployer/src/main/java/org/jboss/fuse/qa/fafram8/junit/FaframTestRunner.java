@@ -43,12 +43,13 @@ public class FaframTestRunner extends BlockJUnit4ClassRunner {
 			e.printStackTrace();
 		}
 
-		log.debug(String.format("JIRA %s is %s", jira.value(), issue.getStatus().toString()));
+		log.debug(String.format("JIRA %s is %s", jira.value().toUpperCase(), issue.getStatus().toString()));
 
 		if (StringUtils.equalsIgnoreCase(issue.getStatus().toString(), "resolved")
 				|| StringUtils.equalsIgnoreCase(issue.getStatus().toString(), "closed")) {
 			super.runChild(method, notifier);
 		} else {
+			log.debug("Skipping " + method.getName());
 			notifier.fireTestIgnored(describeChild(method));
 		}
 	}

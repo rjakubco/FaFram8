@@ -1,6 +1,7 @@
 package org.jboss.fuse.qa.fafram8.resource;
 
 import static org.jboss.fuse.qa.fafram8.modifier.impl.ArchiveModifier.registerArchiver;
+import static org.jboss.fuse.qa.fafram8.modifier.impl.CommandHistoryModifier.saveCommandHistory;
 import static org.jboss.fuse.qa.fafram8.modifier.impl.FileModifier.moveFile;
 import static org.jboss.fuse.qa.fafram8.modifier.impl.JvmOptsModifier.setDefaultJvmOpts;
 import static org.jboss.fuse.qa.fafram8.modifier.impl.JvmOptsModifier.setJvmOpts;
@@ -132,8 +133,8 @@ public class Fafram extends ExternalResource {
 		if (!SystemProperty.skipDefaultUser()) {
 			// Add default user
 			ModifierExecutor.addModifiers(putProperty("etc/users.properties", SystemProperty.getFuseUser(),
-					SystemProperty.getFusePassword() + ",admin,manager,viewer,Monitor, Operator, Maintainer, Deployer, "
-							+ "Auditor, Administrator, SuperUser"));
+					SystemProperty.getFusePassword() + ",admin,manager,viewer,Monitor, Operator, Maintainer, "
+							+ "Deployer, Auditor, Administrator, SuperUser"));
 		}
 
 		if (!SystemProperty.skipDefaultJvmOpts()) {
@@ -142,6 +143,7 @@ public class Fafram extends ExternalResource {
 
 		ModifierExecutor.addModifiers(changeRandomSource());
 
+		ModifierExecutor.addPostModifiers(saveCommandHistory());
 		ModifierExecutor.addPostModifiers(registerArchiver());
 	}
 
@@ -152,15 +154,16 @@ public class Fafram extends ExternalResource {
 		final int defaultPort = 8101;
 
 		// Create a local deployer with local SSH Client and assign to deployer variable
-		deployer = new LocalDeployer(new FuseSSHClient().hostname("localhost").port(defaultPort).username(SystemProperty
-				.getFuseUser()).password(SystemProperty.getFusePassword()));
+		deployer = new LocalDeployer(new FuseSSHClient().hostname("localhost").port(defaultPort).username(SystemProperty.getFuseUser())
+				.password(SystemProperty.getFusePassword()));
 	}
 
 	/**
 	 * Sets up the remote deployment.
 	 */
 	private void setupRemoteDeployment() throws SSHClientException {
-		final SSHClient node = new NodeSSHClient().hostname(SystemProperty.getHost()).port(SystemProperty.getHostPort())
+		final SSHClient node = new NodeSSHClient().hostname(SystemProperty.getHost()).port(SystemProperty
+				.getHostPort())
 				.username(SystemProperty.getHostUser()).password(SystemProperty.getHostPassword());
 
 		final SSHClient fuse = new FuseSSHClient().hostname(SystemProperty.getHost()).fuseSSHPort().username(
@@ -320,6 +323,34 @@ public class Fafram extends ExternalResource {
 	}
 
 	/**
+	 * Gets the full product path.
+	 *
+	 * @return product path
+	 */
+	public String getProductPath() {
+		return SystemProperty.getFusePath();
+	}
+
+	/**
+	 * Waits for the container to provision.
+	 *
+	 * @param containerName container name
+	 */
+	public void waitForProvisioning(String containerName) {
+		deployer.getContainerManager().getExecutor().waitForProvisioning(containerName);
+	}
+
+	/**
+	 * Waits until the defined standalone patch status.
+	 *
+	 * @param patchName patch name
+	 * @param status patch status (true/false)
+	 */
+	public void waitForPatch(String patchName, boolean status) {
+		deployer.getContainerManager().getExecutor().waitForPatchStatus(patchName, status);
+	}
+
+	/**
 	 * Restarts the container.
 	 */
 	public void restart() {
@@ -329,7 +360,8 @@ public class Fafram extends ExternalResource {
 
 	/**
 	 * Triggers specified provision provider. It will call providers functionality to provision pool of nodes required
-	 * to satisfy needs of test deployment. Provider will create node for every container listed in Fafram.containerList.
+	 * to satisfy needs of test deployment. Provider will create node for every container listed in Fafram
+	 * .containerList.
 	 * When the container is marked as root provider will assign public IP to it. Otherwise local IP will be provided.
 	 * Provider have to implement ProvisionProvider interface.
 	 *

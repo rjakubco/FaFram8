@@ -10,6 +10,7 @@ import org.jboss.fuse.qa.fafram8.exceptions.VerifyFalseException;
 import org.jboss.fuse.qa.fafram8.property.SystemProperty;
 import org.jboss.fuse.qa.fafram8.ssh.NodeSSHClient;
 import org.jboss.fuse.qa.fafram8.ssh.SSHClient;
+import org.jboss.fuse.qa.fafram8.util.CommandHistory;
 
 import lombok.AllArgsConstructor;
 import lombok.ToString;
@@ -34,7 +35,9 @@ public class Executor {
 	@SuppressWarnings("TryWithIdenticalCatches")
 	public String executeCommand(String cmd) {
 		try {
-			return client.executeCommand(cmd, false);
+			final String response = client.executeCommand(cmd, false);
+			CommandHistory.add(cmd, response);
+			return response;
 		} catch (KarafSessionDownException e) {
 			log.error("Karaf session is down!");
 		} catch (SSHClientException e) {
@@ -141,7 +144,8 @@ public class Executor {
 			// Check if the time is up
 			if (elapsed > SystemProperty.getBrokerStartWaitTime()) {
 				log.error("Broker wasn't started after " + SystemProperty.getBrokerStartWaitTime() + " seconds");
-				throw new FaframException("Broker wasn't started after " + SystemProperty.getBrokerStartWaitTime() + " seconds");
+				throw new FaframException(
+						"Broker wasn't started after " + SystemProperty.getBrokerStartWaitTime() + " seconds");
 			}
 
 			String response = null;
@@ -203,11 +207,13 @@ public class Executor {
 		final int step = 3;
 		final long timeout = step * 1000L;
 		final long startTimeout = 10000L;
+		final int maxLength = 6;
 
 		// Wait before executing - sometimes the provision is triggered a bit later
 		sleep(startTimeout);
 		int retries = 0;
 		String container;
+		String provisionStatus = "";
 		boolean isSuccessful = false;
 
 		while (!isSuccessful) {
@@ -221,6 +227,13 @@ public class Executor {
 			try {
 				container = client.executeCommand("container-list | grep " + containerName, true);
 				isSuccessful = container != null && container.contains("success");
+				if (container != null) {
+					container = container.replaceAll(" +", " ").trim();
+					final String[] content = container.split(" ", maxLength);
+					if (content.length == maxLength) {
+						provisionStatus = content[maxLength - 1];
+					}
+				}
 			} catch (Exception e) {
 				// Get the reason
 				reason = e.getMessage();
@@ -234,8 +247,10 @@ public class Executor {
 
 			if (!isSuccessful) {
 				log.debug("Remaining time: " + (SystemProperty.getProvisionWaitTime() - retries) + " seconds. " + (""
-						.equals(reason) ? "" : "(" + reason + ")"));
+						.equals(reason) ? "" : "(" + reason + ")") + ("".equals(provisionStatus) ? "" : "("
+						+ provisionStatus + ")"));
 				retries += step;
+				provisionStatus = "";
 				try {
 					Thread.sleep(timeout);
 				} catch (Exception ignored) {
@@ -279,15 +294,17 @@ public class Executor {
 				log.error("Container failed to install patch after " + SystemProperty.getPatchWaitTime() + " seconds.");
 
 				final String action = "true".equals(String.valueOf(status)) ? "install" : "rollback";
-				log.error("Standalone container failed to " + action + " patch after " + SystemProperty.getPatchWaitTime() + " seconds.");
+				log.error("Standalone container failed to " + action + " patch after "
+						+ SystemProperty.getPatchWaitTime() + " seconds.");
 				throw new FaframException(
-						"Container failed to " + action + " patch after " + SystemProperty.getPatchWaitTime() + " seconds.");
+						"Container failed to " + action + " patch after " + SystemProperty.getPatchWaitTime() + "seconds.");
 			}
 
 			String reason = "";
 
 			try {
-				isSuccessful = client.executeCommand("patch:list | grep " + patchName, true).contains(String.valueOf(status));
+				isSuccessful =
+						client.executeCommand("patch:list | grep " + patchName, true).contains(String.valueOf(status));
 			} catch (Exception e) {
 				reason = e.getMessage();
 				shouldReconnect = true;

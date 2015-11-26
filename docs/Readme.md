@@ -138,17 +138,10 @@ This default behavior can be overriden with setting the **fuse.zip** property in
 You can annotate your JUnit test class with `@RunWith(FaframTestRunner.class)` to be able to use the `@Jira("xxx")` annotation for your test. 
 This annotation will check the jira status and can be used to skip the test if the issue is not fixed. The test will be run if the jira is in 
 "Resolved" or "Closed" state, otherwise the test will be skipped.
-
-
-## Checkstyle
-
-We are using checkstyle! If you want to control your code, use the **checkstyle** system property.
-
-	mvn clean install -Dcheckstyle
 	
 For further info about contributing see _Readme.md_ in the root directory of the project.
 
-## Tests
+### Tests
 
 Tests can be found in the respective directory in the module directories. Tests are skipped by default and this behavior can be overriden 
 using the **skip.test.fafram** property.
@@ -156,3 +149,85 @@ using the **skip.test.fafram** property.
 Example usage:
 
 	cd deployer; mvn clean install -Dskip.test.fafram=false -Dtest=HostValidatorTest
+
+## FaFram8 example usage
+
+The only necessary thing to include in your pom.xml file is the dependency for the framework. However, if you want your test to download the
+container automatically and use it, you need to include this in your pom.xml file aswell.
+
+	<?xml version="1.0" encoding="UTF-8"?>
+	<project xmlns="http://maven.apache.org/POM/4.0.0"
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+		<modelVersion>4.0.0</modelVersion>
+
+		<groupId>com.test</groupId>
+		<artifactId>test</artifactId>
+		<version>1.0-SNAPSHOT</version>
+
+		<properties>
+			<fuse.group>org.jboss.fuse</fuse.group>
+			<fuse.id>jboss-fuse-full</fuse.id>
+			<fuse.version>6.2.0.redhat-133</fuse.version>
+        </properties>
+
+		<dependencies>
+			<dependency>
+				<groupId>org.jboss.fuse.qa</groupId>
+				<artifactId>fafram8</artifactId>
+				<version>1.0-SNAPSHOT</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>junit</groupId>
+				<artifactId>junit</artifactId>
+				<version>4.12</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.jboss.fuse</groupId>
+				<artifactId>jboss-fuse-full</artifactId>
+				<type>zip</type>
+				<version>${fuse.version}</version>
+				<!-- We want just the zip without all other transitive dependencies -->
+				<exclusions>
+					<exclusion>
+						<groupId>*</groupId>
+						<artifactId>*</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+		</dependencies>
+
+		<build>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-surefire-plugin</artifactId>
+					<version>2.18.1</version>
+					<configuration>
+						<skipTests>false</skipTests>
+						<systemPropertyVariables>
+							<fuse.group>org.jboss.fuse</fuse.group>
+							<fuse.id>${fuse.id}</fuse.id>
+							<fuse.version>${fuse.version}</fuse.version>
+						</systemPropertyVariables>
+					</configuration>
+				</plugin>
+			</plugins>
+		</build>
+
+	</project>
+
+In this example, we added the dependency for jboss-fuse-full zip file, so that the maven will download the zip file into our local repository before
+the test execution. Using the maven-surefire-plugin we pass the **fuse.group**, **fuse.id**, **fuse.version** properties into the test, that are
+later used to construct the full path to your local repository artifact path. Using these properties you can easily switch between versions
+and even between the Fuse and A-MQ distributions.
+
+There is no need to use this approach, because you can still use some other (previously downloaded) zip file and pass it to FaFram using the **fuse.zip** property.
+
+## Checkstyle
+
+We are using checkstyle! If you want to control your code, use the **checkstyle** system property.
+
+	mvn clean install -Dcheckstyle

@@ -74,8 +74,16 @@ public final class Downloader {
 	 * @return absolute path to the file
 	 */
 	private static String getProductFromMaven() {
-		locateMaven();
-		final String localRepo = getMavenLocalRepository();
+		String localRepo = "";
+
+		// If we use custom local repository, use it
+		if (System.getProperty("maven.repo.local") != null) {
+			localRepo = System.getProperty("maven.repo.local");
+		} else {
+			locateMaven();
+			localRepo = getMavenLocalRepository();
+		}
+
 		return getArtifactPath(localRepo);
 	}
 
