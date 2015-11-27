@@ -4,6 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import org.jboss.fuse.qa.fafram8.property.SystemProperty;
 
+import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunNotifier;
 import org.junit.runners.BlockJUnit4ClassRunner;
 import org.junit.runners.model.FrameworkMethod;
@@ -20,9 +21,9 @@ import net.rcarz.jiraclient.JiraException;
  */
 @Slf4j
 public class FaframTestRunner extends BlockJUnit4ClassRunner {
-
 	/**
 	 * Constructor.
+	 *
 	 * @param klass class
 	 * @throws InitializationError initialization error
 	 */
@@ -33,23 +34,30 @@ public class FaframTestRunner extends BlockJUnit4ClassRunner {
 	@Override
 	public void runChild(FrameworkMethod method, RunNotifier notifier) {
 		final Jira jira = method.getAnnotation(Jira.class);
+		if (jira == null) {
+			log.info("Starting " + method.getName());
+			super.runChild(method, notifier);
+			return;
+		}
 		final JiraClient jiraClient = new JiraClient(SystemProperty.getJiraURL());
 
-		Issue issue = null;
+		Issue issue;
 
 		try {
 			issue = jiraClient.getIssue(jira.value());
 		} catch (JiraException e) {
-			e.printStackTrace();
+			log.error("Jira Exception caught: " + e.getLocalizedMessage());
+			notifier.fireTestFailure(new Failure(describeChild(method), e));
+			return;
 		}
-
-		log.debug(String.format("JIRA %s is %s", jira.value().toUpperCase(), issue.getStatus().toString()));
 
 		if (StringUtils.equalsIgnoreCase(issue.getStatus().toString(), "resolved")
 				|| StringUtils.equalsIgnoreCase(issue.getStatus().toString(), "closed")) {
+			log.info("Starting " + method.getName());
 			super.runChild(method, notifier);
 		} else {
-			log.debug("Skipping " + method.getName());
+			log.info("Skipping " + method.getName() + String.format(" (JIRA %s is %s)", jira.value().toUpperCase(),
+					issue.getStatus().toString()));
 			notifier.fireTestIgnored(describeChild(method));
 		}
 	}
