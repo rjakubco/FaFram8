@@ -6,7 +6,6 @@ import org.jboss.fuse.qa.fafram8.property.FaframConstant;
 import org.jboss.fuse.qa.fafram8.resource.Fafram;
 
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
@@ -18,14 +17,9 @@ import java.io.File;
 public class LocalKeepFolderTest {
 	private Fafram fafram;
 
-	@Before
-	public void before() {
-		System.setProperty(FaframConstant.KEEP_FOLDER, "");
-	}
-
 	@Test
 	public void keepFolderTest() {
-		fafram = new Fafram().suppressStart().setup();
+		fafram = new Fafram().suppressStart().keepFolder().setup();
 
 		// It sets the system property to the product path
 		String path = System.getProperty(FaframConstant.FUSE_PATH);
@@ -39,7 +33,5 @@ public class LocalKeepFolderTest {
 		if (fafram != null) {
 			fafram.tearDown();
 		}
-
-		System.clearProperty(FaframConstant.KEEP_FOLDER);
 	}
 }

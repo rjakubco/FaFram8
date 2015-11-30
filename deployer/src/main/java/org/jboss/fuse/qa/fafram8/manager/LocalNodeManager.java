@@ -187,8 +187,6 @@ public class LocalNodeManager implements NodeManager {
 		if (!stopped || restart) {
 			ModifierExecutor.executePostModifiers();
 			ModifierExecutor.clearAllModifiers();
-			// This should be called after all modifiers but before stop/delete because they can throw exceptions
-			SystemProperty.clearAllProperties();
 			stop(ignoreExceptions);
 			deleteTargetDir(ignoreExceptions);
 		} else {
@@ -197,10 +195,11 @@ public class LocalNodeManager implements NodeManager {
 				ModifierExecutor.executePostModifiers();
 				ModifierExecutor.clearAllModifiers();
 				// This should be called after all modifiers but before stop/delete because they can throw exceptions
-				SystemProperty.clearAllProperties();
 				deleteTargetDir(ignoreExceptions);
 			}
 		}
+
+		SystemProperty.clearAllProperties();
 	}
 
 	/**
